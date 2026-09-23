@@ -35,8 +35,10 @@ seed=$((1 + idx / ${#CUTS[@]}))
 ecut=${CUTS[$((idx % ${#CUTS[@]}))]}
 rundir="${CEEX_SCRATCH}/${RUN_NAME}/RUN_CEEX_${seed}_${ecut}/"
 rm -rf "$rundir"; mkdir -p "$rundir"
-echo "[run_ceex] run=${RUN_NAME} task=${SLURM_ARRAY_TASK_ID} seed=${seed} ecut=${ecut} n=${NEVENTS} exe=${CEEX_EXE} @ $(git -C "$CEEX_ROOT" rev-parse --short HEAD) -> ${rundir}"
-mpirun -np ${NPROC} --mca pml ob1 --mca btl self,vader "$CEEX_EXE" \
+echo "[run_ceex] run=${RUN_NAME} task=${SLURM_ARRAY_TASK_ID} seed=${seed} ecut=${ecut} n=${NEVENTS} exe=${EXE:-$CEEX_EXE} @ $(git -C "$CEEX_ROOT" rev-parse --short HEAD) -> ${rundir}"
+# EXE= runs a tagged binary instead of CEEX_EXE; CEEX_NPH_HISTOS=1 adds per-nph histograms
+EXE=${EXE:-$CEEX_EXE}
+mpirun -np ${NPROC} --mca pml ob1 --mca btl self,vader ${CEEX_NPH_HISTOS:+-x CEEX_NPH_HISTOS} "$EXE" \
        --process=pipig --scenario=KLOE-LA --NLO \
        --n=${NEVENTS} --seed="${seed}" --emin="1d-${ecut}" --outdir="${rundir}" --uni_bin
 echo "[run_ceex] done task=${SLURM_ARRAY_TASK_ID}"

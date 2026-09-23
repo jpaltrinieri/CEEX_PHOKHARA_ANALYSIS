@@ -1,0 +1,34 @@
+diff --git a/MC.f b/MC.f
+index d66af6f..34eae5a 100644
+--- a/MC.f
++++ b/MC.f
+@@ -72,6 +72,7 @@
+          integer, intent(in) :: out_unit
+          integer :: nph, i, n, ndim, ihist
+          integer*4 :: ncall_n
++         character(len=8) :: nph_histos
+          real(prec) :: avgi, sd, chi2a, vegas_dummy
+          procedure(integrand), pointer :: fxn,fxnfill
+ 
+@@ -153,6 +154,20 @@
+             end do
+          endif
+ 
++         ! Opt-in (environment CEEX_NPH_HISTOS=1): also write every histogram
++         ! per photon multiplicity, as <name>_nph<k>, after the merged ones.
++         ! The split depends on --emin, the sum does not.
++         call get_environment_variable("CEEX_NPH_HISTOS", nph_histos)
++         if ((.not. nohisto) .and. trim(nph_histos) == "1") then
++            do i = 1, NUM_HISTS
++               do n = MIN_ORDER+1, MAX_ORDER
++                  write(out_unit,*) "Histogram:", trim(hist_defs(i)%name)//"_nph"//achar(iachar('0')+n-1)
++                  call write_histogram(histograms(i, n), out_unit)
++                  write(out_unit,*) "Integral =", compute_histogram_integral(histograms(i, n))
++               end do
++            end do
++         endif
++
+       end subroutine ceex
+ 
+       end program MonteCarlo
+\ No newline at end of file
