@@ -34,12 +34,11 @@ maximum only steers the channel split and the unweighting.
 RUN/config.sh                        every path; sourced by every script
 RUN/RUN_CEEX/submit.sh               ./submit.sh <run> <n_seeds> <n> [walltime] [ecuts]
 RUN/RUN_CEEX/run_ceex.sh             SLURM array task: one (seed, Emin), 5 MPI ranks, --n per rank
-RUN/RUN_CEEX/slurm-out/
+                                     (SLURM logs: ~/scratch/CEEX_PHOKHARA_ANALYSIS/slurm-out/, not home -- the home file quota filled up on 23 Sep)
 RUN/RUN_PHOKHARA/submit.sh           ./submit.sh <run> <n_seeds> <nges> <nm> [walltime] [seed_offset]
 RUN/RUN_PHOKHARA/run_phokhara.sh     SLURM array task: one seed
 RUN/RUN_PHOKHARA/cards/              runcard template (+ README: where each switch comes from)
 RUN/RUN_PHOKHARA/src/                PHOKHARA source + built binary `phokhara`
-RUN/RUN_PHOKHARA/slurm-out/
 RUN/POST_PROCESS/post_process.sh     ./post_process.sh <run> [ceex|phokhara|all] -> PLOTS/DATA/<run>/
 RUN/POST_PROCESS/check_total.sh      ./check_total.sh -l <scratch run dir>: flag CEEX outputs >5 robust sigma off, or error >10x median
 RUN/POST_PROCESS/quarantine.sh       ./quarantine.sh <run>: move the outputs check_total.sh flags to <run>_excluded/ (reversible, logged)

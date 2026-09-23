@@ -6,8 +6,8 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5G
 #SBATCH --exclude=node025,node029,node051
-#SBATCH --output=/users/jpaltrin/software/CEEX_PHOKHARA_ANALYSIS/RUN/RUN_CEEX/slurm-out/%x_%A_%a.out
-#SBATCH --error=/users/jpaltrin/software/CEEX_PHOKHARA_ANALYSIS/RUN/RUN_CEEX/slurm-out/%x_%A_%a.err
+#SBATCH --output=/users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/slurm-out/RUN_CEEX/%x_%A_%a.out
+#SBATCH --error=/users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/slurm-out/RUN_CEEX/%x_%A_%a.err
 #
 # CEEX main, pipig KLOE-LA fixed-order NLO with GoSam (eepipig_noVP_1L_onshell +
 # eepipigg): F(pi)=1, no VP -- the configuration of the Phokhara card in
@@ -25,6 +25,8 @@ export OMP_NUM_THREADS=1
 cd "$CEEX_ROOT"   # the GoSam process libraries are on a relative rpath
 
 : "${RUN_NAME:?set RUN_NAME (use submit.sh)}"
+# the rundir below is rm -rf'd: never let a bad index map onto another task's dir
+[[ "${SLURM_ARRAY_TASK_ID:-}" =~ ^[1-9][0-9]*$ ]] || { echo "bad SLURM_ARRAY_TASK_ID='${SLURM_ARRAY_TASK_ID:-}'" >&2; exit 1; }
 NPROC=5
 NEVENTS=${NEVENTS:-10k}
 CUTS=(${ECUTS:-4 5})

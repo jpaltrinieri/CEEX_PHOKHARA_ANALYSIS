@@ -6,8 +6,8 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2G
 #SBATCH --exclude=node025,node029,node051
-#SBATCH --output=/users/jpaltrin/software/CEEX_PHOKHARA_ANALYSIS/RUN/RUN_PHOKHARA/slurm-out/%x_%A_%a.out
-#SBATCH --error=/users/jpaltrin/software/CEEX_PHOKHARA_ANALYSIS/RUN/RUN_PHOKHARA/slurm-out/%x_%A_%a.err
+#SBATCH --output=/users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/slurm-out/RUN_PHOKHARA/%x_%A_%a.out
+#SBATCH --error=/users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/slurm-out/RUN_PHOKHARA/%x_%A_%a.err
 #
 # One PHOKHARA seed = one array task. Submit through ./submit.sh, which sets
 # RUN_NAME, NEVENTS, NMAX, SEED_OFFSET, --array and --time.
