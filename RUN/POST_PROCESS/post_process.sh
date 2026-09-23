@@ -8,6 +8,8 @@
 #   Either may be absent (e.g. a Phokhara-only run); it is skipped with a note.
 #   PLOTS/DATA/<run>/{babayaga,phokhara_ref} are links to the shared reference sets.
 #
+# CEEX outputs are first screened with check_total.sh -l (list only).
+# check_total.sh is an unmodified copy of ~/software/CEEX_ANALYSIS/check_total.sh (23 Sep).
 # Paths come from ../config.sh. merge.py/average.py are unmodified copies of
 # CEEX_ANALYSIS/RUN/POST_PROCESS: they write next to themselves, and the
 # results are then moved into DATA -- nothing in CEEX_ANALYSIS is touched.
@@ -24,6 +26,10 @@ ln -sfn ../phokhara_ref "$OUT/phokhara_ref"
 do_ceex() {
     local src="$CEEX_SCRATCH/$RUN"
     if ! ls -d "$src"/RUN_CEEX_* >/dev/null 2>&1; then echo "[post_process] no CEEX output in $src, skipped"; return; fi
+    # outlier check first, list only: flagged runs are reported, never deleted here.
+    # To drop them: ./check_total.sh "$src"  (interactive), then rerun this script.
+    echo "[post_process] check_total.sh -l $src"
+    "$HERE/check_total.sh" -l "$src" | sed 's/^/    /' || true
     cd "$HERE"
     rm -f merged_histograms_*.txt average_summary_*.txt
     python3 average.py "$src" < /dev/null

@@ -41,6 +41,7 @@ RUN/RUN_PHOKHARA/cards/              runcard template (+ README: where each swit
 RUN/RUN_PHOKHARA/src/                PHOKHARA source + built binary `phokhara`
 RUN/RUN_PHOKHARA/slurm-out/
 RUN/POST_PROCESS/post_process.sh     ./post_process.sh <run> [ceex|phokhara|all] -> PLOTS/DATA/<run>/
+RUN/POST_PROCESS/check_total.sh      ./check_total.sh -l <scratch run dir>: flag CEEX outputs >5 robust sigma off, or error >10x median
 RUN/POST_PROCESS/snapshot.sh         ./snapshot.sh <src_run> <dst_run>: link the finished part of a running run under a new name
 RUN/POST_PROCESS/merge.py, average.py  CEEX merge (unmodified copies from CEEX_ANALYSIS)
 RUN/POST_PROCESS/merge_phokhara.py   Phokhara seed_*/NLOFF1.dat -> NLOFF1_<obs>.csv + sigma.txt
