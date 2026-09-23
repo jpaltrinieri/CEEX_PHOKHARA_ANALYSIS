@@ -1,0 +1,147 @@
+PLAN: find the origin of the CEEX vs PHOKHARA pion-angle discrepancy
+KLOE-LA, e+e- -> pi+pi-gamma, fixed-order NLO, F(pi)=1, no VP        (draft 23 Sep, not implemented)
+=======================================================================================================
+
+0. WHAT WE KNOW (prod500k and older data)
+-----------------------------------------
+- sigma agrees: CEEX 0.26840(4)/0.26836(4), PHOKHARA 0.268353(46), BabaYaga 0.268389(4) nb.
+- Every C-even observable agrees (chi2/ndf ~1); only lth+, lth-, lthav differ (chi2/ndf ~1000).
+- A(th+) = [s(<90)-s(>90)]/s:  CEEX 0.2375(1), BabaYaga 0.2372, PHOKHARA 0.2787(2).
+- So the difference is purely C-odd = odd powers of Qpi. At O(alpha^4) the gauge-invariant
+  C-odd classes are Qe^5 Qpi^3 and Qe^3 Qpi^5 (the tree interference is Qe^3 Qpi^3).
+- LO AGREES EXACTLY (existing data, Strong2020 FF): A_LO = 0.0779 in both, sigma_LO 2.6523 nb in both.
+  With the same FF at NLO: CEEX 0.0804(5), PHOKHARA 0.0924 -> the discrepancy is in the NLO
+  correction to the C-odd part. Gap 0.012 with FF, 0.041 with F=1: it scales roughly like the
+  LO asymmetry itself (0.0779 vs 0.2463), i.e. like an extra fraction of the tree interference.
+
+1. STATISTICS FOR EACH TEST
+---------------------------
+Goal of a histogram-level test: resolve a change in A(th+) with sigma(A) <= ~0.001-0.002 while
+checking that sigma and M_xx (lmmx) are unchanged (shape chi2/ndf ~1, sigma to ~0.1%).
+  PHOKHARA : 30 seeds x 100k (nm=10k)  -> sigma(A) ~0.0011,  ~3 min wall, 0.25 CPU-h
+  CEEX     : 10 seeds x 100k, one Emin -> sigma(A) ~0.0012,  one wave ~15-25 min, ~10 CPU-h
+Point-by-point tests need no statistics: a fixed list of ~1000 phase-space points (1-photon and
+2-photon, passing the KLOE-LA cuts), evaluated in both codes. Conventions already match in both
+codes: e+ along +z, e- along -z, pi+ = index 3 (CEEX) / 6 (PHOKHARA), theta w.r.t. the e-.
+Key trick (no charge knob needed): the C-odd part of any piece at a point is
+      C-odd(p+,p-) = [F(p+,p-) - F(p-,p+)] / 2     (swap the two pion momenta).
+Soft cutoff matching: PHOKHARA soft region is E_gamma < w*sqrt(s); CEEX is E_gamma < Emin.
+So PHOKHARA w=1e-5  <->  CEEX --emin=1.02d-5 (use exactly this in split tests).
+
+2. THE TESTS, IN ORDER (cheap and decisive first)
+-------------------------------------------------
+T0  LO with F(pi)=1, both codes, no code change.
+    PHOKHARA nlo=0, nlo2=0, fsrnlo=0, fsr=2;  CEEX --LO.
+    Expect A_LO(th+) = 0.2463 in both (PHOKHARA LOFF1 reference) and identical shapes.
+    Confirms the F=1 tree interference agrees too. ~5 min PHOKHARA, ~20 min CEEX.
+
+T1  PHOKHARA soft-cutoff scan, no code change: w = 1e-4, 1e-5, 1e-6 (and 1e-3).
+    A physical result must not depend on w. Also record sigma1 (1-photon) and sigma2 (2-photon).
+    Tests hypothesis H2 (below): an un-subtracted ISR soft log in B5 would make A drift with w.
+    CEEX is already known to be Emin-independent (1e-4 vs 1e-5 agree to 0.0001).
+
+T2  H1 -- the misplaced factor in PHOKHARA ampLO (phokhara_10.0.f:9969-9982). STRONGEST LEAD.
+    As written:  ampLO += Re[ T1 + T2 + T3 + T4*(ver_f+ver_s) ]     (pions)
+    Muon analogue (10384-10394): 2*Re[T1+T2+T3+T4] * (ver_s+ver_f)/2.
+    So T1+T2+T3 of the tree ISR x FSR interference are added with coefficient 1 instead of O(alpha):
+    a C-odd, w-independent extra term (T1,T2 are m_e-suppressed; T3 is a full helicity term),
+    that cancels in sigma over the symmetric cuts -- exactly the observed pattern.
+    T2a (per point, diagnostic only): print Re[T1+T2+T3], Re[T4*(ver_f+ver_s)], and the tree
+        interference B3 at the common points; check Re[T3]/B3 ~ the observed ~17% excess.
+    T2b (histogram): a separate binary phokhara_h1 with the bracket moved so that the whole
+        sum is multiplied, Re[T1+T2+T3+T4]*(ver_f+ver_s) (check the intended normalisation
+        against the muon code and the "factor 2 ... taken into account in ver_f and ver_s"
+        comment). Rerun 30 x 100k. Prediction if H1 is the whole story: A(th+) -> 0.2375,
+        sigma and every C-even shape unchanged. Then redo 300 x 500k to confirm at 0.0002.
+    If T2b closes the gap to < 2 sigma: done; report to the PHOKHARA authors with T2a numbers.
+    If it only closes part of it: continue with T3-T6 on the remainder.
+
+T3  Photon-multiplicity split at a matched cutoff (histograms), minimal code change.
+    Compare separately the 1-photon (Born + virtual + soft) and the 2-photon (hard real)
+    contributions to lth+, lth-, lmmx, A(th+), at w=1e-5 <-> Emin=1.02e-5.
+      PHOKHARA: card flag "print final-state photons explicitly" (print_summed=1) gives the
+                1-photon and 2-photon histograms separately (check it is honoured for weighted).
+      CEEX    : histograms are summed over nph (MC.f:141-145); need per-nph output (small
+                change: write the per-nph histograms before summing), or run with nph fixed.
+    Tells whether the difference lives in the 1-photon (virtual/soft) or 2-photon (real) part.
+
+T4  Point-by-point C-odd comparison of the 1-photon NLO piece (needs dump drivers).
+    Common point list; for each point and its pi+<->pi- swap, evaluate "virtual + soft(w)":
+      CEEX    : amp2_pipig_NLO pieces at nph=1: tree, 2*fin+ctm (GoSam 1L + mass CT), ctfin,
+                YFS soft B4tot (split into its six pairs: pairs 3-6 in YFS_FF.f:179-182 are the
+                C-odd initial-final soft terms). CEEX_DUMP_PSP already dumps the nph=1 points.
+      PHOKHARA: the gen_1ph pieces separately: A (amplit, ISR |I|^2), B1-B3 (tree + vertices),
+                B4 (H1 block, both parts), B5 (ISR 1-loop x FSR tree), C (NLOpions soft, incl.
+                softintegral_interference), D (virt_pions: penta/box ISR, penta/box FSR,
+                vFSR). The commented print at 2114-2117 is the hook; save_amplitudes needs its
+                argument types fixed (real*16/complex*32).
+    Compare the C-odd (swap-antisymmetric) sums first, then class by class (T5).
+
+T5  Gauge-invariant charge classes, point by point.
+    Decompose the 1-photon C-odd NLO piece into Qe^5 Qpi^3 and Qe^3 Qpi^5:
+      CEEX    : GoSam pion couplings gAPP (A phi phi) and gAAPP (seagull) are run-time module
+                variables: set gAPP=-lambda, gAAPP=2 lambda^2 after set_parameter, evaluate at
+                lambda = +-1, +-2 and fit the polynomial -> each class. The sibling checkout
+                ~/software/CEEX also has ready charge-class GoSam libraries
+                (eepipig_1L_q1p4/q2p3/q3p2/q4p1) and ISR/FSR group libraries (wisr*/wfsr*)
+                plus tools class_split / group_span that could be reused (not in CEEX-main).
+      PHOKHARA: no charge parameter; each piece of T4 has a definite class:
+                Qe^5 Qpi^3: ISR loop x FSR tree (B5), ISR box/pentagon x ISR tree, the e-side
+                            vertex part of B4, soft IF x ISR-dominated tree;
+                Qe^3 Qpi^5: FSR loop (vFSR) x ISR tree, FSR box/pentagon x FSR tree, the
+                            pion-side vertex part of B4.
+    The class that disagrees names the diagrams. Within a class, drop to single diagrams
+    (CEEX: q1p4_d<N> style single-diagram libraries; PHOKHARA: the separate result_* terms).
+
+T6  Point-by-point C-odd comparison of the 2-photon real emission (tree only, easiest).
+    CEEX beta0_gosam_pipigg (full ee->pipigamma gamma tree) vs PHOKHARA gen_2ph helicityamp
+    (coherent II + IF + FF currents), at common 2-photon points and swapped. Then per class:
+    PHOKHARA can zero Jplus/Jmin (FF) and mapi/mbpi (IF) (commented switch at 13164-13187);
+    CEEX via gAPP scaling. Covers hypothesis H5.
+
+3. OTHER HYPOTHESES FROM READING PHOKHARA (to be tested only if T2 does not close the gap)
+--------------------------------------------------------------------------------------------
+H2  B5 (ampLO 9998-10007): V1(1) = (1 - 2 alpha/4pi V1(1))/Sp keeps the tree "1" and an
+    un-subtracted ISR soft log; Re[F* I](1+soft_ISR(w)) may be double counted with B3/NLOpions.
+    -> T1 (w-dependence of A) and T4 (per-point B5 vs CEEX ISR-loop x FSR-tree class).
+H3  Lepton-line labelling in virt_pions: p1 = e+ passed as the first fermion leg; if the loop
+    routines expect the electron there, the C-odd loop x tree terms flip sign.
+    -> compare resultB_penta_* (their tree^2, incl. interference) with ampLO's tree at a point.
+H4  Pentabox routines: comments say the finite part "should be multiplied by (-1)" but the code
+    keeps result=result (e.g. Pentabox_PIFSRHelSum_temp.f:1156). Would flip boxes/pentagons.
+    -> T4/T5: box/pentagon C-odd piece vs CEEX (and its IR-pole cancellation).
+H5  FSR-FSR two-photon current pairing/sign (13189, 13335): affects IF x FF (Qe^3 Qpi^5).
+    -> T6.
+Minor: REALPART(result_virtual_FSR)*CONJG(Fs) at virtualpions.f:215 (harmless for F=1);
+       factor-4 normalisation difference pentabox vs vFSR terms (check via pole cancellation);
+       mu^2 = s hard-coded (virtualpions.f:113) vs lambda = sqrt(s) in the soft integrals:
+       a mu/lambda independence test is a cheap consistency probe.
+
+4. CEEX-SIDE SANITY TESTS (so that CEEX is not assumed right)
+-------------------------------------------------------------
+C1  C-mirror test and A(th+) already agree with BabaYaga (independent code) at 0.1%.
+C2  --poletest on KLOE-LA: the exact pole identity (incl. the initial-final poles) at every point
+    -> fixes the relative sign of the C-odd YFS terms and GoSam's charges.
+C3  Emin independence: already 1e-4 vs 1e-5 agree; repeat A(th+) per nph at 1e-4/1e-5/1e-6.
+C4  The small residual CEEX-BabaYaga A(th+) offset (+0.00027, ~2 sigma at each Emin) is to be
+    kept in view but is 150x smaller than the PHOKHARA effect.
+
+5. DECISION TREE
+----------------
+T0 (LO agrees?) --no--> tree-level problem: compare 1-photon tree per point (T4 tree part) first.
+      |yes
+T1 (A independent of w?) --no--> soft/virtual mismatch (H2): T4 on B5, soft IF, Rodrigo soft.
+      |yes
+T2 (H1 fix gives 0.2375?) --yes--> confirm at high stats, per-point numbers, write up.
+      |no / partly
+T3 (1-photon or 2-photon?) --1-photon--> T4 -> T5 -> single diagrams (H3, H4)
+                           --2-photon--> T6 (H5)
+
+6. WHAT WOULD BE CHANGED (only after we agree)
+----------------------------------------------
+- PHOKHARA: separate tagged binaries in RUN/RUN_PHOKHARA/src (phokhara_h1, phokhara_dump, ...),
+  each a patch file like phokhara_nostop.patch; production binary untouched.
+- CEEX-main: a per-point dump driver and (T3) per-nph histograms; tagged binaries MC_<tag>,
+  CEEX_EXE unchanged while arrays run.
+- Runs under new run names (t0_lo, t1_w1e-4, t2_h1fix, ...), same pipeline (check_total,
+  quarantine, merge, plot), results in RESULTS/<run>/.
