@@ -141,5 +141,6 @@ only. CEEX's `lmxx` is Phokhara's `lmmx`.
 | run | what |
 |---|---|
 | `partial_1151_ceex100k_phok4x20k` | DATA + RESULTS only: a merge made at 11:51 of the CEEX 100k production while it was running, with the first 4 Phokhara timing seeds |
+| `test10k` | DATA + RESULTS: CEEX 30 seeds x Emin {1e-4,1e-5} x 10k x 5 ranks; Phokhara (`phokhara_nostop`) 30 seeds x nges 10k, nm 10k, ~11 s per seed. Pipeline check: Phokhara sigma_MC 0.26840(105) nb, A(th+) 0.278(4) as in the old reference |
 | `test_ceex10k_phok20k` | DATA + RESULTS: CEEX 2 seeds x 10k, Phokhara 8 seeds x 20k (raw in scratch `CEEX/test_10k_2seeds`, `PHOKHARA/timing_20k`) |
 | CEEX 100k production (cancelled 12:08, 59/60 tasks done) | raw only, still at `~/scratch/CEEX-main/KLOE-LA_NLO_pipig` (old layout, not merged) |
