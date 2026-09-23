@@ -1,0 +1,18 @@
+# T3 split at matched cutoff 1e-4 GeV with FIXED PHOKHARA (phokhara_fix, w=9.8039e-5, 100 x 500k) vs CEEX MC_nphsplit (--emin=1d-4, 10 x 5 ranks x 100k, 1/50 quarantined), 2026-09-23
+CEEX 49 rank files (ecut 4), PHOKHARA 100 seeds, run t3fix_1e-4
+
+== nph1 (Born + virtual + soft)
+  CEEX      sigma = 0.095329 +- 0.000102 nb   A(th+) = +0.1548(11)  A(th-) = -0.1546(11)  A(thav) = -0.1772(11)
+  PHOKHARA  sigma = 0.095389 +- 0.000069 nb   A(th+) = +0.1558(7)  A(th-) = -0.1555(7)  A(thav) = -0.1783(7)
+  shape chi2/ndf CEEX vs PHOKHARA (60 bins): lth+ 0.75  lth- 0.96  lthav 0.70  lmxx 0.79  lthg 1.05  leg 0.96
+
+== nph2 (hard 2-photon)
+  CEEX      sigma = 0.172903 +- 0.000229 nb   A(th+) = +0.2826(13)  A(th-) = -0.2820(13)  A(thav) = -0.3140(13)
+  PHOKHARA  sigma = 0.173008 +- 0.000045 nb   A(th+) = +0.2829(2)  A(th-) = -0.2828(2)  A(thav) = -0.3157(2)
+  shape chi2/ndf CEEX vs PHOKHARA (60 bins): lth+ 1.22  lth- 0.95  lthav 1.38  lmxx 1.78  lthg 1.09  leg 1.04
+
+== sum (total)
+  CEEX      sigma = 0.268232 +- 0.000251 nb   A(th+) = +0.2372(9)  A(th-) = -0.2367(9)  A(thav) = -0.2654(9)
+  PHOKHARA  sigma = 0.268397 +- 0.000083 nb   A(th+) = +0.2377(3)  A(th-) = -0.2376(3)  A(thav) = -0.2669(3)
+  shape chi2/ndf CEEX vs PHOKHARA (60 bins): lth+ 1.02  lth- 0.95  lthav 0.91  lmxx 1.26  lthg 0.95  leg 0.95
+

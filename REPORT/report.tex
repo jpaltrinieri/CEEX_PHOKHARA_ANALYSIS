@@ -99,7 +99,8 @@ $\Ath=\HiAav$, independent of the cutoff and in agreement with \ceex{} and \bby.
   \end{itemize}
   Subtracting both leaves a per-point residual of $2.5\times10^{-5}$ of the tree.
 \item \textbf{With both corrected}, $\Ath$ no longer depends on $w$ and agrees with \ceex{} and
-  \bby{} (\cref{sec:fix}). Totals and charge-even distributions are unchanged.
+  \bby{}, in total and separately in the one- and two-photon parts (\cref{sec:fix}). Totals and
+  charge-even distributions are unchanged.
 \end{enumerate}
 
 %=========================================================================================
@@ -410,11 +411,26 @@ $w$-averaged asymmetries are
 \end{tabular}
 \end{center}
 At $w=10^{-5}$ and $10^{-6}$ the fixed \phok{} agrees with \ceex{} and \bby{} within
-$0.3$--$1.5\sigma$. The $w=10^{-4}$ point is $0.0007$ ($\sim3\sigma$) lower. This is not a trend
-in $\ln w$, since $10^{-5}$ and $10^{-6}$ agree with each other, and it is not in the corrected
-pieces: T4 repeated at $w=10^{-4}$ (1078 points, \ceex{} at $E_{\min}=1.02\times10^{-4}$~GeV)
-leaves no systematic $C$-odd residual after H1+H2 (mean $-7\times10^{-6}$, no correlation with the
-tree interference). It is noted as an open point in \cref{sec:caveats}.
+$0.3$--$1.5\sigma$. The $w=10^{-4}$ sample lies $0.0007$ lower. To check it, the multiplicity split
+of \cref{sec:t3} was repeated with the fixed code at a matched cutoff of $10^{-4}$~GeV
+(\phok{} $w=9.804\times10^{-5}$, 100 seeds $\times$ 500k; \ceex{} $E_{\min}=10^{-4}$~GeV):
+\begin{center}\small
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{$\sigma$ [nb]} & \multicolumn{2}{c}{$\Ath$} \\
+ & \ceex & \phok{} (fixed) & \ceex & \phok{} (fixed) \\
+\midrule
+1 photon (Born+V+S) & 0.09533(10) & 0.09539(7) & 0.1548(11) & 0.1558(7) \\
+2 photons (hard) & 0.17290(23) & 0.17301(5) & 0.2826(13) & 0.2829(2) \\
+sum & 0.26823(25) & 0.26840(8) & 0.2372(9) & 0.2377(3) \\
+\bottomrule
+\end{tabular}
+\end{center}
+Both parts agree, with angle-shape $\chi^2/{\rm ndf}=0.7$--$1.4$, and this sample gives
+$\Ath=0.2377(3)$, consistent with $w=10^{-5}$ and $10^{-6}$. A 2\% change of the cutoff cannot
+move $\Ath$ by $0.0009$, so the low $w=10^{-4}$ value is a fluctuation of that sample
+($2.6\sigma$ from this one). T4 at $w=10^{-4}$ also leaves no systematic $C$-odd residual after
+H1+H2 (mean $-7\times10^{-6}$).
 \Cref{fig:after,fig:after-ov} repeat \cref{fig:before,fig:before-ov} with the fixed \phok{} at $w=10^{-5}$: the pion-angle
 shape $\chi^2/{\rm ndf}$ against \ceex{} drops from $\sim1900$ to $0.9$--$1.7$.
 
@@ -441,10 +457,9 @@ $w=10^{-5}$). The tilt is gone.}
   errors are on code paths active for \code{pion=1} with \code{nlo2=1} in any configuration, so
   they should also affect the Strong2020 form-factor results (there the NLO gap in $\Ath$ is
   $0.012$: \ceex{} $0.0804$, \phok{} $0.0924$). This has not been re-run.
-\item After the fix, the $w=10^{-4}$ result lies $0.0007$ ($\sim3\sigma$) below the $w=10^{-5}$ and
-  $10^{-6}$ ones and below \ceex{} at the same cutoff. The corrected one-photon matrix element
-  agrees with \ceex{} at that cutoff point by point, so the offset is outside the pieces changed
-  here; a multiplicity split at $w=10^{-4}$ is the next check. It is $2\%$ of the original effect.
+\item After the fix, one of the three high-statistics samples ($w=10^{-4}$) lies $0.0007$ below the
+  others; an independent sample at the same cutoff agrees with them and with \ceex{} part by part
+  (\cref{sec:fix}), so it is treated as a fluctuation.
 \item Muons take a different, correct branch and are not affected.
 \item Totals and charge-even distributions are not affected by either error ($\sigma$ unchanged
   in every run; charge-even per-point agreement $10^{-5}$).
