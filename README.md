@@ -1,5 +1,9 @@
 # CEEX_PHOKHARA_ANALYSIS
 
+**Result: [REPORT/report.pdf](REPORT/report.pdf).** The discrepancy is two errors in PHOKHARA's
+1-photon ISR x FSR interference at NLO; with the fix (RUN/RUN_PHOKHARA/variants/h1.patch + h3.patch)
+PHOKHARA agrees with CEEX and BabaYaga.
+
 CEEX vs PHOKHARA for one scenario only: **KLOE-LA (KLOE-I), e⁺e⁻ → π⁺π⁻γ,
 fixed-order NLO, F(π) = 1, no vacuum polarisation.** `RUN/` makes and merges
 the data for both generators, `PLOTS/` plots it, `RESULTS/` holds the plots.
