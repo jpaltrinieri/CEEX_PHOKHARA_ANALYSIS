@@ -12,3 +12,6 @@ __pycache__/
 *.pyc
 *.tar.gz
 RUN/RUN_PHOKHARA/variants/build_*/
+RUN/RUN_CEEX/t4/t4_ceex
+RUN/RUN_CEEX/t4/*.o
+RUN/RUN_CEEX/t4/*.mod
