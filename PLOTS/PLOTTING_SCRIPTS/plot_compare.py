@@ -196,8 +196,23 @@ REF = opt.get("--phokhara") or ("phokhara" if "phokhara" in sources else
 if REF is None or REF not in sources:
     sys.exit(f"--phokhara={REF}: no Phokhara set available; have {', '.join(sources)}")
 BB = "babayaga" if "babayaga" in sources else None
+# Numerators over BabaYaga, in panel (1) and the "vs babayaga" table: CEEX when
+# there is any, else the Phokhara sets -- so Phokhara / BabaYaga is shown while
+# CEEX is still running.
+HAVE_CEEX = any(k.startswith("ceex") for k in sources)
+PANEL1 = "CEEX / BabaYaga" if HAVE_CEEX else "Phokhara / BabaYaga"
+
+
+def bb_nums(keys):
+    if HAVE_CEEX:
+        return [k for k in keys if k.startswith("ceex")]
+    return [k for k in dict.fromkeys([REF, "phokhara", "phokhara_ref"]) if k in keys]
+
+
 if BB is None:
-    print("⚠️  no BabaYaga: the CEEX / BabaYaga panel is dropped")
+    print(f"⚠️  no BabaYaga: the {PANEL1} panel is dropped")
+elif not HAVE_CEEX:
+    print("⚠️  no CEEX: panel (1) and the BabaYaga table show Phokhara / BabaYaga")
 print(f"Phokhara denominator: {sources[REF]['label']}")
 
 
@@ -341,7 +356,7 @@ def write_summary(path, group=10):
     if BB:
         L.append("")
         L.append(f"shape chi2/ndf vs babayaga ({600 // group}-bin grid)")
-        ce = [k for k in sources if k.startswith("ceex")]
+        ce = bb_nums(list(sources))
         L.append(f"{'obs':8s}" + "".join(f"{k:>16s}" for k in ce))
         for obs in obs_all:
             g = on_grid(obs, group)
@@ -436,11 +451,13 @@ def draw_ratio(ax, g, nums, den):
 
 def ratio_panels(g):
     """[(numerators, denominator, y-label)] for the panels this observable
-    supports: CEEX / BabaYaga, then {CEEX, BabaYaga} / Phokhara."""
+    supports: CEEX / BabaYaga (Phokhara / BabaYaga without CEEX), then
+    {CEEX, BabaYaga} / Phokhara."""
     out = []
     ce = ceex_keys(g)
-    if BB in g and ce:
-        out.append((ce, BB, "CEEX / BabaYaga"))
+    n1 = bb_nums(list(g))
+    if BB in g and n1:
+        out.append((n1, BB, PANEL1))
     nums = ce + ([BB] if BB in g else [])
     if REF in g and nums:
         out.append((nums, REF, "X / Phokhara"))
@@ -512,7 +529,7 @@ def plot_overview(obs_list, group, folder, which):
                        lw=sources[k]["style"][2]) for k in keys]
     fig.legend(h, [sources[k]["label"] for k in keys], loc="lower center",
                ncol=len(h), fontsize=9, frameon=True)
-    fig.suptitle("CEEX / BabaYaga" if which == 0 else
+    fig.suptitle(PANEL1 if which == 0 else
                  f"CEEX and BabaYaga / {sources[REF]['label']}", fontsize=12)
     fig.tight_layout(rect=(0, 0.05, 1, 0.97))
     out = os.path.join(folder, "overview_vs_babayaga.pdf" if which == 0

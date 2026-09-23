@@ -1,0 +1,3 @@
+# merged from /users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/PHOKHARA/prod500k: 30 seeds
+sigma     = 0.271763 +- 0.000446 nb  (seed-scatter error 0.000485, 30 seeds)
+sigma_MC  = 0.268626 +- 0.000146 nb  (seed-scatter error 0.000154, 30 seeds)
