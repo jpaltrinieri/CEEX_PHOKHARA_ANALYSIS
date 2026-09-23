@@ -1,0 +1,8 @@
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1001
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1002
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1003
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1004
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1005
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1006
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1007
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1008

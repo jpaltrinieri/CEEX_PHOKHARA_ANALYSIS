@@ -1,0 +1,3 @@
+# merged from /users/jpaltrin/software/Phokhara_run/run/timing: 8 seeds
+sigma     = 0.265733 +- 0.006851 nb  (seed-scatter error 0.002484, 8 seeds)
+sigma_MC  = 0.270984 +- 0.001845 nb  (seed-scatter error 0.002465, 8 seeds)

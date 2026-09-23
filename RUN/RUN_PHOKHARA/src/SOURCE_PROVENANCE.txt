@@ -1,0 +1,12 @@
+133d68bc38fe0d316640fbdcddb3068bffc8f515
+ M phokhara
+?? variables_cuts_KLOE-II.f
+copied from ~/software/PHOKARA_10.0 on 2026-09-23; variables_cuts_KLOE-I.f from monte-carlo-results-root-scenarios/scenarios/kloe-I/phokhara
+moved from ~/software/Phokhara_run/src to CEEX_PHOKHARA_ANALYSIS/RUN/RUN_PHOKHARA/src on 2026-09-23 (relinked, objects unchanged)
+2026-09-23: phokhara_nostop.patch applied to phokhara_10.0.f (comments out the three
+  "if (Mmax(i).lt.inte) stop" lines); built as phokhara_nostop, the binary RUN/config.sh uses.
+  src/phokhara is the unpatched build. Rebuild both from a fresh PHOKARA_10.0 checkout:
+    cp -r ~/software/PHOKARA_10.0 src && cp variables_cuts_KLOE-I.f src/ && cd src
+    make phokhara ROOT_DIR=$PWD/eemmg-lib/ VARIABLES_CUTS_FILE=variables_cuts_KLOE-I.f
+    patch -p0 < phokhara_nostop.patch
+    make phokhara_nostop PROGRAM_NAME=phokhara_nostop ROOT_DIR=$PWD/eemmg-lib/ VARIABLES_CUTS_FILE=variables_cuts_KLOE-I.f

@@ -1,0 +1,8 @@
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1001
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1006
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1007
+merged  /users/jpaltrin/software/Phokhara_run/run/timing/seed_1008
+skipped /users/jpaltrin/software/Phokhara_run/run/timing/seed_1002  (no done.txt (running or killed))
+skipped /users/jpaltrin/software/Phokhara_run/run/timing/seed_1003  (no done.txt (running or killed))
+skipped /users/jpaltrin/software/Phokhara_run/run/timing/seed_1004  (no done.txt (running or killed))
+skipped /users/jpaltrin/software/Phokhara_run/run/timing/seed_1005  (no done.txt (running or killed))

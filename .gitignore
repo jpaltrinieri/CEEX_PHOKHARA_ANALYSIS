@@ -1,0 +1,13 @@
+# PHOKHARA source tree: 250 MB with prebuilt libraries -- rebuild from PHOKARA_10.0,
+# see RUN/RUN_PHOKHARA/src/SOURCE_PROVENANCE.txt. Keep only what differs from it.
+RUN/RUN_PHOKHARA/src/*
+!RUN/RUN_PHOKHARA/src/SOURCE_PROVENANCE.txt
+!RUN/RUN_PHOKHARA/src/variables_cuts_KLOE-I.f
+!RUN/RUN_PHOKHARA/src/phokhara_nostop.patch
+# job logs, caches, tarballs
+RUN/*/slurm-out/
+RUN/POST_PROCESS/merged_histograms_*.txt
+RUN/POST_PROCESS/average_summary_*.txt
+__pycache__/
+*.pyc
+*.tar.gz
