@@ -156,7 +156,7 @@ only. CEEX's `lmxx` is Phokhara's `lmmx`.
 | run | what |
 |---|---|
 | `partial_1151_ceex100k_phok4x20k` | DATA + RESULTS only: a merge made at 11:51 of the CEEX 100k production while it was running, with the first 4 Phokhara timing seeds |
-| `prod500k` | Phokhara 300 seeds x 500k: sigma_MC 0.268353(46) nb, A(th+) 0.27872(16). CEEX 30 seeds x Emin {1e-4,1e-5} x 500k x 5 ranks: running |
+| `prod500k` | CEEX 30 seeds x Emin {1e-4,1e-5} x 500k x 5 ranks: 59/60 tasks (18_5 cancelled after 1h16, set aside unfinished), 1/295 outlier rank quarantined; Phokhara 300 seeds x 500k. sigma: CEEX 0.26840(4) / 0.26836(4), Phokhara 0.268353(46), BabaYaga 0.268389(4) nb. A(th+): CEEX 0.23751(13) / 0.23752(14), BabaYaga 0.23724(1), Phokhara 0.27872(16). Pion-angle shapes CEEX vs Phokhara chi2/ndf 1060-1560 |
 | `prod500k_partial` | snapshot of `prod500k` at 14:11: CEEX 27/60 tasks (14 at Emin 1e-4, 15 at 1e-5, no outliers flagged), Phokhara 300/300. sigma: CEEX 0.26842(5) / 0.26834(6), Phokhara 0.26835(5), BabaYaga 0.268389(4) nb. A(th+): CEEX 0.2376(2) / 0.2378(2), BabaYaga 0.2372, Phokhara 0.2787(2) |
 | `prod100k` | CEEX 30 seeds x Emin {1e-4,1e-5} x 100k x 5 ranks, 11/300 outlier ranks quarantined; Phokhara 30 seeds x 100k. sigma: CEEX 0.26833(19) / 0.26779(23), Phokhara 0.26867(32) nb. A(th+): CEEX 0.2381(7) / 0.2390(8), BabaYaga 0.2372, Phokhara 0.2764(11) |
 | `test100k` | snapshot of `prod100k` at 12:49: CEEX 22/60 tasks (11 per Emin) x 100k x 5 ranks, 3 outlier ranks quarantined (107 outputs), Phokhara all 30 seeds x 100k (sigma_MC 0.26867(32) nb). A(th+): CEEX 0.2403(12) at Emin 1e-5, BabaYaga 0.2372, Phokhara 0.2764(11) |
