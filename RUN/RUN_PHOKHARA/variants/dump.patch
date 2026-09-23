@@ -1,0 +1,298 @@
+--- a/phokhara_10.0.f	2026-09-23 16:18:40.957957622 +0100
++++ b/phokhara_10.0.f	2026-09-23 16:26:45.941203951 +0100
+@@ -1963,6 +1963,12 @@
+       complex*16 fsr_no_em
+       integer i,ru,mu,nu, oldpion
+       logical accepted      
++      integer t4n,t4max,t4k
++      real*8 t4tmp,t4amp
++      real*16 t4q,t4s(0:3,5),t4dq
++      save t4n
++      data t4n/0/
++      parameter (t4max=3000)
+       common/Lept_ee/Leptonic
+       common/pedf/rk1,dps 
+       common/virtsoft/inte_s
+@@ -2108,9 +2114,56 @@
+ c full pi0-------------------------------------------------------------
+          if((pion.eq.1).and.(nlo2.eq.1))then !ST - full soft
+            
++           do t4k=0,3
++             t4s(t4k,1)=p1(t4k)
++             t4s(t4k,2)=q1(t4k)
++             t4s(t4k,3)=p2(t4k)
++             t4s(t4k,4)=q2(t4k)
++             t4s(t4k,5)=p4(t4k)
++           enddo
+            amppenta= dble(virt_pions(qq_quad,p1,q1,p2,q2,p4,check))
+            inte=inte+gev2nbarn*NLOpions(qq)*jac0*jac1/(4.d0*pi*Sp)
+      1     + gev2nbarn*amppenta*jac0*jac1/(4.d0*pi*Sp)
++c [T4 dump] first t4max accepted 1-photon events of the production
++c loop: all pieces at the event and at pi+ <-> pi- swapped momenta
++           if ((i.eq.2).and.(t4n.lt.t4max)) then
++             t4n = t4n + 1
++             t4dq=0.q0
++             do t4k=0,3
++               t4dq=max(t4dq,abs(p1(t4k)-t4s(t4k,1)),
++     1          abs(q1(t4k)-t4s(t4k,2)),abs(p2(t4k)-t4s(t4k,3)),
++     2          abs(q2(t4k)-t4s(t4k,4)),abs(p4(t4k)-t4s(t4k,5)))
++               p1(t4k)=t4s(t4k,1)
++               q1(t4k)=t4s(t4k,2)
++               p2(t4k)=t4s(t4k,3)
++               q2(t4k)=t4s(t4k,4)
++               p4(t4k)=t4s(t4k,5)
++             enddo
++             if (t4n.le.5) write(*,*) 'T4 quad momenta changed by',
++     1         dble(t4dq)
++             call t4_eval(qq,amplit,qq_quad,p1,q1,p2,q2,p4,0)
++c            virt_pions overwrites its momentum arguments: start the
++c            swapped evaluation again from the saved copies
++             do t4k=0,3
++               t4tmp=momenta(6,t4k)
++               momenta(6,t4k)=momenta(7,t4k)
++               momenta(7,t4k)=t4tmp
++               p1(t4k)=t4s(t4k,1)
++               q1(t4k)=t4s(t4k,4)
++               p2(t4k)=t4s(t4k,3)
++               q2(t4k)=t4s(t4k,2)
++               p4(t4k)=t4s(t4k,5)
++             enddo
++             call HadronicTensorISR(qq,q0p,q2p,q0b,q2b,Hadronic)
++             t4amp = Matrix(Leptonic,Hadronic)
++             call t4_eval(qq,t4amp,qq_quad,p1,q1,p2,q2,p4,1)
++             do t4k=0,3
++               t4tmp=momenta(6,t4k)
++               momenta(6,t4k)=momenta(7,t4k)
++               momenta(7,t4k)=t4tmp
++             enddo
++             call HadronicTensorISR(qq,q0p,q2p,q0b,q2b,Hadronic)
++           endif
+       !       write (*,*) "Ampli", amplit, NLOpions(qq), 
+       ! &     amppenta,
+       ! &     momenta(1, :),
+@@ -9882,6 +9935,8 @@
+ c
+       real*8 function ampLO(qq,rk1,gam,q)
+       include 'phokhara_10.0.inc'     
++      real*8 t4v(40),t4a
++      common/t4c/t4v
+       complex*16 p1eck1,p1eck2,p2eck1,p2eck2,p1gam,p2gam,cvac_qq,dggvap
+       complex*16 epsk1(2,4),epsk2(2,4),BW_om,vacpol_and_nr
+       complex*16 gam(4),gam_ma(4),eck1(4),eck2(4)
+@@ -9903,6 +9958,9 @@
+       common/param_PFF/aa_phi,mm_ph,gg_ph
+ c     
+       ampLO = 0.d0
++      do i=1,5
++        t4v(i)=0.d0
++      enddo
+       testISR=0.d0
+       call pol_vec(rk1,epsk1)
+       call skalar1LO(rk1)
+@@ -9935,23 +9993,28 @@
+ c the FSR - corrected if fsrnlo=1 (ver_s calculated in subroutine input)
+ c           for fsrnlo = 0 ver_s =0
+ c
++      t4a = ampLO
+       ampLO = ampLO
+      1         +((dme*cdabs(ddpl(1,1)-ddmi(1,1)))**2
+      1         +(dme*cdabs(ddpl(2,2)-ddmi(2,2)))**2
+      2         +(cdabs(-ebppb*ddmi(2,1)+el_m2/ebppb*ddpl(2,1)))**2
+      3         +(cdabs(ebppb*ddpl(1,2)-el_m2/ebppb*ddmi(1,2)))**2)
+      4         *(1.d0 + ver_s)*cdabs(cvac_s)**2
++      t4v(1) = t4v(1) + ampLO - t4a
+ c ISR+correction FSR 
+         if(fsrnlo.eq.1)then
++      t4a = ampLO
+         ampLO = ampLO + ( (dme*cdabs(mb(1,1)-ma(1,1)))**2
+      1          +(dme*cdabs(mb(2,2)-ma(2,2)))**2
+      2          +(cdabs(-ebppb*ma(2,1)+el_m2/ebppb*mb(2,1)))**2
+      3          +(cdabs(ebppb*mb(1,2)-el_m2/ebppb*ma(1,2)))**2 )
+      4          * ver_f* cdabs(cvac_qq)**2
++      t4v(2) = t4v(2) + ampLO - t4a
+         endif
+ c
+ c the FSR x ISR 
+       if(fsr.eq.2)then
++      t4a = ampLO
+       ampLO = ampLO
+      4         +2.d0*dreal(
+      5    dconjg(dme*(mb(1,1)-ma(1,1))*cvac_qq)
+@@ -9962,6 +10025,7 @@
+      8    (-ebppb*ddmi(2,1)+el_m2/ebppb*ddpl(2,1))*cvac_s
+      9   +dconjg((ebppb*mb(1,2)-el_m2/ebppb*ma(1,2))*cvac_qq)*
+      1    (ebppb*ddpl(1,2)-el_m2/ebppb*ddmi(1,2))*cvac_s )
++      t4v(3) = t4v(3) + ampLO - t4a
+ c
+       endif
+ c
+@@ -9969,6 +10033,7 @@
+       if((nlo2.eq.1).and.(pion.eq.1))then
+ ! vator 2 of this interference taken into account in ver_f and ver_s        
+ !ST
++      t4a = ampLO
+          ampLO = ampLO
+      4         +dreal(
+      5    dconjg(dme*(mb(1,1)-ma(1,1))*cvac_qq)
+@@ -9980,6 +10045,9 @@
+      9   +dconjg((ebppb*mb(1,2)-el_m2/ebppb*ma(1,2))*cvac_qq)*
+      1    (ebppb*ddpl(1,2)-el_m2/ebppb*ddmi(1,2))*cvac_s
+      2    *(ver_f+ver_s) )
++      t4v(4) = t4v(4) + ampLO - t4a
++      t4v(19) = ver_f
++      t4v(20) = ver_s
+ 
+          call NLO_ISR_no_mass_terms(qq,apl,ami,apl2,ami2,rk1,eck1)
+          
+@@ -9995,6 +10063,7 @@
+ c     2     )
+ 
+ 
++      t4a = ampLO
+        ampLO=ampLO+dreal(
+      5    dconjg(dme*(ddpl(1,1)-ddmi(1,1))*cvac_s)
+      5              *dme*(apl(1,1)-ami(1,1))*cvac_qq
+@@ -10005,6 +10074,7 @@
+      9   +dconjg((ebppb*ddpl(1,2)-el_m2/ebppb*ddmi(1,2))*cvac_s)*
+      1    (ebppb*apl(1,2)-el_m2/ebppb*ami(1,2))*cvac_qq
+      2     )
++      t4v(5) = t4v(5) + ampLO - t4a
+ 
+        
+             
+@@ -17641,20 +17711,30 @@
+ c ========================================================================
+ c === PHOKHARA 10.0, (c) October 2020       ================================
+ c ========================================================================
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-
++c ====================================================================
++c [T4 dump] evaluate and write every 1-photon matrix-element piece
++      subroutine t4_eval(qq,amplit,qq_quad,p1,q1,p2,q2,p4,iswap)
++      include 'phokhara_10.0.inc'
++      real*8 qq,amplit,helicityampLO,NLOpions,hlo,xnlo,penta
++      real*16 qq_quad,p1(0:3),q1(0:3),p2(0:3),q2(0:3),p4(0:3)
++      real*16 virt_pions,chk
++      real*8 t4v(40)
++      integer iswap,k
++      logical t4open
++      common/t4c/t4v
++      save t4open
++      data t4open/.false./
++      if (.not.t4open) then
++        open(77,file='t4_points.txt',status='unknown')
++        write(77,'(a)') '# iswap qq pe+(4) pe-(4) pgam(4) ppi+(4)'//
++     1   ' ppi-(4) amplit helLO NLOpions virt t4v(1:20)'
++        t4open=.true.
++      endif
++      hlo = helicityampLO(qq)
++      xnlo = NLOpions(qq)
++      penta = dble(virt_pions(qq_quad,p1,q1,p2,q2,p4,chk))
++      write(77,'(i2,60(1x,1pe23.15))') iswap, qq,
++     1 (momenta(1,k),k=0,3),(momenta(2,k),k=0,3),(momenta(3,k),k=0,3),
++     2 (momenta(6,k),k=0,3),(momenta(7,k),k=0,3),
++     3 amplit,hlo,xnlo,penta,(t4v(k),k=1,20)
++      end
+--- a/virtualpions.f	2026-09-23 16:18:40.968957650 +0100
++++ b/virtualpions.f	2026-09-23 16:26:45.942203954 +0100
+@@ -1,5 +1,7 @@
+       real*16 function virt_pions(qq,p1,q1,p2,q2,p4,check)
+       include 'phokhara_10.0.inc'
++      real*8 t4v(40)
++      common/t4c/t4v
+       real*16    q1(0:3),q2(0:3),p1(0:3),p2(0:3),p3(0:3),p4(0:3)
+       real*8    q1d(0:3),q2d(0:3),p1d(0:3),p2d(0:3),p3d(0:3),p4d(0:3),
+      1 musqd
+@@ -217,6 +219,15 @@
+ c       print*,'penta=',trace_result
+ 
+ 
++c [T4 dump] the four pieces of trace_result, times dps
++       t4v(14)=dble((4.q0*piq*alpha_q)**3*factor1*2.q0*REALPART(
++     1 (result_penta_FSRcr+result_penta_FSR)*CONJG(Fs))/4.q0*dps)
++       t4v(15)=dble((4.q0*piq*alpha_q)**3*factor1*2.q0*REALPART(
++     1 (result_penta_ISR+result_penta_ISRcr)*CONJG(Fq))/4.q0*dps)
++       t4v(17)=dble((4.q0*piq*alpha_q)**3*factor1*2.q0*REALPART(
++     1 ampGVMD)/4.q0*dps)
++       t4v(16)=dble(REALPART(REALPART(result_virtual_FSR)*CONJG(Fs))
++     1 *32.q0*piq**2*alpha_q**4*dps)
+        virt_pions=trace_result*dps
+ 
+       return
+--- a/hard_soft_part/one_photon.f	2026-09-23 16:18:40.978957676 +0100
++++ b/hard_soft_part/one_photon.f	2026-09-23 16:26:45.942203954 +0100
+@@ -1,5 +1,7 @@
+        real*8 function NLOpions(qq)
+        include '../phokhara_10.0.inc'     
++      real*8 t4v(40),t4a
++      common/t4c/t4v
+       real*8 qq,rk1(4),q(4),dps,amp_h,ampNLO
+       complex*16 gam(4),gammu(4,2,2),v1(2,2),v2(2,2),up1(2,2),up2(2,2)
+      1          ,gammu_ma(4,2,2)
+@@ -20,11 +22,14 @@
+      1 ((4.d0*pi*alpha)**3)*ampNLO(qq,rk1,gam,q)/4.d0
+       
+       NLOpions=amp_h*dps
++      t4v(13)=((4.d0*pi*alpha)**3)/4.d0*dps
+ 
+       end
+ 
+       real*8 function ampNLO(qq,rk1,gam,q)
+       include '../phokhara_10.0.inc'     
++      real*8 t4v(40),t4a
++      common/t4c/t4v
+       complex*16 p1eck1,p1eck2,p2eck1,p2eck2,p1gam,p2gam,cvac_qq,dggvap
+       complex*16 epsk1(2,4),epsk2(2,4),BW_om,vacpol_and_nr
+       complex*16 gam(4),gam_ma(4),eck1(4),eck2(4)
+@@ -46,6 +51,7 @@
+ c     
+       ampNLO = 0.d0
+       amp_fullLO=0.d0
++      t4v(7)=0.d0
+       FSRamp=0.d0
+       ISRamp=0.d0
+       call pol_vec(rk1,epsk1)
+@@ -91,6 +97,7 @@
+      3         +(cdabs(ebppb*ddpl(1,2)-el_m2/ebppb*ddmi(1,2)))**2)
+      4         *cdabs(cvac_s)**2                
+ 
++          t4a = amp_fullLO
+           amp_fullLO=amp_fullLO + 2.d0*dreal(                    !INT
+      5    dconjg(dme*(mb(1,1)-ma(1,1))*cvac_qq)
+      5              *dme*(ddpl(1,1)-ddmi(1,1))*cvac_s
+@@ -100,6 +107,7 @@
+      8    (-ebppb*ddmi(2,1)+el_m2/ebppb*ddpl(2,1))*cvac_s
+      9   +dconjg((ebppb*mb(1,2)-el_m2/ebppb*ma(1,2))*cvac_qq)*
+      1    (ebppb*ddpl(1,2)-el_m2/ebppb*ddmi(1,2))*cvac_s )
++          t4v(7) = t4v(7) + amp_fullLO - t4a
+ 
+ 
+ c       FSRamp=FSRamp+ ((dme*cdabs(ddpl(1,1)-ddmi(1,1)))**2 !FSR
+@@ -118,6 +126,12 @@
+              call softintegral_interference(softint_sum)
+ 
+          
++         t4v(6)=amp_fullLO
++         t4v(8)=softint_p1p2
++         t4v(9)=softint_pjpj
++         t4v(10)=softint_q1q2
++         t4v(11)=softint_qjqj
++         t4v(12)=softint_sum
+          ampNLO=amp_fullLO*2.d0*
+      1  ( softint_pjpj - softint_p1p2
+      1  + softint_qjqj - softint_q1q2 

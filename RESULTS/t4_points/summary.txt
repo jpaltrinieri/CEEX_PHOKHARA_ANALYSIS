@@ -1,0 +1,38 @@
+# T4: 1-photon NLO matrix element point by point, CEEX-main vs PHOKHARA (phokhara_dump, unpatched physics), 2026-09-23
+# 988 accepted 1-photon events of a KLOE-LA production (seed 77), each also at pi+<->pi- swapped momenta; cutoff w*sqrt(s) = Emin = 1e-5 GeV
+988 points (+ swaps) from /users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/T4/pts_nostop
+
+tree normalisation CEEX/PHOKHARA: mean 289397.48476375  rel. spread 3.37e-01
+tree C-odd/C-even:   CEEX mean -0.027707   PHOKHARA mean -0.027707   max |diff| 7.17e-13
+
+NLO correction (total - tree), per point, / C-even tree:
+  C-even                       CEEX -0.77566 (rms 0.0358)   PHOKHARA -0.77570 (rms 0.0359)   P-C mean -0.00004  rms 0.00001
+  C-odd                        CEEX +0.02296 (rms 0.4400)   PHOKHARA +0.01770 (rms 0.3417)   P-C mean -0.00526  rms 0.09930
+
+PHOKHARA C-odd pieces / C-even tree (mean over points):
+  A      +0.00000   (C-even +0.78306)
+  B1     +0.00000   (C-even +0.51419)
+  B2     -0.00000   (C-even +0.01959)
+  B3     -0.02771   (C-even +0.00000)
+  B4     -0.00921   (C-even +0.00000)
+  B5     -0.00474   (C-even -0.00000)
+  S_ISR  +0.02648   (C-even -0.95556)
+  S_FSR  +0.00345   (C-even -0.12724)
+  S_IF   +0.00219   (C-even -0.02193)
+  pISR   -0.00009   (C-even +0.00129)
+  pFSR   +0.00002   (C-even -0.00153)
+  vFSR   -0.00040   (C-even +0.01243)
+  B3/2 (=Re[I*F], the tree interference once): -0.01385
+
+CEEX C-odd pieces / C-even tree (tree x factor, mean over points):
+  tree*aD    -0.01079   (C-even +0.38782)    factor itself: odd -0.00011 even +0.38726
+  tree*act   +0.00159   (C-even -0.05746)    factor itself: odd +0.00000 even -0.05746
+  tree*YFSv  +0.00860   (C-even -0.29217)    factor itself: odd -0.00070 even +0.28514
+  tree*YFS   +0.02356   (C-even -0.81384)    factor itself: odd +0.00149 even -0.79898
+
+# Per-point test of the two PHOKHARA defects (D = C-odd NLO difference P - C, / C-even tree):
+#   pred(H1) = B4 - (B3/2)(ver_f+ver_s)        pred(H2) = (B3/2)(1+soft_ISR(w)),  soft_ISR(w) = -0.95556
+#   D - pred[H1 only ]: mean -0.000614  rms 0.011605   (D rms 0.09930)
+#   D - pred[H2 only ]: mean -0.004646  rms 0.087669
+#   D - pred[H1 + H2 ]: mean +0.000001  rms 0.000025
+# C-even NLO correction agrees per point: CEEX -0.77566, PHOKHARA -0.77570, difference rms 0.00001.
