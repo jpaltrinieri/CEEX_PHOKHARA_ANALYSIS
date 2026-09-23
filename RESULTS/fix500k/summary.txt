@@ -1,0 +1,6 @@
+# fixed PHOKHARA (phokhara_fix = h1 + h3), 300 seeds x 500k per w; [n] = finished seeds if < 300
+fix500k_w1e-4   n=300 sigma_MC=0.268345(48)  A(th+)=0.23682(17)  A(th-)=-0.23692(17)  A(thav)=-0.26615(17)
+fix500k_w1e-5   n=300 sigma_MC=0.268351(46)  A(th+)=0.23757(17)  A(th-)=-0.23735(17)  A(thav)=-0.26676(17)
+fix500k_w1e-6   n=300 sigma_MC=0.268354(44)  A(th+)=0.23730(16)  A(th-)=-0.23735(16)  A(thav)=-0.26659(16)
+slope dA(th+)/dlog10(w) = -0.00023 +- 0.00012;  w-average A(th+) 0.23724(10), -A(th-) 0.23722(10), -A(thav) 0.26651(9)
+# CEEX prod500k (Emin 1e-4): A(th+) 0.23751(13), -A(th-) 0.23723(13), -A(thav) 0.26660(13); BabaYaga 0.23724 / 0.23727 / 0.26650

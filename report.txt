@@ -1,0 +1,158 @@
+REPORT: origin of the CEEX vs PHOKHARA pion-angle discrepancy
+KLOE-LA (Strong2020 KLOE-I), e+e- -> pi+pi-gamma, fixed-order NLO, F(pi)=1, no VP
+23 Sep 2026 -- repository github.com/jpaltrinieri/CEEX_PHOKHARA_ANALYSIS
+==========================================================================================
+
+1. SUMMARY
+----------
+The disagreement is caused by two errors in PHOKHARA 10.0, both in the 1-photon ISR x FSR
+interference at NLO (routine ampLO, pion branch, used only with nlo2=1, i.e. full NLO):
+
+  H1  phokhara_10.0.f:9969-9982. The vertex-correction factor (ver_f+ver_s) is written inside
+      dreal(...) after the last of the four helicity products, so it multiplies only that
+      term; the other three terms of the tree interference Re[I*F] are added a second time
+      with coefficient 1 instead of O(alpha). The muon analogue (10384-10394) is correct.
+
+  H2  phokhara_10.0.f:9998-10007 with hard_soft_part/ISRcurrent_no_mass_terms.f:134,210
+      (block "B5" = Re[F* (apl-ami)], ISR one-loop current x FSR tree). Its coefficient
+      V1(1) = (1 - 2 alpha/4pi V1)/Sp keeps (a) the tree "1" and (b) the analytic ISR soft
+      function 2 ln(4w^2)(ln m^2+1)+..., so B5 carries an extra Re[F*I](1 + soft_ISR(w)).
+      The tree interference is already added in the fsr=2 block, and in the nlo2 mode the
+      analytic ISR soft function is replaced by the eikonal in NLOpions (it is subtracted in
+      ver_s, vertLO and the leptonic tensor, but not here). Part (b) is w-dependent: it is
+      why PHOKHARA's asymmetry depends on the soft-photon cutoff.
+
+Both are C-odd, so they cancel in sigma over the symmetric KLOE-LA cuts and show up only in
+the pion polar angles (theta+, theta-, theta_avg) -- exactly the observed pattern.
+With both removed (phokhara_fix = variants/h1.patch + variants/h3.patch) PHOKHARA agrees with
+CEEX-main and with BabaYaga, and its result no longer depends on w (section 5).
+
+2. THE DISCREPANCY (reproduced)
+-------------------------------
+Setup (details in README.md):
+  PHOKHARA 10.0 @ PHOKARA_10.0 133d68b, KLOE-I cuts (variables_cuts_KLOE-I.f), card
+    nlo=nlo2=1, IFSNLO=1, ISR+INT+FSR, ivac=0, FF_pion=-1, GVMD=0, no f0, w=1e-5, 600 bins;
+    binary phokhara_nostop (the "Max(i) too small" stops disabled; weighted events only,
+    so a 10k scan suffices -- the maximum only steers the channel split).
+  CEEX-main e05d007, pipig --scenario=KLOE-LA --NLO --uni_bin, Emin = 1e-4, 1e-5 GeV.
+
+prod500k (PHOKHARA 300 x 500k; CEEX 59 x 5 ranks x 500k per Emin, 1/295 outlier quarantined):
+                         sigma (nb)          A(th+) = [s(<90)-s(>90)]/s
+  CEEX Emin 1e-4         0.26840(4)          0.23751(13)
+  CEEX Emin 1e-5         0.26836(4)          0.23752(14)
+  BabaYaga               0.268389(4)         0.23724(1)
+  PHOKHARA (unpatched)   0.268353(46)        0.27872(16)
+  PHOKHARA old ref (5 Aug set)  0.268393(23) 0.27861(8)   -> reproduced by the new run
+Pion-angle shape chi2/ndf CEEX vs PHOKHARA 1060-1560 (60 bins); every other observable ~1.
+At LO the codes agree exactly (existing Strong2020-FF runs: A_LO = 0.0779 in both, sigma_LO
+2.6523 nb in both), so the difference is in the NLO correction to the C-odd part.
+
+3. HOW IT WAS LOCATED (plan.txt, tests T1-T4)
+---------------------------------------------
+T1  Soft-cutoff scan, unpatched PHOKHARA, 30 x 100k per w          (RESULTS/t1_t2)
+      w        1e-3        1e-4        1e-5        1e-6
+      A(th+)   0.3106(11)  0.2950(12)  0.2785(12)  0.2637(11)     slope +0.0156 per decade
+      sigma    0.26833     0.26827     0.26792     0.26830        constant
+    A physical result cannot depend on w: an uncancelled C-odd ln w. (CEEX: Emin 1e-4 and
+    1e-5 give the same A to 1e-4.)
+
+T2  Diagnostic variants at three w                                  (RESULTS/t1_t2)
+      h1   (H1 parenthesis fixed)            A(1e-5) 0.2411, slope unchanged 0.017/decade
+      h2   (probe: ISR soft log dropped)     A flat (slope 0.0004(9)) but 0.3551
+      h1h2                                   A flat, 0.3188
+    -> H1 is a w-independent error; the whole w-dependence sits in B5's soft log; dropping
+       only the log is not the right correction (the tree and constants remain).
+
+T3  Split by photon multiplicity at a matched cutoff               (RESULTS/t3_split)
+    CEEX --emin=1d-5 GeV  <->  PHOKHARA w = 9.8039e-6 (soft region E_gamma < w sqrt(s)).
+    CEEX-main MC.f got an opt-in per-nph histogram output (CEEX_NPH_HISTOS=1; binary
+    MC_nphsplit; RUN/RUN_CEEX/MC_nphsplit.patch).
+                            sigma CEEX / PHOKHARA      A(th+) CEEX / PHOKHARA   angle chi2/ndf
+      1-photon (B+V+S)      0.05268 / 0.05239          0.0375(13) / 0.2360(44)   79-94
+      2-photon (hard)       0.21560 / 0.21588          0.2901(16) / 0.2855(10)   1.0-1.4
+    -> the whole discrepancy is the C-odd part of the 1-photon contribution
+       (C-odd 1-photon sigma 0.0020 vs 0.0124 nb; the difference is the full total gap).
+
+T4  Point-by-point comparison of the 1-photon NLO matrix element    (RESULTS/t4_points)
+    988 accepted 1-photon KLOE-LA points, each also with pi+ <-> pi- momenta swapped
+    (C-odd = half the difference), same cutoff. PHOKHARA variant phokhara_dump writes every
+    piece (ISR tensor A, B1-B5 of ampLO, the soft eikonals of NLOpions, the loop terms of
+    virt_pions); a CEEX-main driver (RUN/RUN_CEEX/t4/t4_ceex) evaluates tree, alpha/4pi D,
+    counterterm and YFS at the same momenta (pion mass set to PHOKHARA's). Each code is
+    normalised to its own C-even tree.
+      tree C-odd/C-even ratio             agrees to 7e-13
+      C-even NLO correction               CEEX -0.77566, PHOKHARA -0.77570, diff rms 1e-5
+      C-odd NLO correction                diff rms 0.099 (of the tree)
+      soft (eikonal/YFS) C-odd part       agrees, diff rms 0.0007
+      diff D is proportional to the tree interference B3 at every point (D = 0.19 B3)
+    Subtracting the two defects, both computed exactly per point:
+      pred(H1) = B4 - (B3/2)(ver_f+ver_s)        pred(H2) = (B3/2)(1+soft_ISR(w))
+      D - pred(H1)        rms 0.0116
+      D - pred(H2)        rms 0.0877
+      D - pred(H1+H2)     rms 0.000025, mean 1e-6
+    i.e. H1 + H2 account for the full per-point C-odd difference (a factor 4000 reduction).
+
+4. THE FIX
+----------
+RUN/RUN_PHOKHARA/variants/ (built with variants/build.sh, production binaries untouched):
+  h1.patch   ampLO pion ISRxFSR block:  ...*cvac_s *(ver_f+ver_s) )  ->  ...*cvac_s )*(ver_f+ver_s)
+             i.e. Re[T1+T2+T3+T4]*(ver_f+ver_s), as in the muon code (the pion comment
+             "factor 2 of this interference taken into account in ver_f and ver_s" agrees:
+             ver_f, ver_s are |M|^2-level corrections).
+  h3.patch   after B5: subtract Re[F*I](1+softisr), with softisr the same analytic ISR soft
+             function nlo2 subtracts from ver_s:
+             softisr = alpha/pi*(-ln(4w^2)(1+ln(me^2/s)) - ln^2(me^2/s)/2 - ln(me^2/s) - pi^2/3)
+  phokhara_fix = phokhara_nostop + h1.patch + h3.patch
+  (h2.patch is the T2 diagnostic probe, not a fix.)
+
+5. RESULT WITH THE FIX
+----------------------
+30 x 100k per w                                                      (RESULTS/t4_fix)
+      w        1e-3        1e-4        1e-5        1e-6
+      A(th+)   0.2349(12)  0.2352(13)  0.2383(12)  0.2374(11)     slope -0.0010(5)/decade
+      sigma    0.26799     0.26892     0.26854     0.26784        unchanged
+  w-average: A(th+) 0.2365(6), -A(th-) 0.2374(6), -A(thav) 0.2664(6)
+  CEEX:      0.2375,           0.2374,            0.2666;   BabaYaga 0.2372, 0.2373, 0.2665
+
+HIGH-STATISTICS CONFIRMATION (300 x 500k per w):
+@@HIGHSTATS@@
+
+6. CAVEATS AND OPEN POINTS
+--------------------------
+- Only the configuration studied here was tested: F(pi)=1, no VP, KLOE-LA cuts. The errors are
+  in code paths that are active for pion=1 with nlo2=1 in any configuration (they do not
+  depend on FF_pion or ivac), so they should also affect the Strong2020-FF KLOE results
+  (there the NLO gap in A was 0.012, CEEX 0.0804 vs PHOKHARA 0.0924). Not re-run with FF.
+- Muons (pion=0) take a different branch (ampLOm2, correct) and are not affected.
+- Totals and C-even distributions are unaffected by both errors (verified: sigma unchanged,
+  C-even per-point agreement 1e-5).
+- The small CEEX - BabaYaga offset in A(th+) (+0.00027, ~2 sigma at each Emin) is 150x smaller
+  than the PHOKHARA effect and is left open.
+- Tests T5 (charge-class split) and T6 (2-photon point by point) of plan.txt were not needed:
+  the 2-photon part agrees (T3) and H1+H2 explain the 1-photon part at 2.5e-5 per point (T4).
+
+7. OTHER FINDINGS ALONG THE WAY
+-------------------------------
+- PHOKHARA_10.0 as checked out has an empty stub variables_cuts.f (no cuts, no histograms);
+  the KLOE-I cuts come from monte-carlo-results-root-scenarios. The card format and FF_pion
+  numbering changed w.r.t. the Strong2020 cards (seed and GVMD lines; FF_pion=-1 is F=1).
+- PHOKHARA stops ("Warning! Max(i) too small!", phokhara_10.0.f:1910,2135,2263) when a weight
+  exceeds the scanned maximum and writes no histograms; dropping such seeds (as the Strong2020
+  merge did) biases the result. For weighted events the stop is unnecessary (phokhara_nostop).
+- PHOKHARA's virt_pions overwrites its quad-precision momentum arguments (by ~1 GeV); harmless
+  in production, but any second call in the same event gets wrong momenta.
+- In the 5-Aug reference folder, Phokhara/NLOnovp_*.csv is the MUON result (0.9925 nb).
+- CEEX: diverging rank outputs occur at the few-per-cent level at 100k (11/300); they are
+  excluded before merging (check_total.sh + quarantine.sh). CEEX-main README still documents
+  --ref_alloc/--vfreeze, which main no longer parses.
+- Cost (Barkla): CEEX ~6-7 s per 1k of --n per rank, PHOKHARA ~0.2-1 ms per event passing
+  the cuts; at equal precision PHOKHARA needed ~45x less CPU (prod100k).
+
+8. WHERE THINGS ARE
+-------------------
+plan.txt                          the test plan (T0-T6, hypotheses H1-H5)
+RESULTS/prod500k                  the discrepancy at high statistics (plots, summary.txt)
+RESULTS/t1_t2, t3_split, t4_points, t4_fix, fix500k   test results (summary.txt each)
+RUN/RUN_PHOKHARA/variants/        h1.patch, h3.patch (the fix), h2.patch, dump.patch, build.sh
+RUN/RUN_CEEX/t4/                  CEEX point driver;  RUN/RUN_CEEX/MC_nphsplit.patch
+RUN/POST_PROCESS/                 phok_table.py, t3_compare.py, t4_compare.py, merge/plot tools

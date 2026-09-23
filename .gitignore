@@ -15,3 +15,7 @@ RUN/RUN_PHOKHARA/variants/build_*/
 RUN/RUN_CEEX/t4/t4_ceex
 RUN/RUN_CEEX/t4/*.o
 RUN/RUN_CEEX/t4/*.mod
+REPORT/*.aux
+REPORT/*.log
+REPORT/*.out
+REPORT/*.toc
