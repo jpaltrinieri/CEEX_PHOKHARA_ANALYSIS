@@ -1,0 +1,11 @@
+--- a/phokhara_10.0.f	2026-09-23 15:32:36.175921196 +0100
++++ b/phokhara_10.0.f	2026-09-23 15:32:36.264921430 +0100
+@@ -9979,7 +9979,7 @@
+      8    (-ebppb*ddmi(2,1)+el_m2/ebppb*ddpl(2,1))*cvac_s
+      9   +dconjg((ebppb*mb(1,2)-el_m2/ebppb*ma(1,2))*cvac_qq)*
+      1    (ebppb*ddpl(1,2)-el_m2/ebppb*ddmi(1,2))*cvac_s
+-     2    *(ver_f+ver_s) )
++     2    )*(ver_f+ver_s)
+ 
+          call NLO_ISR_no_mass_terms(qq,apl,ami,apl2,ami2,rk1,eck1)
+          

@@ -11,3 +11,4 @@ RUN/POST_PROCESS/average_summary_*.txt
 __pycache__/
 *.pyc
 *.tar.gz
+RUN/RUN_PHOKHARA/variants/build_*/

@@ -19,8 +19,9 @@ D=$PHOKHARA_SCRATCH/$RUN_NAME/seed_$SEED
 mkdir -p "$D" && cd "$D" || exit 1
 cp $PHOKHARA_DIR/src/const_and_model_paramall10.0.dat $PHOKHARA_DIR/src/vpol_all_bare_sum_v2.9.dat \
    $PHOKHARA_DIR/src/vpol_bare_lept_v2.9.dat .
-sed "s/@SEED@/$SEED/;s/@NEVENTS@/$NEVENTS/;s/@NMAX@/$NMAX/" "$PHOKHARA_CARD" > input.dat
+CARD=${CARD:-$PHOKHARA_CARD}   # submit.sh CARD=<template> overrides the production card
+sed "s/@SEED@/$SEED/;s/@NEVENTS@/$NEVENTS/;s/@NMAX@/$NMAX/" "$CARD" > input.dat
 start=$(date +%s)
-"$PHOKHARA_EXE" input.dat > phokhara.out 2>&1
+"${EXE:-$PHOKHARA_EXE}" input.dat > phokhara.out 2>&1   # submit.sh EXE=<binary> runs a variant
 echo "exit=$? seconds=$(( $(date +%s) - start )) host=$(hostname)" > done.txt
 rm -f vpol_*.dat const_and_model_paramall10.0.dat
