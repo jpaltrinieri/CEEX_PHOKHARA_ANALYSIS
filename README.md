@@ -42,6 +42,7 @@ RUN/RUN_PHOKHARA/src/                PHOKHARA source + built binary `phokhara`
 RUN/RUN_PHOKHARA/slurm-out/
 RUN/POST_PROCESS/post_process.sh     ./post_process.sh <run> [ceex|phokhara|all] -> PLOTS/DATA/<run>/
 RUN/POST_PROCESS/check_total.sh      ./check_total.sh -l <scratch run dir>: flag CEEX outputs >5 robust sigma off, or error >10x median
+RUN/POST_PROCESS/quarantine.sh       ./quarantine.sh <run>: move the outputs check_total.sh flags to <run>_excluded/ (reversible, logged)
 RUN/POST_PROCESS/snapshot.sh         ./snapshot.sh <src_run> <dst_run>: link the finished part of a running run under a new name
 RUN/POST_PROCESS/merge.py, average.py  CEEX merge (unmodified copies from CEEX_ANALYSIS)
 RUN/POST_PROCESS/merge_phokhara.py   Phokhara seed_*/NLOFF1.dat -> NLOFF1_<obs>.csv + sigma.txt
@@ -100,6 +101,17 @@ not the physics.
 
 ## Merge and plot
 
+CEEX first: screen for diverged rank outputs, and take them out (reversibly)
+before merging -- `average.py` already drops them from sigma, but `merge.py`
+would put them in the histograms:
+
+```sh
+cd RUN/POST_PROCESS
+./check_total.sh -l ~/scratch/CEEX_PHOKHARA_ANALYSIS/CEEX/<run>   # list only (also run by post_process.sh)
+./quarantine.sh <run>                                             # move flagged outputs to <run>_excluded/
+```
+
+
 ```sh
 cd PLOTS
 source source.sh                         # plots conda env
@@ -143,7 +155,7 @@ only. CEEX's `lmxx` is Phokhara's `lmmx`.
 | run | what |
 |---|---|
 | `partial_1151_ceex100k_phok4x20k` | DATA + RESULTS only: a merge made at 11:51 of the CEEX 100k production while it was running, with the first 4 Phokhara timing seeds |
-| `test100k` | snapshot of `prod100k` at 12:49: CEEX 22/60 tasks (11 per Emin) x 100k x 5 ranks, Phokhara all 30 seeds x 100k (sigma_MC 0.26867(32) nb). A(th+): CEEX 0.2403(12) at Emin 1e-5, BabaYaga 0.2372, Phokhara 0.2764(11) |
+| `test100k` | snapshot of `prod100k` at 12:49: CEEX 22/60 tasks (11 per Emin) x 100k x 5 ranks, 3 outlier ranks quarantined (107 outputs), Phokhara all 30 seeds x 100k (sigma_MC 0.26867(32) nb). A(th+): CEEX 0.2403(12) at Emin 1e-5, BabaYaga 0.2372, Phokhara 0.2764(11) |
 | `test10k` | DATA + RESULTS: CEEX 30 seeds x Emin {1e-4,1e-5} x 10k x 5 ranks; Phokhara (`phokhara_nostop`) 30 seeds x nges 10k, nm 10k, ~11 s per seed. Pipeline check: Phokhara sigma_MC 0.26840(105) nb, A(th+) 0.278(4) as in the old reference |
 | `test_ceex10k_phok20k` | DATA + RESULTS: CEEX 2 seeds x 10k, Phokhara 8 seeds x 20k (raw in scratch `CEEX/test_10k_2seeds`, `PHOKHARA/timing_20k`) |
 | CEEX 100k production (cancelled 12:08, 59/60 tasks done) | raw only, still at `~/scratch/CEEX-main/KLOE-LA_NLO_pipig` (old layout, not merged) |
