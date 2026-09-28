@@ -15,7 +15,7 @@
 # ../RUN_PHOKHARA/cards/.
 #
 # Submit through ./submit.sh, which sets RUN_NAME, NEVENTS, ECUTS, --array, --time.
-# Task i -> seed 1+(i-1)/#ECUTS, ecut cycling fastest; rank r of seed s runs
+# Task i -> seed SEED_OFFSET+1+(i-1)/#ECUTS, ecut cycling fastest; rank r of seed s runs
 # with CEEX seed 100*s+r, so seeds never collide across tasks.
 set -euo pipefail
 source "$HOME/software/CEEX_PHOKHARA_ANALYSIS/RUN/config.sh"
@@ -32,7 +32,7 @@ NPROC=5
 NEVENTS=${NEVENTS:-10k}
 CUTS=(${ECUTS:-4 5})
 idx=$((SLURM_ARRAY_TASK_ID - 1))
-seed=$((1 + idx / ${#CUTS[@]}))
+seed=$((1 + ${SEED_OFFSET:-0} + idx / ${#CUTS[@]}))   # SEED_OFFSET (submit.sh) keeps runs independent
 ecut=${CUTS[$((idx % ${#CUTS[@]}))]}
 rundir="${CEEX_SCRATCH}/${RUN_NAME}/RUN_CEEX_${seed}_${ecut}/"
 rm -rf "$rundir"; mkdir -p "$rundir"
