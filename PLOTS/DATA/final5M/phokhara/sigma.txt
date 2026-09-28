@@ -1,0 +1,3 @@
+# merged from /users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/PHOKHARA/final5M: 1000 seeds
+sigma     = 0.268323 +- 0.000025 nb  (seed-scatter error 0.000025, 1000 seeds)
+sigma_MC  = 0.268398 +- 0.000008 nb  (seed-scatter error 0.000008, 1000 seeds)

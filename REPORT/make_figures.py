@@ -107,6 +107,15 @@ def fig_wscan():
                     markeredgecolor=INK, markeredgewidth=0.5, label=lab)
         ax.errorbar([], [], yerr=[], color=S3, marker="*", ms=10, lw=0, markeredgecolor=INK,
                     markeredgewidth=0.5, label=lab)
+    r5 = run_A("fix5M_w1e-5")
+    if r5:
+        y, e, n = r5
+        lab = f"fixed: {n} x 5M (5 x 10$^9$ events)"
+        # drawn just left of w = 1e-5 so it does not hide the 300 x 500k star
+        zx.errorbar([-5.18], [y], yerr=[e], color=S3, marker="D", ms=6.5, lw=0, elinewidth=1.6, zorder=5,
+                    markeredgecolor=INK, markeredgewidth=0.7, label=lab)
+        ax.errorbar([], [], yerr=[], color=S3, marker="D", ms=6.5, lw=0, markeredgecolor=INK,
+                    markeredgewidth=0.7, label=lab)
     ax.set_ylabel(r"$A(\theta^+)$")
     ax.set_title("(a) all variants", fontsize=8.5, color=INK, loc="left")
     zx.set_title("(b) fixed PHOKHARA, zoom", fontsize=8.5, color=INK, loc="left")

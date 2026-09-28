@@ -5,7 +5,8 @@
 #SBATCH --ntasks=5
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5G
-#SBATCH --exclude=node025,node029,node051
+#SBATCH --exclude=node017,node025,node029,node051
+# (node017 excluded: ran ~5x slower than other nodes on 28 Sep)
 #SBATCH --output=/users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/slurm-out/RUN_CEEX/%x_%A_%a.out
 #SBATCH --error=/users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/slurm-out/RUN_CEEX/%x_%A_%a.err
 #

@@ -90,6 +90,45 @@ if len(res) >= 2:
                 f"-A(th-) {fmt(mm, mme, 5)}, -A(thav) {fmt(mv, mve, 5)}")
 else:
     lines += ["\\newcommand{\\HiSlope}{--}", "\\newcommand{\\HiAav}{--}", "\\newcommand{\\HiAmav}{--}", "\\newcommand{\\HiAvav}{--}"]
+# the 1000 x 5M run at w = 1e-5 (\FiveN seeds, \FiveSig, \FiveA, \FiveAm, \FiveAv)
+seeds5 = [d for d in glob.glob(f"{SC}/fix5M_w1e-5/seed_*")
+          if os.path.exists(d + "/done.txt") and os.path.getsize(d + "/NLOFF1.dat") > 0]
+if seeds5:
+    sig = np.array([[float(x) for x in SIG.search(open(d + "/phokhara.out", errors="replace").read()).groups()] for d in seeds5])
+    A5 = {}
+    for k in ("lth+", "lth-", "lthav"):
+        acc = None; acc2 = None
+        for d in seeds5:   # running sums: 1000 x 600-bin histograms need not sit in memory
+            h = hists(d + "/NLOFF1.dat", (k,))[k]
+            acc = h.copy() if acc is None else acc + np.column_stack([0 * h[:, :2], h[:, 2:3], 0 * h[:, 3:]])
+            acc2 = h[:, 3]**2 if acc2 is None else acc2 + h[:, 3]**2
+        m = acc.copy(); m[:, 2] = acc[:, 2] / len(seeds5); m[:, 3] = np.sqrt(acc2) / len(seeds5)
+        A5[k] = asym(m)
+    s5 = (sig[:, 0].mean(), np.sqrt((sig[:, 1]**2).sum()) / len(seeds5))
+    lines += [f"\\newcommand{{\\FiveN}}{{{len(seeds5)}}}", f"\\newcommand{{\\FiveSig}}{{{fmt(*s5, 6)}}}",
+              f"\\newcommand{{\\FiveA}}{{{fmt(*A5['lth+'], 5)}}}",
+              f"\\newcommand{{\\FiveAm}}{{{fmt(-A5['lth-'][0], A5['lth-'][1], 5)}}}",
+              f"\\newcommand{{\\FiveAv}}{{{fmt(-A5['lthav'][0], A5['lthav'][1], 5)}}}"]
+    summ.append(f"fix5M_w1e-5     n={len(seeds5):4d} sigma_MC={fmt(*s5, 6)}  A(th+)={fmt(*A5['lth+'], 5)}"
+                f"  A(th-)={fmt(*A5['lth-'], 5)}  A(thav)={fmt(*A5['lthav'], 5)}")
+else:
+    lines += ["\\newcommand{\\FiveN}{--}", "\\newcommand{\\FiveSig}{--}", "\\newcommand{\\FiveA}{--}",
+              "\\newcommand{\\FiveAm}{--}", "\\newcommand{\\FiveAv}{--}"]
+# pion-angle shape chi2/ndf of the after-fix plots (RESULTS/final5M/summary.txt, table vs phokhara)
+sf = os.path.join(ROOT, "RESULTS", "final5M", "summary.txt")
+chiC = chiB = "--"
+if os.path.exists(sf):
+    txt = open(sf).read().split("shape chi2/ndf vs phokhara", 1)
+    if len(txt) == 2:
+        rows = [l.split() for l in txt[1].split("\n\n", 1)[0].splitlines()[1:]]
+        head = rows[0]; data = [r for r in rows[1:] if r and r[0] in ("lth+", "lth-", "lthav")]
+        def col(name):
+            j = 1 + 2 * (head.index(name) - 1)   # after "obs", each entry is "<chi2> (<ndf>)"
+            return [float(r[j]) for r in data]
+        c = col("ceex4") + col("ceex5"); b = col("babayaga")
+        chiC = f"{min(c):.1f}--{max(c):.1f}"; chiB = f"{min(b):.1f}--{max(b):.1f}"
+lines += [f"\\newcommand{{\\FiveChiC}}{{{chiC}}}", f"\\newcommand{{\\FiveChiB}}{{{chiB}}}"]
+summ.append(f"final5M pion-angle shape chi2/ndf: vs CEEX {chiC}, vs BabaYaga {chiB}")
 summ.append("# CEEX prod500k (Emin 1e-4): A(th+) 0.23751(13), -A(th-) 0.23723(13), -A(thav) 0.26660(13); BabaYaga 0.23724 / 0.23727 / 0.26650")
 open(os.path.join(HERE, "numbers.tex"), "w").write("\n".join(lines) + "\n")
 os.makedirs(os.path.join(ROOT, "RESULTS", "fix500k"), exist_ok=True)

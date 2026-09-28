@@ -68,7 +68,8 @@ the full-NLO mode replaces by the eikonal elsewhere. The second error makes the 
 asymmetry depend on the unphysical soft-photon cutoff. A point-by-point comparison of the
 one-photon matrix elements shows that the two errors account for the whole charge-odd
 difference to $2.5\times10^{-5}$ of the tree. With both corrected, \phok{} gives
-$\Ath=\HiAav$, independent of the cutoff and in agreement with \ceex{} and \bby.
+$\Ath=\HiAav$ averaged over the cutoff and $\FiveA$ with $5\times10^9$ events, independent of
+the cutoff and in agreement with \ceex{} and \bby.
 \end{abstract}
 
 \setcounter{tocdepth}{1}
@@ -245,7 +246,8 @@ Three diagnostic \phok{} builds were run at $w=10^{-4},10^{-5},10^{-6}$ (\cref{f
 \includegraphics[width=0.96\textwidth]{fig_wscan.pdf}
 \caption{$\Ath$ against the \phok{} soft cutoff for the unpatched code, the T2 diagnostic
 variants and the fixed code (H1 + H3), with \ceex{} (grey band: $\pm3\sigma$) and \bby. The zoom
-(b) shows the fixed code at 30$\times$100k and at 300$\times$500k (stars).}
+(b) shows the fixed code at 30$\times$100k, at 300$\times$500k (stars) and at
+\FiveN$\times$5M (diamond, drawn just left of $w=10^{-5}$).}
 \label{fig:wscan}
 \end{figure}
 
@@ -394,6 +396,9 @@ $\Ath$ & 0.2349(12) & 0.2352(13) & 0.2383(12) & 0.2374(11) \\
 \multicolumn{5}{l}{\emph{300 seeds $\times$ 500k}} \\
 $\sigma$ [nb] & -- & \HiSigA & \HiSigB & \HiSigC \\
 $\Ath$ & -- & \HiAA & \HiAB & \HiAC \\
+\multicolumn{5}{l}{\emph{\FiveN{} seeds $\times$ 5M ($5\times10^9$ events)}} \\
+$\sigma$ [nb] & -- & -- & \FiveSig & -- \\
+$\Ath$ & -- & -- & \FiveA & -- \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -405,6 +410,7 @@ $w$-averaged asymmetries are
  & $\Ath$ & $-A(\theta^-)$ & $-A(\theta_{\rm avg})$ \\
 \midrule
 \phok, fixed (300$\times$500k, $w$-average) & \HiAav & \HiAmav & \HiAvav \\
+\phok, fixed (\FiveN$\times$5M, $w=10^{-5}$) & \FiveA & \FiveAm & \FiveAv \\
 \ceex, $E_{\min}=10^{-4}$ GeV & 0.23751(13) & 0.23723(13) & 0.26660(13) \\
 \bby & 0.23724(1) & 0.23727(1) & 0.26650(1) \\
 \bottomrule
@@ -431,21 +437,28 @@ $\Ath=0.2377(3)$, consistent with $w=10^{-5}$ and $10^{-6}$. A 2\% change of the
 move $\Ath$ by $0.0009$, so the low $w=10^{-4}$ value is a fluctuation of that sample
 ($2.6\sigma$ from this one). T4 at $w=10^{-4}$ also leaves no systematic $C$-odd residual after
 H1+H2 (mean $-7\times10^{-6}$).
-\Cref{fig:after,fig:after-ov} repeat \cref{fig:before,fig:before-ov} with the fixed \phok{} at $w=10^{-5}$: the pion-angle
-shape $\chi^2/{\rm ndf}$ against \ceex{} drops from $\sim1900$ to $0.9$--$1.7$.
+\paragraph{Highest statistics.} A final run of \FiveN{} seeds $\times$ 5M events
+($5\times10^9$ events passing the cuts, $w=10^{-5}$) gives $\sigma=\FiveSig$~nb and
+$\Ath=\FiveA$, $-A(\theta^-)=\FiveAm$, $-A(\theta_{\rm avg})=\FiveAv$. Its statistical error is
+four times below that of \ceex{} (prod500k, $\pm0.00013$), so the comparison is now limited by
+\ceex. \Cref{fig:after,fig:after-ov} repeat \cref{fig:before,fig:before-ov} with this run: the
+pion-angle shape $\chi^2/{\rm ndf}$ against \ceex{} drops from $\sim1900$ to \FiveChiC{}, and
+against \bby{} it is \FiveChiB.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.62\textwidth]{final500k/60bins/pi_kloe_la_lth+.pdf}
-\caption{\textbf{After the fix}: as \cref{fig:before}, with the fixed \phok{} (300$\times$500k,
-$w=10^{-5}$). The tilt is gone.}
+\includegraphics[width=0.62\textwidth]{final5M/60bins/pi_kloe_la_lth+.pdf}
+\caption{\textbf{After the fix}: as \cref{fig:before}, with the fixed \phok{} (\FiveN$\times$5M,
+$w=10^{-5}$) as the denominator. The tilt is gone.}
 \label{fig:after}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{final500k/60bins/overview_vs_phokhara.pdf}
-\caption{\textbf{After the fix}: every observable, \ceex{} and \bby{} over the fixed \phok.}
+\includegraphics[width=\textwidth]{final5M/60bins/overview_vs_phokhara.pdf}
+\caption{\textbf{After the fix}: every observable, \ceex{} and \bby{} over the fixed \phok{}
+(\FiveN$\times$5M). With $5\times10^9$ \phok{} events the band around 1 is its own error; the
+scatter is that of \ceex.}
 \label{fig:after-ov}
 \end{figure}
 
@@ -463,8 +476,15 @@ $w=10^{-5}$). The tilt is gone.}
 \item Muons take a different, correct branch and are not affected.
 \item Totals and charge-even distributions are not affected by either error ($\sigma$ unchanged
   in every run; charge-even per-point agreement $10^{-5}$).
-\item \ceex{} lies $0.00027$ ($\sim2\sigma$ at each $E_{\min}$) above \bby{} in $\Ath$. This is
-  150 times smaller than the \phok{} effect and is left open.
+\item \ceex{} lies $0.00027$ ($2\sigma$ at each $E_{\min}$) above \bby{} in $\Ath$, and the fixed
+  \phok{} at $5\times10^9$ events sides with \bby: $\FiveA$ against $0.23724(1)$, with $-A(\theta^-)$
+  and $-A(\theta_{\rm avg})$ equal to $10^{-5}$ as well. A possible $0.1\%$ \ceex{} effect in
+  $\Ath$ would now need more \ceex{} statistics to confirm; it is 150 times smaller than the
+  original \phok{} effect. $-A(\theta^-)$ and $-A(\theta_{\rm avg})$ of \ceex{} agree with both.
+\item With $5\times10^9$ \phok{} events, small \bby--\phok{} shape differences become visible in a few
+  charge-even observables ($\chi^2/{\rm ndf}$ 2--3 in $p_\pm$, $p^\perp_+$, $E_\gamma$; 10 in
+  $|p^z_-|$, where \bby's binning already gave $\sim20$ before). \ceex{} agrees with \phok{} there at
+  $\chi^2/{\rm ndf}\approx1$. They are unrelated to the pion-angle issue.
 \item Tests T5 (charge-class split) and T6 (two-photon point-by-point) of the plan were not
   needed: the two-photon part agrees (T3) and H1+H2 explain the one-photon part (T4).
 \end{itemize}
@@ -505,7 +525,7 @@ RUN/RUN\_CEEX/t4/ & \ceex{} point driver; \texttt{MC\_nphsplit.patch} (per-multi
 RUN/POST\_PROCESS/ & merge, outlier check, \texttt{phok\_table.py}, \texttt{t3\_compare.py},
   \texttt{t4\_compare.py} \\
 RESULTS/ & \texttt{prod500k}, \texttt{t1\_t2}, \texttt{t3\_split}, \texttt{t4\_points},
-  \texttt{t4\_fix}, \texttt{fix500k}, \texttt{final500k} \\
+  \texttt{t4\_fix}, \texttt{fix500k}, \texttt{final500k}, \texttt{fix5M}, \texttt{final5M} \\
 REPORT/ & this report, \texttt{make\_figures.py}, \texttt{make\_numbers.py} \\
 \bottomrule
 \end{tabularx}
