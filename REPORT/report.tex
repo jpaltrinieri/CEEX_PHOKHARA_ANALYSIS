@@ -385,13 +385,43 @@ The ingredients:
 (that is B2).
 
 \paragraph{\code{helicityampLO} $\to$ \code{ampLO}: second line of \cref{eq:phok-split}}
-(lines 9687--10021). One block per underbrace:
+(lines 9687--10021). Starting from the definition,
 \[
   \code{helicityampLO}=\frac{(4\pi\alpha)^3}{4}\,\code{ampLO}\times\text{(phase space)},\qquad
   \code{ampLO}=\sum_{\lambda_\gamma=1,2}\big(B_1+B_2+B_3+B_4+B_5\big),
 \]
-the $1/4$ being the $e^\pm$ spin average. The amplitudes are $2\times2$ Weyl blocks A and B,
-$\code{plus}(v)=v^0-\vec v\cdot\vec\sigma$ and $\code{minus}(v)=v^0+\vec v\cdot\vec\sigma$:
+where the $1/4$ is the $e^\pm$ spin average and B1--B5 are helicity sums
+$\langle X,Y\rangle$ of tree and one-loop amplitudes (defined below, \cref{tab:phok-blocks}).
+Per photon polarisation:
+\begin{align*}
+\sum_iB_i
+&= |F|^2(1+v_s)+|I|^2v_f+2{\rm Re}\langle I,F\rangle
+   +{\rm Re}\langle I,F\rangle(v_f+v_s)+{\rm Re}\langle F,I_{\rm 1L}\rangle+\Delta B_4\\
+\intertext{\small\emph{$\downarrow$ factorised vertex corrections, $\delta F_e=\tfrac12v_sF$ and
+  $\delta I_\pi=\tfrac12v_fI$}}
+&= |F|^2+2{\rm Re}[F^*\delta F_e]+2{\rm Re}[I^*\delta I_\pi]+2{\rm Re}[I^*F]
+   +2{\rm Re}[I^*\delta F_e+F^*\delta I_\pi]+{\rm Re}\langle F,I_{\rm 1L}\rangle+\Delta B_4\\
+\intertext{\small\emph{$\downarrow$ one-loop ISR amplitude of B5,
+  $I_{\rm 1L}=I(1+S_{\rm ISR})+2\delta I_e$, so
+  ${\rm Re}\langle F,I_{\rm 1L}\rangle=2{\rm Re}[F^*\delta I_e]+\Delta B_5$}}
+&= \big[\text{second line of \cref{eq:phok-split}}\big]+\Delta B_4+\Delta B_5\\
+\intertext{\small\emph{$\downarrow$ the fix (H1, H2) removes $\Delta B_4$ and $\Delta B_5$}}
+&\longrightarrow \big[\text{second line of \cref{eq:phok-split}}\big].
+\end{align*}
+The first line is the code block by block (\cref{tab:phok-blocks}), with B4 written as its
+intended form plus the remainder $\Delta B_4$ left by the misplaced parenthesis. The two extra
+terms are both proportional to the tree interference:
+\[
+  \Delta B_4={\rm Re}\sum_{k\le3}T_k(I)^*T_k(F)\,\big(1-(v_f+v_s)\big),\qquad
+  \Delta B_5={\rm Re}\langle I,F\rangle\,\big(1+S_{\rm ISR}(w)\big).
+\]
+The decomposition of $I_{\rm 1L}$ is read from \code{V1(1)} (\cref{sec:h2}) and confirmed
+numerically by the per-point test (\cref{sec:t4}).
+
+The ingredients:
+\begin{itemize}
+\item Amplitudes as $2\times2$ Weyl blocks A and B, with
+  $\code{plus}(v)=v^0-\vec v\cdot\vec\sigma$ and $\code{minus}(v)=v^0+\vec v\cdot\vec\sigma$:
 \begin{center}\small
 \begin{tabular}{@{}lll@{}}
 \toprule
@@ -403,18 +433,23 @@ $I_{\rm 1L}$ (ISR at one loop, from \code{NLO\_ISR\_no\_mass\_terms}) & \code{am
 \bottomrule
 \end{tabular}
 \end{center}
-The beam spinors enter through four fixed combinations of the blocks (lines 9939--9942), with
-$e_b=E+|\vec p|$ of the positron:
+\item Helicity amplitudes: the beam spinors enter through four fixed combinations of the blocks
+  (lines 9939--9942), with $e_b=E+|\vec p|$ of the positron,
 \begin{align*}
 T_1(X)&=m_e(B_{11}-A_{11}), & T_3(X)&=-e_b A_{21}+\tfrac{m_e^2}{e_b}B_{21},\\
 T_2(X)&=m_e(B_{22}-A_{22}), & T_4(X)&=\phantom{-}e_b B_{12}-\tfrac{m_e^2}{e_b}A_{12}.
 \end{align*}
-\emph{(Inferred)} $T_1,T_2$ are the $m_e$-suppressed helicity-flip amplitudes and $T_3,T_4$ the
-two leading helicity-conserving ones. With
-$\langle X,Y\rangle\equiv\sum_{k=1}^4T_k(X)^*\,T_k(Y)$ and $|X|^2\equiv\langle X,X\rangle$, the
-five blocks are listed in \cref{tab:phok-blocks}.
+  \emph{(Inferred)} $T_1,T_2$ are the $m_e$-suppressed helicity-flip amplitudes and $T_3,T_4$
+  the two leading helicity-conserving ones.
+\item Helicity sums: $\langle X,Y\rangle\equiv\sum_{k=1}^4T_k(X)^*\,T_k(Y)$ and
+  $|X|^2\equiv\langle X,X\rangle$.
+\item $v_s$ (\code{ver\_s}) and $v_f$ (\code{vertLO}): the electron-vertex correction at $s$ and
+  the pion-vertex correction at $q^2$, analytic, with their soft parts removed
+  (\cref{sec:phok-ir}).
+\end{itemize}
 
 \begin{table}[htbp]
+
 \centering\small
 \caption{The blocks of \code{ampLO}, per photon polarisation. Vacuum-polarisation
   factors \code{cvac} are 1 in our setup and omitted.}
@@ -433,15 +468,6 @@ B5 & ${\rm Re}\langle F,I_{\rm 1L}\rangle$, with $I_{\rm 1L}=I(1+S_{\rm ISR})+2\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-As coded, B4 and B5 differ from their underbraces in \cref{eq:phok-split} by two extra terms,
-both proportional to the tree interference:
-\[
-  \Delta B_4={\rm Re}\sum_{k\le3}T_k(I)^*T_k(F)\,\big(1-(v_f+v_s)\big),\qquad
-  \Delta B_5={\rm Re}\langle I,F\rangle\,\big(1+S_{\rm ISR}(w)\big).
-\]
-The decomposition $I_{\rm 1L}=I(1+S_{\rm ISR})+2\delta I_e$ is read from \code{V1(1)}
-(\cref{sec:h2}) and confirmed numerically by the per-point test (\cref{sec:t4}).
 
 \paragraph{\code{NLOpions}: last term of \cref{eq:phok-split}} (\code{hard\_soft\_part/one\_photon.f}).
 \[
