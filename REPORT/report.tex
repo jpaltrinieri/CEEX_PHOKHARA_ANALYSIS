@@ -271,11 +271,51 @@ where the one-loop amplitudes are
 The two vertex corrections factorise: $\delta F_e=\tfrac12v_s\,F$ and $\delta I_\pi=\tfrac12v_f\,I$,
 with $v_s$ (\code{ver\_s}) and $v_f$ (\code{ver\_f}$=$\code{vertLO}) real $|M|^2$-level factors.
 
-\paragraph{All contributions.} Expanding $|M|^2$ and adding the soft photons gives the terms of
-\cref{tab:phok-map}. Counting charges ($I\propto Q_e^2Q_\pi$, $F\propto Q_eQ_\pi^2$, each loop
-adds two charges) tells which are charge-odd: a term is charge-odd when it has an odd power of
-$Q_\pi$. The tree $|M|^2$ is split over three places: $|I|^2$ in \code{amplit}, $|F|^2$ in B1,
-$2{\rm Re}[I^*F]$ in B3.
+\paragraph{From the amplitude expansion to the routines.} Squaring $M$ and keeping
+$\mathcal O(\alpha)$ relative to the tree, every term is an interference $2{\rm Re}[X^*Y]$ of a
+tree amplitude $X\in\{I,F\}$ with a tree or one-loop amplitude $Y$. \phok{} computes them in
+four routines:
+\begin{align}
+|M|^2 ={}& \underbrace{|I|^2+2{\rm Re}[I^*\delta I_e]}_{\code{amplit}}\notag\\[2pt]
+&+\underbrace{\underbrace{|F|^2+2{\rm Re}[F^*\delta F_e]}_{\rm B1}
+  +\underbrace{2{\rm Re}[I^*\delta I_\pi]}_{\rm B2}
+  +\underbrace{2{\rm Re}[I^*F]}_{\rm B3}
+  +\underbrace{2{\rm Re}[I^*\delta F_e+F^*\delta I_\pi]}_{\rm B4}
+  +\underbrace{2{\rm Re}[F^*\delta I_e]}_{\rm B5}}_{\code{helicityampLO}}\notag\\[2pt]
+&+\underbrace{2{\rm Re}\big[(I+F)^*(\delta F_\pi+\delta B_e+\delta B_\pi)\big]}_{\code{virt\_pions}}
+ +\underbrace{|I+F|^2\,\mathcal S(w)}_{\code{NLOpions}},
+\label{eq:phok-split}
+\end{align}
+where $\mathcal S(w)$ is the eikonal factor for soft emission below $w\sqrt s$. The same
+assignment as a grid, one cell per $2{\rm Re}[X^*Y]$ (the $F^*I$ cell is the same term as $I^*F$):
+\begin{center}\small
+\begin{tabular}{@{}l|cc|cccc|c@{}}
+\toprule
+ & $I$ & $F$ & $\delta I_e$ & $\delta I_\pi$ & $\delta F_e$ & $\delta F_\pi$ & $\delta B_e$, $\delta B_\pi$ \\
+\midrule
+$I^*$ & \code{amplit} & B3 & \code{amplit} & B2 & B4 & \code{virt\_pions} & \code{virt\_pions} \\
+$F^*$ & (B3) & B1 & B5 & B4 & B1 & \code{virt\_pions} & \code{virt\_pions} \\
+\bottomrule
+\end{tabular}
+\end{center}
+The pattern follows from what each routine can do:
+\begin{itemize}
+\item \code{amplit} is a tensor contraction $L^{\mu\nu}H_{\mu\nu}$, which only exists for
+  $|{\rm ISR}|^2$: it gives the $I^*$ entries with $I$ and $\delta I_e$, and nothing else.
+\item The vertex corrections factorise, $\delta F_e=\tfrac12v_sF$ and $\delta I_\pi=\tfrac12v_fI$,
+  so every cell with them is a tree helicity sum times $v_s$ or $v_f$. Together with the tree
+  $|F|^2$ and $2{\rm Re}[I^*F]$ they are all in \code{helicityampLO} (B1--B4).
+\item $\delta I_e$ appears twice. Against $I^*$ it is in \code{amplit} (analytic, $m_e$ kept);
+  against $F^*$ it needs the amplitude, which \code{helicityampLO} takes from
+  \code{NLO\_ISR\_no\_mass\_terms} (massless electrons) in B5.
+\item The non-factorising loops $\delta F_\pi$, $\delta B_e$, $\delta B_\pi$ are genuine one-loop
+  amplitudes, computed in \code{virt\_pions} against the full tree $I+F$.
+\end{itemize}
+\Cref{tab:phok-map} lists the same terms with their charge factors. Counting charges
+($I\propto Q_e^2Q_\pi$, $F\propto Q_eQ_\pi^2$, each loop adds two charges), a term is charge-odd
+when it has an odd power of $Q_\pi$. The charge-odd cells are $I^*F$, $I^*\delta F_e$,
+$F^*\delta I_\pi$, $F^*\delta I_e$, $I^*\delta F_\pi$, $I^*\delta B_e$ and $F^*\delta B_\pi$, plus
+the odd part of the soft term.
 
 \begin{table}[htbp]
 \centering\small
@@ -314,8 +354,9 @@ $|M_{\rm tree}|^2\times$($e\pi$ eikonal)         & $\times Q_eQ_\pi$ & $\mp$ & \
 \end{tabularx}
 \end{table}
 
-\paragraph{\code{amplit}: ISR squared} (lines 2069, 6757ff). \code{amplit}$=L^{\mu\nu}H_{\mu\nu}$ is
-a contraction of a leptonic and a hadronic tensor, not a helicity sum:
+\paragraph{\code{amplit}: first line of \cref{eq:phok-split}} (lines 2069, 6757ff).
+\code{amplit}$=L^{\mu\nu}H_{\mu\nu}$ is a contraction of a leptonic and a hadronic tensor, not a
+helicity sum:
 \begin{itemize}
 \item $H^{\mu\nu}\propto|F_\pi(q^2)|^2(q_+-q_-)^\mu(q_+-q_-)^\nu$ (\code{HadronicTensorISR}): the
   $\gamma^*\to\pi\pi$ vertex, squared;
@@ -334,8 +375,8 @@ where the subscript V means the virtual correction with the IR pole dropped and 
 counterpart supplied by \code{NLOpions}. \code{amplit} contains nothing else: no FSR, no
 interference, and not the pion-vertex correction (that is B2).
 
-\paragraph{\code{helicityampLO} $\to$ \code{ampLO}: everything else at tree level and the
-factorising corrections} (lines 9687--10021).
+\paragraph{\code{helicityampLO} $\to$ \code{ampLO}: second line of \cref{eq:phok-split}}
+(lines 9687--10021). One block per underbrace:
 \[
   \code{helicityampLO}=\frac{(4\pi\alpha)^3}{4}\,\code{ampLO}\times\text{(phase space)},\qquad
   \code{ampLO}=\sum_{\lambda_\gamma=1,2}\big(B_1+B_2+B_3+B_4+B_5\big),
@@ -385,10 +426,8 @@ B5 & ${\rm Re}\langle F,I_{\rm 1L}\rangle$, with $I_{\rm 1L}=I(1+S_{\rm ISR})+2\
 \end{tabularx}
 \end{table}
 
-So \code{helicityampLO} holds the tree $|F|^2$ and $2{\rm Re}[I^*F]$ and all one-loop terms
-that are built from tree amplitudes: the two factorising vertex corrections (B1, B2, B4) and the
-ISR loop interfered with the FSR tree (B5). As coded, B4 and B5 carry two extra terms, both
-proportional to the tree interference:
+As coded, B4 and B5 differ from their underbraces in \cref{eq:phok-split} by two extra terms,
+both proportional to the tree interference:
 \[
   \Delta B_4={\rm Re}\sum_{k\le3}T_k(I)^*T_k(F)\,\big(1-(v_f+v_s)\big),\qquad
   \Delta B_5={\rm Re}\langle I,F\rangle\,\big(1+S_{\rm ISR}(w)\big).
@@ -396,7 +435,7 @@ proportional to the tree interference:
 The decomposition $I_{\rm 1L}=I(1+S_{\rm ISR})+2\delta I_e$ is read from \code{V1(1)}
 (\cref{sec:h2}) and confirmed numerically by the per-point test (\cref{sec:t4}).
 
-\paragraph{\code{NLOpions}: soft emission} (\code{hard\_soft\_part/one\_photon.f}).
+\paragraph{\code{NLOpions}: last term of \cref{eq:phok-split}} (\code{hard\_soft\_part/one\_photon.f}).
 \[
 |M_{\rm tree}|^2\times 2\big[\,S_{jj}^{ee}-S_{12}^{ee}+S_{jj}^{\pi\pi}-S_{12}^{\pi\pi}
   +(-S_{11}^{e\pi}-S_{22}^{e\pi}+S_{12}^{e\pi}+S_{21}^{e\pi})\,\big],
@@ -406,7 +445,7 @@ form, and the eikonal integrals of \code{soft\_integrals.f} ('t~Hooft--Veltman, 
 evaluated on the event momenta: \code{pjpj}, \code{p1p2} ($ee$), \code{qjqj\_sub},
 \code{q1q2\_sub} ($\pi\pi$) and the four $e\pi$ interference terms.
 
-\paragraph{\code{virt\_pions}: the loops that do not factorise} (\code{virtualpions.f}, quad
+\paragraph{\code{virt\_pions}: third line of \cref{eq:phok-split}} (\code{virtualpions.f}, quad
 precision, $\mu^2=s$). Each loop amplitude is contracted with a helicity vector of the full tree
 $I+F$ (the \code{hel()} arrays carry both the $F_\pi(s)$ and the $F_\pi(q^2)$ parts), so each
 routine gives both the charge-even and the charge-odd rows of \cref{tab:phok-map}. The diagram
