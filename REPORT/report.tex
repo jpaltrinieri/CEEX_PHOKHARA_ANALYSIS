@@ -469,28 +469,77 @@ B5 & ${\rm Re}\langle F,I_{\rm 1L}\rangle$, with $I_{\rm 1L}=I(1+S_{\rm ISR})+2\
 \end{tabularx}
 \end{table}
 
-\paragraph{\code{NLOpions}: last term of \cref{eq:phok-split}} (\code{hard\_soft\_part/one\_photon.f}).
-\[
-|M_{\rm tree}|^2\times 2\big[\,S_{jj}^{ee}-S_{12}^{ee}+S_{jj}^{\pi\pi}-S_{12}^{\pi\pi}
-  +(-S_{11}^{e\pi}-S_{22}^{e\pi}+S_{12}^{e\pi}+S_{21}^{e\pi})\,\big],
-\]
-with the full tree $|M_{\rm tree}|^2=|I|^2+|F|^2+2{\rm Re}\langle I,F\rangle$ recomputed in helicity
-form, and the eikonal integrals of \code{soft\_integrals.f} ('t~Hooft--Veltman, eq.~(7.3))
-evaluated on the event momenta: \code{pjpj}, \code{p1p2} ($ee$), \code{qjqj\_sub},
-\code{q1q2\_sub} ($\pi\pi$) and the four $e\pi$ interference terms.
-
-\paragraph{\code{virt\_pions}: third line of \cref{eq:phok-split}} (\code{virtualpions.f}, quad
-precision, $\mu^2=s$). Each loop amplitude is contracted with a helicity vector of the full tree
-$I+F$ (the \code{hel()} arrays carry both the $F_\pi(s)$ and the $F_\pi(q^2)$ parts), so each
-routine gives both the charge-even and the charge-odd rows of \cref{tab:phok-map}. The diagram
-content is inferred from the propagator masses:
+\paragraph{\code{virt\_pions}: third line of \cref{eq:phok-split}} (\code{virtualpions.f},
+lines 74--220). Starting from the definition,
+\begin{align*}
+\frac{\code{virt\_pions}}{\text{phase space}}
+&= \frac{(4\pi\alpha)^3}{4}\,\frac{\alpha}{4\pi}\,
+   2{\rm Re}\big[(P_\pi+P_\pi^{\rm cr})F_s^*+(P_e+P_e^{\rm cr})F_q^*+A_{\rm GVMD}\big]\\
+&\quad+32\pi^2\alpha^4\,{\rm Re}[V_\pi]\,F_s^*\\
+\intertext{\small\emph{$\downarrow$ $F_s=F_\pi(s)$, $F_q=F_\pi(q^2)$ are 1 ($F_\pi=1$, no VP);
+  $A_{\rm GVMD}=0$ (no GVMD)}}
+&= \frac{(4\pi\alpha)^3}{4}\,\frac{\alpha}{4\pi}\,
+   2{\rm Re}\big[P_\pi+P_\pi^{\rm cr}+P_e+P_e^{\rm cr}\big]+32\pi^2\alpha^4\,{\rm Re}[V_\pi]\\
+\intertext{\small\emph{$\downarrow$ each routine returns its loop amplitude summed over helicities
+  against the tree helicity vector \code{hel()}, which contains both $I$ and $F$}}
+&= 2{\rm Re}[(I+F)^*\delta B_\pi]+2{\rm Re}[(I+F)^*\delta B_e]+2{\rm Re}[(I+F)^*\delta F_\pi]\\
+&= \big[\text{third line of \cref{eq:phok-split}}\big].
+\end{align*}
+The ingredients (diagram content inferred from the propagator masses):
 \begin{itemize}
-\item \code{Pentabox\_full\_isrHelSum}, \code{cross\_ISRHelSum}: $\delta B_e$, masses
-  $(m_e,m_e,0,m_\pi,0)$, and its $\pi^+\leftrightarrow\pi^-$ crossing;
-\item \code{Pentabox\_PIFSRHelSum}, \code{cross\_FSRHelSum}: $\delta B_\pi$, masses
-  $(m_e,0,m_\pi,m_\pi,0)$, and its crossing;
-\item \code{virtual\_FSRHelSum} and \code{\ldots cr} (\code{test\_vFSR.f}): $\delta F_\pi$, only
-  massless and $m_\pi$ propagators, with QCDLoop integrals.
+\item $P_\pi$, $P_\pi^{\rm cr}$ (\code{Pentabox\_PIFSRHelSum}, \code{cross\_FSRHelSum}):
+  $\delta B_\pi$, two-photon exchange with the real photon on the pion line (pentagon masses
+  $(m_e,0,m_\pi,m_\pi,0)$, plus the boxes), and its $\pi^+\leftrightarrow\pi^-$ crossing.
+\item $P_e$, $P_e^{\rm cr}$ (\code{Pentabox\_full\_isrHelSum}, \code{cross\_ISRHelSum}):
+  $\delta B_e$, the same with the real photon on the electron line (masses
+  $(m_e,m_e,0,m_\pi,0)$), and its crossing.
+\item $V_\pi$ (\code{virtual\_FSRHelSum} and \code{\ldots cr}, \code{test\_vFSR.f}): $\delta F_\pi$,
+  the pion-line loops, only massless and $m_\pi$ propagators, including the on-shell
+  counterterms (\cref{sec:phok-uv}); double precision, QCDLoop integrals.
+\item All loops: quad precision (except $V_\pi$), all momenta outgoing (the routine flips the
+  signs of the photon and pion momenta in place), $\mu^2=s$, UV and IR poles dropped. The
+  pentagons and boxes are UV-finite; their IR poles are matched by the $e\pi$ soft integrals of
+  \code{NLOpions} \emph{(inferred)}.
+\item Normalisation: with the common factor written out, $V_\pi$ carries $32\pi^2\alpha^4$ and the
+  pentagons $\frac{(4\pi\alpha)^3}{4}\frac{\alpha}{4\pi}\,2=8\pi^2\alpha^4$. We did not check
+  whether the factor 4 is compensated inside the routine; the per-point test (\cref{sec:t4})
+  agrees with \ceex{}.
+\end{itemize}
+
+\paragraph{\code{NLOpions}: last term of \cref{eq:phok-split}} (\code{hard\_soft\_part/one\_photon.f},
+\code{soft\_integrals.f}). Starting from the definition,
+\[
+  \code{NLOpions}=\frac{(4\pi\alpha)^3}{4}\,\code{ampNLO}\times\text{(phase space)},
+\]
+\begin{align*}
+\code{ampNLO}
+&= A_{\rm LO}\times 2\big[\,S_{jj}^{ee}-S_{12}^{ee}+S_{jj}^{\pi\pi}-S_{12}^{\pi\pi}+S^{e\pi}\,\big]\\
+\intertext{\small\emph{$\downarrow$ $A_{\rm LO}$ (\code{amp\_fullLO}) is the full tree, recomputed
+  with the same helicity sums as \code{ampLO}}}
+&= |I+F|^2\times 2\big[\,S_{jj}^{ee}-S_{12}^{ee}+S_{jj}^{\pi\pi}-S_{12}^{\pi\pi}+S^{e\pi}\,\big]\\
+\intertext{\small\emph{$\downarrow$ the bracket is the eikonal factor: every pair of charged legs
+  $i,j$, with the sign of $\eta_iQ_i\eta_jQ_j$, integrated over $E_\gamma<w\sqrt s$}}
+&= |I+F|^2\,\big[\mathcal S_{ee}(w)+\mathcal S_{\pi\pi}(w)+\mathcal S_{e\pi}(w)\big]
+ = |I+F|^2\,\mathcal S(w)\\
+&= \big[\text{last term of \cref{eq:phok-split}}\big].
+\end{align*}
+The ingredients ($p_1=e^+$, $p_2=e^-$, $q_1=\pi^+$, $q_2=\pi^-$):
+\begin{itemize}
+\item $S_{ij}=-\frac{\alpha}{\pi}\,(p_i\cdot p_j)\,L_{ij}$, with $L_{ij}$ the integral of the eikonal
+  $1/[(p_i\cdot k)(p_j\cdot k)]$ over the soft region, 't~Hooft--Veltman eq.~(7.3); evaluated on the
+  momenta of the event.
+\item $ee$: \code{pjpj} (the $e^+$ self term; the factor 2 counts $e^-$ too, the beams being
+  symmetric) and \code{p1p2} (the $e^+e^-$ term).
+\item $\pi\pi$: \code{qjqj\_sub} (the $\pi^+$ and $\pi^-$ self terms averaged, times 2) and
+  \code{q1q2\_sub} (the $\pi^+\pi^-$ term).
+\item $e\pi$: $S^{e\pi}=-S(p_1,q_1)-S(p_2,q_2)+S(p_1,q_2)+S(p_2,q_1)$
+  (\code{softintegral\_interference}), with the signs of the charge products. $\mathcal S_{e\pi}$
+  is odd in $Q_\pi$: it makes the soft term charge-odd from $|I|^2+|F|^2$, while
+  $\mathcal S_{ee}$ and $\mathcal S_{\pi\pi}$ do so from $2{\rm Re}[I^*F]$.
+\item IR regulator: $\lambda=\sqrt s$ for the $ee$ and $e\pi$ terms. The two $\pi\pi$ integrals carry
+  extra $-\frac12\ln(q^2/s)$ terms, which amount to $\lambda^2=q^2$ \emph{(inferred)}, the scale of
+  the pion-vertex loops. The $\ln(2w\sqrt s/\lambda)$ terms carry all the $w$ dependence of the
+  one-photon weight.
 \end{itemize}
 
 \subsection{UV renormalisation}
