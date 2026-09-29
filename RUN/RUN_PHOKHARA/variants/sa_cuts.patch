@@ -1,0 +1,42 @@
+--- a/variables_cuts_KLOE-I.f	2026-09-29 15:23:02.233570216 +0100
++++ b/variables_cuts_KLOE-I.f	2026-09-29 15:23:02.243570243 +0100
+@@ -125,23 +125,13 @@
+      &           (ppm.gt.0.16)))
+       if (.not.accepted) return
+ 
+-      ! Cut on thg
+-      thg1 = dacos(-momenta(3,3)/
+-     &         dSqrt(momenta(3,1)**2+momenta(3,2)**2+momenta(3,3)**2))
+-     &         *180/pi
+-      thg2 = dacos(-momenta(4,3)/
+-     &         dSqrt(momenta(4,1)**2+momenta(4,2)**2+momenta(4,3)**2))
+-     &         *180/pi
+-
+-      if (thg1 /= thg1) thg1 = 1
+-      if (thg2 /= thg2) thg2 = 1  ! If it is a nan, set to 1 (won't pass the cuts)
+-
+-      g1_pass_cuts = ((thg1.ge.50).and.(thg1.le.130).and.
+-     &               (momenta(3,0).gt.0.02))
+-      g2_pass_cuts = ((thg2.ge.50).and.(thg2.le.130).and.
+-     &               (momenta(4,0).gt.0.02))
+-      
+-      accepted = (accepted.and.(g1_pass_cuts.or.g2_pass_cuts))
++      ! [SA] KLOE small-angle (Strong2020 KLOE-II) instead of the tagged
++      ! photon: missing momentum within 15 deg of a beam, as in
++      ! variables_cuts_KLOE-II.f
++      thg1 = dacos((momenta(6,3)+momenta(7,3))/dSqrt(
++     &   (momenta(6,1)+momenta(7,1))**2+(momenta(6,2)+momenta(7,2))**2+
++     &   (momenta(6,3)+momenta(7,3))**2))*180/pi
++      accepted = (accepted.and.((thg1.le.15).or.(thg1.gt.165)))
+       if (.not.accepted) return
+ 
+       ! Cut on mxx
+@@ -150,6 +140,6 @@
+      &       (momenta(6,2) + momenta(7,2))**2 - 
+      &       (momenta(6,3) + momenta(7,3))**2)
+ 
+-      accepted = (accepted.and.(mxx**2.ge.0.1).and.(mxx**2.le.0.85))
++      accepted = (accepted.and.(mxx**2.ge.0.35).and.(mxx**2.le.0.95))
+ 
+       end 
+\ No newline at end of file

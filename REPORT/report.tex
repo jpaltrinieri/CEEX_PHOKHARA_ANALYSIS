@@ -623,9 +623,50 @@ still suppressed, because they interfere with the helicity-flip part of $F$, whi
 $\propto m_e/\sqrt s$ with no collinear enhancement. The helicity-conserving terms of relative
 size $m_e^2/(p\cdot k)$ are simply missing, and matter only within $\theta_\gamma\lesssim
 m_e/E\approx1$~mrad of a beam; there they are an $\mathcal O(\alpha)$ correction to the
-ISR$\times$FSR interference, which is small for such photons. We expect this to be negligible
-but have not tested it; a per-point comparison with \ceex{}, whose amplitudes keep $m_e$
-exactly, at small-angle kinematics would settle it.
+ISR$\times$FSR interference, which is small for such photons.
+
+\paragraph{Test at small-angle kinematics.} We repeated the per-point comparison with \ceex{},
+whose amplitudes keep $m_e$ exactly, at 1233 one-photon points of the KLOE small-angle scenario
+(missing momentum within $15^\circ$ of a beam, $0.35\le M^2_{\pi\pi}\le0.95$~GeV$^2$), 82 of
+them with the photon within 1~mrad of a beam (\cref{tab:sa}). After subtracting H1 and H2 the
+charge-odd difference is consistent with zero in every angular bin: within 1~mrad it is
+$1.1(1.0)\times10^{-5}$ of the tree, against $3\times10^{-4}$ for the whole B5 loop and
+$2\times10^{-3}$ for the tree interference. The massless B5 has no visible effect, even for
+photons collinear to a beam.
+
+The precision of the test is set by \ceex{}. Below its collinear cutoff (\code{-{}-thg\_cutoff},
+default $3^\circ$) \ceex{} does not evaluate the virtual correction directly but extrapolates it
+in $\ln(2p\cdot k)$ from two anchor angles. Lowering the cutoff to $0.3^\circ$ shrinks the
+charge-odd scatter from $1.4\times10^{-3}$ to $9\times10^{-5}$, so that scatter comes from the
+extrapolation, not from \phok. The charge-even part cannot be followed that far: the direct
+evaluation becomes unstable below $\sim1^\circ$ (differences of $10^{-2}$ with the $0.3^\circ$
+cutoff). With the default cutoff the charge-even parts agree to $(0.6$--$1)\times10^{-3}$ of the
+tree within 5~mrad, and to $10^{-4}$ or better above $1^\circ$.
+
+\begin{table}[H]
+\centering\small
+\caption{Per-point comparison at KLOE small-angle kinematics, binned in the photon angle to the
+  nearest beam. All entries are divided by the charge-even tree; residuals are mean (rms) over
+  the points. ``\ceex{} cutoff'' is \code{-{}-thg\_cutoff}.}
+\label{tab:sa}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+$\theta_\gamma$ [mrad] & 0--1 & 1--5.2 & 5.2--17.5 & 17.5--52 & 52--270 \\
+\midrule
+Points & 82 & 273 & 267 & 268 & 343 \\
+$|$tree interference$|$ & $1.9\times10^{-3}$ & $3.3\times10^{-3}$ & $1.0\times10^{-2}$ & $3.3\times10^{-2}$ & $0.12$ \\
+$|$B5 loop$|$ & $3.0\times10^{-4}$ & $5.1\times10^{-4}$ & $1.6\times10^{-3}$ & $5.1\times10^{-3}$ & $1.8\times10^{-2}$ \\
+\addlinespace
+\multicolumn{6}{@{}l}{\emph{Charge-odd, minus H1 and H2} [$10^{-5}$]} \\
+\quad \ceex{} cutoff $0.3^\circ$ & $+1.1\,(8.9)$ & $+0.2\,(5.8)$ & $-0.2\,(3.6)$ & $-0.1\,(1.7)$ & $-0.1\,(1.0)$ \\
+\quad \ceex{} cutoff $3^\circ$ & $+16\,(140)$ & $+7\,(100)$ & $+0.3\,(48)$ & $+0.2\,(13)$ & $-0.1\,(1.0)$ \\
+\addlinespace
+\multicolumn{6}{@{}l}{\emph{Charge-even} [$10^{-5}$]} \\
+\quad \ceex{} cutoff $3^\circ$ & $+100\,(56)$ & $+59\,(62)$ & $-2\,(29)$ & $-12\,(16)$ & $-6\,(4)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Where the errors are}
 \label{sec:phok-errors}

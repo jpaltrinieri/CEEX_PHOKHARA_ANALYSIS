@@ -1,0 +1,12 @@
+# T4-SA: 1233 accepted 1-photon KLOE small-angle points (+ pi+<->pi- swaps), w*sqrt(s) = Emin = 1e-5 GeV
+# photon angle to the nearest beam [mrad]:  0.0-1.0  1.0-5.2  5.2-17.5  17.5-52.4  52.4-270.0
+points                                   82                273                267                268                343
+|tree interference|/tree            1.9e-03            3.3e-03            1.0e-02            3.3e-02            1.2e-01
+|B5 loop (fixed)|/tree              3.0e-04            5.1e-04            1.6e-03            5.1e-03            1.8e-02
+# residual per C-even tree, mean(rms) over points:
+C-odd - H1 - H2, 3 deg    +1.6e-04(1.4e-03)  +7.0e-05(1.0e-03)  +2.5e-06(4.8e-04)  +1.5e-06(1.3e-04)  -8.5e-07(9.6e-06)
+C-even,          3 deg    +1.0e-03(5.6e-04)  +5.9e-04(6.2e-04)  -1.8e-05(2.9e-04)  -1.2e-04(1.6e-04)  -5.6e-05(4.2e-05)
+C-odd - H1 - H2, 1 deg    +5.5e-05(5.3e-04)  +1.8e-05(3.6e-04)  -4.1e-08(1.1e-04)  -8.6e-07(1.7e-05)  -8.5e-07(9.6e-06)
+C-even,          1 deg    -7.3e-04(2.6e-03)  -9.4e-04(2.5e-03)  -9.0e-04(1.5e-03)  -3.2e-04(4.7e-04)  -5.6e-05(4.2e-05)
+C-odd - H1 - H2, 0.3 deg  +1.1e-05(8.9e-05)  +1.8e-06(5.8e-05)  -2.1e-06(3.6e-05)  -8.6e-07(1.7e-05)  -8.5e-07(9.6e-06)
+C-even,          0.3 deg  -1.4e-02(2.0e-02)  -1.1e-02(1.6e-02)  -3.2e-03(5.8e-03)  -3.2e-04(4.7e-04)  -5.6e-05(4.2e-05)
