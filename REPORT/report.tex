@@ -352,26 +352,37 @@ $|M_{\rm tree}|^2\times$($e\pi$ eikonal)         & $\times Q_eQ_\pi$ & $\mp$ & \
 \end{tabularx}
 \end{table}
 
-\paragraph{\code{amplit}: first line of \cref{eq:phok-split}} (lines 2069, 6757ff).
-\code{amplit}$=L^{\mu\nu}H_{\mu\nu}$ is a contraction of a leptonic and a hadronic tensor, not a
-helicity sum:
+\paragraph{\code{amplit}: first line of \cref{eq:phok-split}} (lines 2069, 6757--7037). Starting
+from the definition:
+\begin{align*}
+\code{amplit}
+&= L^{\mu\nu}H_{\mu\nu}
+  && \text{definition: leptonic $\times$ hadronic tensor}\\
+&= |I|^2+\big(2{\rm Re}[I^*\delta I_e]\big)_{\rm V+S}
+  && \text{\code{Bornvirtualsoft}: LO + virtual + analytic soft}\\
+&= |I|^2+2{\rm Re}[I^*\delta I_e]_{\rm V}+S_{\rm ISR}(w)\,|I|^2
+  && \text{split V+S into virtual and soft}\\
+&\longrightarrow |I|^2+2{\rm Re}[I^*\delta I_e]_{\rm V}
+  && \text{subtract $S_{\rm ISR}(w)\,|I|^2$ (lines 6838--6856)}
+\end{align*}
+The ingredients:
 \begin{itemize}
 \item $H^{\mu\nu}\propto|F_\pi(q^2)|^2(q_+-q_-)^\mu(q_+-q_-)^\nu$ (\code{HadronicTensorISR}): the
-  $\gamma^*\to\pi\pi$ vertex, squared;
+  $\gamma^*\to\pi\pi$ vertex, squared.
 \item $L^{\mu\nu}$ (\code{LeptonicTensor1ISR}): the electron line with the emitted photon,
-  squared and summed over the photon polarisation. Its coefficients come from
-  \code{Bornvirtualsoft} (G.~Rodrigo et al., EPJC~22 (2001) 81; J.H.~K\"uhn, G.~Rodrigo,
-  EPJC~25 (2002) 215): LO plus the $\mathcal O(\alpha)$ ISR virtual+soft correction with $m_e$
-  kept, a renormalised analytic result.
+  squared and summed over the photon polarisation, $L=L_{\rm LO}+\frac{\alpha}{\pi}L_{\rm NLO}$.
+  The coefficients come from \code{Bornvirtualsoft} (G.~Rodrigo et al., EPJC~22 (2001) 81;
+  J.H.~K\"uhn, G.~Rodrigo, EPJC~25 (2002) 215), with $m_e$ kept. $L_{\rm LO}H=|I|^2$, and
+  $\frac{\alpha}{\pi}L_{\rm NLO}H$ is the IR-finite sum of the one-loop ISR correction and the
+  analytic soft emission below $w\sqrt s$.
+\item V: the virtual correction with its IR pole dropped (dimensional regularisation,
+  $\mu^2=s$), the convention of the eikonal integrals in \code{NLOpions}; \emph{(inferred)} from
+  the form of $S_{\rm ISR}$.
+\item $S_{\rm ISR}(w)$: the analytic ISR soft function (\cref{sec:phok-ir}). Once it is
+  subtracted, the soft emission it stood for is supplied by \code{NLOpions}.
 \end{itemize}
-The analytic soft function is then removed (lines 6838--6856), so
-\[
-  \code{amplit}=|I|^2+2{\rm Re}[I^*\delta I_e]_{\rm V+S}-S_{\rm ISR}(w)\,|I|^2
-               =|I|^2+2{\rm Re}[I^*\delta I_e]_{\rm V},
-\]
-where the subscript V means the virtual correction with the IR pole dropped and its soft
-counterpart supplied by \code{NLOpions}. \code{amplit} contains nothing else: no FSR, no
-interference, and not the pion-vertex correction (that is B2).
+\code{amplit} contains nothing else: no FSR, no interference, and not the pion-vertex correction
+(that is B2).
 
 \paragraph{\code{helicityampLO} $\to$ \code{ampLO}: second line of \cref{eq:phok-split}}
 (lines 9687--10021). One block per underbrace:
