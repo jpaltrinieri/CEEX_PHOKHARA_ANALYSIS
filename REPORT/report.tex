@@ -92,7 +92,7 @@ the cutoff; \ceex{} (\CeexA) and \bby{} ($0.23724$) agree with it to $3\times10^
 \item \textbf{The whole effect sits in the charge-odd part of the one-photon contribution}
   (Born + virtual + soft); the hard two-photon emission agrees between the codes
   at a matched cutoff.
-\item \textbf{Two errors in \phok{} explain it point by point} (\cref{sec:bugs}, \cref{app:t4}):
+\item \textbf{Two errors in \phok{} explain it point by point} (\cref{sec:bugs}):
   \begin{itemize}
   \item \textbf{H1} -- \code{phokhara\_10.0.f:9969--9982}: the factor $(v_f+v_s)$ multiplies only
     the last of four helicity terms of the tree interference;
@@ -415,7 +415,7 @@ terms are both proportional to the tree interference:
   \Delta B_5={\rm Re}\langle I,F\rangle\,\big(1+S_{\rm ISR}(w)\big).
 \]
 The decomposition of $I_{\rm 1L}$ is read from \code{V1(1)} (\cref{sec:h2}) and confirmed
-numerically by the per-point test (\cref{app:t4}).
+numerically by a per-point comparison with \ceex{} at 988 one-photon points.
 
 The ingredients:
 \begin{itemize}
@@ -501,7 +501,7 @@ The ingredients (diagram content inferred from the propagator masses):
   \code{NLOpions} \emph{(inferred)}.
 \item Normalisation: with the common factor written out, $V_\pi$ carries $32\pi^2\alpha^4$ and the
   pentagons $\frac{(4\pi\alpha)^3}{4}\frac{\alpha}{4\pi}\,2=8\pi^2\alpha^4$. We did not check
-  whether the factor 4 is compensated inside the routine; the per-point test (\cref{app:t4})
+  whether the factor 4 is compensated inside the routine; the per-point comparison with \ceex{}
   agrees with \ceex{}.
 \end{itemize}
 
@@ -618,8 +618,8 @@ the fixes.
 \paragraph{Oddities without effect here.} \code{soft\_f} in \code{vertLO} and \code{ver\_f} in
 \code{ampNLO} are computed but not used. The virtual-FSR term in \code{virt\_pions} has an
 explicit prefactor four times that of the pentagons ($32\pi^2\alpha^4$ vs $8\pi^2\alpha^4$); we
-did not check whether this is compensated inside the routine, but the per-point test
-(\cref{app:t4}) agrees with \ceex{} to $2.5\times10^{-5}$ of the tree. Some ``(-1)'' comments do
+did not check whether this is compensated inside the routine, but a per-point comparison with \ceex{}
+agrees with \ceex{} to $2.5\times10^{-5}$ of the tree. Some ``(-1)'' comments do
 not match the code.
 
 %=========================================================================================
@@ -818,7 +818,7 @@ Sum                               & 0.26823(25) & 0.26840(8) & 0.2372(9)  & 0.23
 Both parts agree, with angle-shape $\chi^2/{\rm ndf}=0.7$--$1.4$, and this sample gives
 $\Ath=0.2377(3)$, consistent with $w=10^{-5}$ and $10^{-6}$. A 2\% change of the cutoff cannot
 move $\Ath$ by $0.0009$, so the low $w=10^{-4}$ value is a fluctuation of that sample
-($2.6\sigma$ from this one). The per-point test (\cref{app:t4}) at $w=10^{-4}$ also leaves no systematic $C$-odd residual after
+($2.6\sigma$ from this one). A per-point comparison with \ceex{} at $w=10^{-4}$ also leaves no systematic $C$-odd residual after
 H1+H2 (mean $-7\times10^{-6}$).
 \paragraph{Highest statistics.} A final run of \FiveN{} seeds $\times$ 5M events
 ($5\times10^9$ events passing the cuts, $w=10^{-5}$) gives $\sigma=\FiveSig$~nb and
@@ -868,39 +868,6 @@ $m_{\rm trk}$ and $m^{\rm c}_{\rm trk}$ are nearly empty tail bins.}
 $\theta^+$, $\theta^-$ and $\theta_{\rm avg}$ are off; the spikes in $M_{\pi\pi\gamma}$ and
 $M_{\rm trk}$ are empty tail bins.}
 \label{fig:before-ov}
-\end{figure}
-
-\clearpage
-\section{Per-point comparison of the one-photon matrix element}
-\label{app:t4}
-988 accepted one-photon KLOE-LA points were dumped by a \phok{} variant
-(\code{phokhara\_dump}) together with every piece of the one-photon matrix element, at the event
-and with the pion momenta swapped. A \ceex-main driver (\code{t4\_ceex}) evaluates the tree, the
-hard virtual $\frac{\alpha}{4\pi}D$ (\gosam{} finite part plus mass counterterm), the
-wave-function counterterm and the YFS factor at the same momenta; the pion mass is set to
-\phok's value. Each code is normalised to its own charge-even tree:
-\begin{itemize}
-\item tree $C$-odd/$C$-even ratio: identical to $7\times10^{-13}$;
-\item $C$-even NLO correction: \ceex{} $-0.77566$, \phok{} $-0.77570$, per-point difference rms $10^{-5}$;
-\item $C$-odd NLO correction: per-point difference $D$ with rms $0.099$;
-\item $C$-odd soft (eikonal/YFS) part: agrees, rms $7\times10^{-4}$.
-\end{itemize}
-$D$ is exactly proportional to the tree interference at every point. Subtracting the two errors,
-each computed exactly per point ($v_s=0.29655$, $v_f=0.023$--$0.036$,
-$S_{\rm ISR}(w)=-0.95556$),
-\[
-  \text{pred}_{\rm H1}=B_4-\tfrac12B_3\,(v_f+v_s),\qquad
-  \text{pred}_{\rm H2}=\tfrac12B_3\,(1+S_{\rm ISR}(w)),
-\]
-leaves a residual of rms $2.5\times10^{-5}$ with mean $10^{-6}$ (\cref{fig:t4}). H1 alone leaves
-$1.2\times10^{-2}$, H2 alone $8.8\times10^{-2}$.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\textwidth]{fig_t4.pdf}
-\caption{Per-point comparison, 988 one-photon points. Left: the $C$-odd difference $D$ against the tree interference, with the
-H1+H2 prediction. Right: $\log_{10}|D-\text{subtracted}|$ for no subtraction, H1, H2 and H1+H2.}
-\label{fig:t4}
 \end{figure}
 
 \end{document}
