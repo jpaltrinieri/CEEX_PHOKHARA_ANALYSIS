@@ -595,6 +595,38 @@ $w$ terms. All $w$ dependence then comes from \code{NLOpions} and cancels agains
 two-photon events. A leftover analytic $\ln w$ term does not cancel, and the result depends on
 $w$.
 
+\subsection{Electron mass}
+\label{sec:phok-me}
+The full-NLO pion calculation is not exact in $m_e$ everywhere. Piece by piece:
+\begin{itemize}
+\item \textbf{Exact in $m_e$:} the tree amplitudes $I$ and $F$ (massive beam spinors through the
+  $T_k$), the one-loop ISR squared in \code{amplit} (\code{Bornvirtualsoft}, with its
+  electron-mass corrections), the two-photon-exchange boxes and pentagons (electron propagators
+  and spinors massive), and the eikonal soft integrals of \code{NLOpions}.
+\item \textbf{$m_e$ only in logarithms:} the electron vertex $v_s$ is the $m_e\to0$ form,
+  $\frac{2\alpha}{\pi}[(L-1)\ln2w+\frac34L-1+\frac{\pi^2}{6}]$ with $L=\ln(s/m_e^2)$. The
+  neglected terms are $\mathcal O(m_e^2/s)\approx2.5\times10^{-7}$ at fixed $s$, with no
+  enhancement anywhere in phase space.
+\item \textbf{Massless, except logarithms and kinematics: B5}, the ISR one-loop amplitude against
+  the FSR tree (\code{NLO\_ISR\_no\_mass\_terms}). Only the leading coefficient \code{V1(1)}
+  contains $m_e$, in its soft and collinear logarithms; the other kept coefficients
+  (\code{V1(2)}, \code{V1(5)}, \code{V1(8)}--\code{V1(11)}) are massless expressions in
+  $y_{1,2}=2p_{1,2}\cdot k/s$ and $q^2/s$, evaluated with the massive momenta. The seven
+  helicity-flip coefficients (\code{V1(3,4,6,7,12,13,14)}) are set to zero and their expressions
+  do not exist in the code; only their normalisation is left as a comment. The mass terms
+  \code{deny1}, \code{deny2}, \code{m2miny1}, \code{m2miny2} are computed but not used.
+\end{itemize}
+So the claim of full $m_e$ dependence holds for every piece except B5 (and, harmlessly, $v_s$).
+For B5 the approximation is safe at large photon angles, where the neglected terms are
+$\mathcal O(m_e^2/s)$. For a photon along a beam (KLOE small-angle) the helicity-flip terms are
+still suppressed, because they interfere with the helicity-flip part of $F$, which is itself
+$\propto m_e/\sqrt s$ with no collinear enhancement. The helicity-conserving terms of relative
+size $m_e^2/(p\cdot k)$ are simply missing, and matter only within $\theta_\gamma\lesssim
+m_e/E\approx1$~mrad of a beam; there they are an $\mathcal O(\alpha)$ correction to the
+ISR$\times$FSR interference, which is small for such photons. We expect this to be negligible
+but have not tested it; a per-point comparison with \ceex{}, whose amplitudes keep $m_e$
+exactly, at small-angle kinematics would settle it.
+
 \subsection{Where the errors are}
 \label{sec:phok-errors}
 
