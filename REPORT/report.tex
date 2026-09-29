@@ -63,10 +63,10 @@ for $e^+e^-\to\pi^+\pi^-\gamma$ agree in the total cross section and in every ch
 distribution, but disagree in the pion polar angles: the forward--backward asymmetry of the
 $\pi^+$ is $\Ath=0.2375$ in \ceex{} (and $0.2372$ in \bby) against $0.2787$ in \phok.
 We show that the difference is entirely due to two errors in the one-photon ISR$\times$FSR
-interference at NLO in \phok{} (routine \code{ampLO}, pion branch of the full-NLO mode): a
+interference at NLO in \phok{} (routine \code{ampLO}): a
 misplaced parenthesis that adds three helicity terms of the tree interference a second time,
 and a block that keeps the tree interference together with an analytic ISR soft function that
-the full-NLO mode replaces by the eikonal elsewhere. The second error makes the \phok{}
+the calculation replaces by the eikonal elsewhere. The second error makes the \phok{}
 asymmetry depend on the unphysical soft-photon cutoff. A point-by-point comparison of the
 one-photon matrix elements shows that the two errors account for the whole charge-odd
 difference to $2.5\times10^{-5}$ of the tree. With both corrected, \phok{} gives
@@ -140,9 +140,8 @@ repository (\cref{app:files}).
 \section{\texorpdfstring{How \phok{} computes $\pi^+\pi^-\gamma$ at NLO}{How PHOKHARA computes pi+pi-gamma at NLO}}
 \label{sec:phok}
 
-This section describes the pion branch of \phok~10.0 in the configuration of our card
-(\code{pion=1}, \code{nlo=nlo2=1}, \code{fsr=2}, \code{fsrnlo=1}, $F_\pi=1$, no vacuum
-polarisation): first the overall structure, then the routines, the UV and IR treatment, and
+This section describes what \phok~10.0 computes for $\pi^+\pi^-\gamma$ at full NLO, the
+calculation of this report ($F_\pi=1$, no vacuum polarisation): first the overall structure, then the routines, the UV and IR treatment, and
 finally the two blocks where the errors are (\cref{sec:phok-errors}). Line numbers refer to the
 unpatched \code{phokhara\_10.0.f} unless another file is named. Statements marked
 \emph{(inferred)} are our reading of the code; the code itself does not document them.
@@ -319,8 +318,7 @@ the odd part of the soft term.
 
 \begin{table}[htbp]
 \centering\small
-\caption{Every contribution to the one-photon weight and where \phok{} computes it (full-NLO pion
-  mode). B1--B5 are the blocks of \code{ampLO} (\cref{tab:phok-blocks}). $S_{\rm ISR}(w)$ is the
+\caption{Every contribution to the one-photon weight and where \phok{} computes it. B1--B5 are the blocks of \code{ampLO} (\cref{tab:phok-blocks}). $S_{\rm ISR}(w)$ is the
   analytic ISR soft function of \cref{sec:phok-ir}. The hard two-photon emission, the other half
   of the real correction, is computed separately in \code{gen\_2ph}.}
 \label{tab:phok-map}
@@ -331,7 +329,7 @@ Contribution & Charges & C & Computed in & Remark \\
 \multicolumn{5}{@{}l}{\emph{Tree}}\\
 $|I|^2$                          & $Q_e^4Q_\pi^2$ & $+$ & \code{amplit} & tensor $L^{\mu\nu}H_{\mu\nu}$ \\
 $|F|^2$                          & $Q_e^2Q_\pi^4$ & $+$ & \code{ampLO} B1 & \\
-$2{\rm Re}[I^*F]$                & $Q_e^3Q_\pi^3$ & $-$ & \code{ampLO} B3 & only with \code{fsr=2} \\
+$2{\rm Re}[I^*F]$                & $Q_e^3Q_\pi^3$ & $-$ & \code{ampLO} B3 & \\
 \midrule
 \multicolumn{5}{@{}l}{\emph{One loop}}\\
 $2{\rm Re}[I^*\delta I_e]$       & $Q_e^6Q_\pi^2$ & $+$ & \code{amplit} & Rodrigo, $m_e$ kept; $-S_{\rm ISR}|I|^2$ \\
@@ -366,7 +364,7 @@ helicity sum:
   EPJC~25 (2002) 215): LO plus the $\mathcal O(\alpha)$ ISR virtual+soft correction with $m_e$
   kept, a renormalised analytic result.
 \end{itemize}
-With \code{nlo2=1} the analytic soft function is then removed (lines 6838--6856), so
+The analytic soft function is then removed (lines 6838--6856), so
 \[
   \code{amplit}=|I|^2+2{\rm Re}[I^*\delta I_e]_{\rm V+S}-S_{\rm ISR}(w)\,|I|^2
                =|I|^2+2{\rm Re}[I^*\delta I_e]_{\rm V},
@@ -407,22 +405,21 @@ five blocks are listed in \cref{tab:phok-blocks}.
 
 \begin{table}[htbp]
 \centering\small
-\caption{The blocks of \code{ampLO} (pion branch), per photon polarisation. Vacuum-polarisation
+\caption{The blocks of \code{ampLO}, per photon polarisation. Vacuum-polarisation
   factors \code{cvac} are 1 in our setup and omitted.}
 \label{tab:phok-blocks}
-\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}Xlll@{}}
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}Xll@{}}
 \toprule
-Block & Code computes & Physics content & Condition & Lines \\
+Block & Code computes & Physics content & Lines \\
 \midrule
-B1 & $|F|^2(1+v_s)$ & $|F|^2+2{\rm Re}[F^*\delta F_e]$ & always$^a$ & 9938--9943 \\
-B2 & $|I|^2\,v_f$  & $2{\rm Re}[I^*\delta I_\pi]$ & \code{fsrnlo=1} & 9945--9951 \\
-B3 & $2{\rm Re}\langle I,F\rangle$ & $2{\rm Re}[I^*F]$ & \code{fsr=2} & 9954--9966 \\
+B1 & $|F|^2(1+v_s)$ & $|F|^2+2{\rm Re}[F^*\delta F_e]$ & 9938--9943 \\
+B2 & $|I|^2\,v_f$  & $2{\rm Re}[I^*\delta I_\pi]$ & 9945--9951 \\
+B3 & $2{\rm Re}\langle I,F\rangle$ & $2{\rm Re}[I^*F]$ & 9954--9966 \\
 B4 & ${\rm Re}\sum_{k\le3}T_k(I)^*T_k(F)$ ${}+{\rm Re}[T_4(I)^*T_4(F)](v_f+v_s)$
-   & intended ${\rm Re}\langle I,F\rangle(v_f+v_s)$ & \code{nlo2=1}, \code{pion=1} & 9969--9982 \textbf{H1} \\
+   & intended ${\rm Re}\langle I,F\rangle(v_f+v_s)$ & 9969--9982 \textbf{H1} \\
 B5 & ${\rm Re}\langle F,I_{\rm 1L}\rangle$, with $I_{\rm 1L}=I(1+S_{\rm ISR})+2\delta I_e$
-   & intended $2{\rm Re}[F^*\delta I_e]$ & \code{nlo2=1}, \code{pion=1} & 9984--10007 \textbf{H2} \\
+   & intended $2{\rm Re}[F^*\delta I_e]$ & 9984--10007 \textbf{H2} \\
 \bottomrule
-\multicolumn{5}{@{}l}{\footnotesize $^a$ $v_s=0$ if \code{fsrnlo=0}.}
 \end{tabularx}
 \end{table}
 
@@ -490,12 +487,11 @@ integrated analytically in \code{NLOpions}. Hard region: exact two-photon matrix
 FSR$\cdot$FSR (\code{Jplus}/\code{Jmin}) amplitudes added coherently and squared with the same
 $T_1$--$T_4$ pattern.
 
-\paragraph{The full-NLO rewrite (\code{nlo2=1}).} In the older NLO mode each analytic vertex
-result was ``virtual + soft'', with its own analytic $\ln(2w)$ soft function (ISR in the
-leptonic tensor, $v_s$ for the electron vertex, \code{vertLO} for the pion vertex). That scheme
-has no $e$--$\pi$ soft interference. \code{nlo2=1} replaces all soft emission by the exact
-eikonal integrals of \code{NLOpions}, which include the $e\pi$ terms, so every analytic soft
-function has to be removed from its ``V+S'' formula. The code does this in three places:
+\paragraph{Soft subtraction in the analytic pieces.} The three analytic one-loop results (ISR in
+the leptonic tensor, $v_s$ for the electron vertex, \code{vertLO} for the pion vertex) are
+``virtual + soft'' formulas, each with its own analytic $\ln(2w)$ soft function. All soft
+emission is supplied by the eikonal integrals of \code{NLOpions}, which also contain the $e\pi$
+terms, so the analytic soft function is removed from each of the three:
 \begin{itemize}
 \item leptonic tensor (lines 6838--6856): $L-L_{\rm LO}\,S_{\rm ISR}(w)$, with
   \[
@@ -507,7 +503,7 @@ function has to be removed from its ``V+S'' formula. The code does this in three
   381, eq.~(29), ``without terms proportional to Log(2w)''.
 \end{itemize}
 
-\paragraph{What must hold.} After the rewrite every one-loop piece should be free of analytic
+\paragraph{What must hold.} After these subtractions every one-loop piece should be free of analytic
 $w$ terms. All $w$ dependence then comes from \code{NLOpions} and cancels against the
 two-photon events. A leftover analytic $\ln w$ term does not cancel, and the result depends on
 $w$.
@@ -526,7 +522,7 @@ of \cref{sec:phok-1ph}):
 \item \textbf{B5 (H2).} \code{NLO\_ISR\_no\_mass\_terms} returns the ISR amplitude
   \emph{including} the tree, not the loop alone: its leading coefficient \code{V1(1)} contains
   the tree ``1'' and the analytic soft function $S_{\rm ISR}(w)$. The ``1'' repeats half of B3,
-  and $S_{\rm ISR}(w)$ is the one soft function the full-NLO rewrite never removed, which breaks
+  and $S_{\rm ISR}(w)$ is the one analytic soft function that is never removed, which breaks
   the condition of \cref{sec:phok-ir}.
 \end{itemize}
 Both extra terms are proportional to ${\rm Re}\langle I,F\rangle$, which is charge-odd. They
@@ -570,7 +566,7 @@ observable to \phok: only the three pion angles are off, by a smooth tilt from $
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.62\textwidth]{before_c1M_e5/60bins/pi_kloe_la_lth+.pdf}
+\includegraphics[width=0.62\textwidth]{before_cfull_e5/60bins/pi_kloe_la_lth+.pdf}
 \caption{\textbf{Before the fix}: unpatched \phok{} (300$\times$500k) against \ceex{} more1M (\CeexN$\times$5$\times$1M): $d\sigma/d\theta^+$, \ceex/\bby, and \ceex{} and
 \bby{} over \phok{} (60 bins). \ceex{} ($E_{\min}=10^{-5}$~GeV, black) and \bby{} (blue) agree; \phok{} (red) is
 tilted.}
@@ -579,7 +575,7 @@ tilted.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{before_c1M_e5/60bins/overview_vs_phokhara.pdf}
+\includegraphics[width=\textwidth]{before_cfull_e5/60bins/overview_vs_phokhara.pdf}
 \caption{\textbf{Before the fix}: every observable, \ceex{} and \bby{} over \phok. Only
 $\theta^+$, $\theta^-$ and $\theta_{\rm avg}$ are off; the spikes in $M_{\pi\pi\gamma}$ and
 $M_{\rm trk}$ are empty tail bins.}
@@ -772,8 +768,8 @@ S_{\rm ISR}(w)=\frac{\alpha}{\pi}\Big[-\ln(4w^2)\,(1+L)-\tfrac12L^2-L-\tfrac{\pi
 \qquad L=\ln\frac{m_e^2}{s}.
 \]
 \begin{itemize}
-\item The tree interference is already added by the \code{fsr=2} block (B3).
-\item In the full-NLO mode the analytic ISR soft function is replaced by the eikonal in
+\item The tree interference is already added by B3.
+\item The analytic ISR soft function is replaced by the eikonal in
   \code{NLOpions}; it is subtracted from $v_s$, $v_f$ and the leptonic tensor, but not here.
 \item At $w\simeq10^{-5}$ the two parts nearly cancel ($1+S_{\rm ISR}=0.044$), but
   $S_{\rm ISR}$ changes by $0.152$ per decade of $w$. This gives the T1 slope:
@@ -845,8 +841,9 @@ H1+H2 (mean $-7\times10^{-6}$).
 ($5\times10^9$ events passing the cuts, $w=10^{-5}$) gives $\sigma=\FiveSig$~nb and
 $\Ath=\FiveA$, $-A(\theta^-)=\FiveAm$, $-A(\theta_{\rm avg})=\FiveAv$. To match this precision
 on the \ceex{} side, a further \ceex{} run (more1M: 5 MPI ranks $\times$ 1M events per task at
-$E_{\min}=10^{-5}$~GeV, seeds 101--300, independent of prod500k) was started; the \CeexN{} tasks
-finished at the time of writing (\CeexNr{} rank outputs; 8 whose total diverged were discarded by \code{check\_total.sh}) give
+$E_{\min}=10^{-5}$~GeV, seeds 101--300, independent of prod500k) was run. \CeexN{} of its 200 tasks
+completed; the last one was stopped. After discarding 8 rank outputs whose total diverged
+(\code{check\_total.sh}), the \CeexNr{} rank outputs give
 $\sigma=\CeexSig$~nb and
 \[
   \Ath=\CeexA,\qquad -A(\theta^-)=\CeexAm,\qquad -A(\theta_{\rm avg})=\CeexAv ,
@@ -858,7 +855,7 @@ pion-angle shape $\chi^2/{\rm ndf}$ of \ceex{} against the fixed \phok{} drops f
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.62\textwidth]{final5M_c1M_e5/60bins/pi_kloe_la_lth+.pdf}
+\includegraphics[width=0.62\textwidth]{final5M_cfull_e5/60bins/pi_kloe_la_lth+.pdf}
 \caption{\textbf{After the fix}: as \cref{fig:before}, with the fixed \phok{} (\FiveN$\times$5M,
 $w=10^{-5}$) as the denominator and \ceex{} more1M (\CeexN$\times$5$\times$1M, $E_{\min}=10^{-5}$~GeV).
 The tilt is gone.}
@@ -867,7 +864,7 @@ The tilt is gone.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{final5M_c1M_e5/60bins/overview_vs_phokhara.pdf}
+\includegraphics[width=\textwidth]{final5M_cfull_e5/60bins/overview_vs_phokhara.pdf}
 \caption{\textbf{After the fix}: every observable, \ceex{} (more1M, $E_{\min}=10^{-5}$~GeV) and \bby{}
 over the fixed \phok{} (\FiveN$\times$5M).}
 \label{fig:after-ov}
@@ -878,7 +875,7 @@ over the fixed \phok{} (\FiveN$\times$5M).}
 \label{sec:caveats}
 \begin{itemize}
 \item Only the configuration studied here was tested ($F_\pi=1$, no VP, KLOE-LA cuts). Both
-  errors are on code paths active for \code{pion=1} with \code{nlo2=1} in any configuration, so
+  errors are in the pion full-NLO code whatever the form factor or VP setting, so
   they should also affect the Strong2020 form-factor results (there the NLO gap in $\Ath$ is
   $0.012$: \ceex{} $0.0804$, \phok{} $0.0924$). This has not been re-run.
 \item After the fix, one of the three high-statistics samples ($w=10^{-4}$) lies $0.0007$ below the
@@ -889,8 +886,7 @@ over the fixed \phok{} (\FiveN$\times$5M).}
   in every run; charge-even per-point agreement $10^{-5}$).
 \item The $0.00027$ ($2\sigma$) excess of \ceex{} prod500k over \bby{} in $\Ath$ was a statistical
   fluctuation: \ceex{} more1M gives $\Ath=\CeexA$, equal to \bby{} ($0.23724(1)$) and the fixed
-  \phok{} ($\FiveA$). more1M was still running when this report was written (\CeexN{} of 200
-  tasks); the numbers will be updated with the full run.
+  \phok{} ($\FiveA$).
 \item With $5\times10^9$ \phok{} events, small \bby--\phok{} shape differences become visible in a few
   charge-even observables ($\chi^2/{\rm ndf}$ 2--3 in $p_\pm$, $p^\perp_+$, $E_\gamma$; 10 in
   $|p^z_-|$, where \bby's binning already gave $\sim20$ before). \ceex{} agrees with \phok{} there at
@@ -935,7 +931,7 @@ RUN/RUN\_CEEX/t4/ & \ceex{} point driver; \texttt{MC\_nphsplit.patch} (per-multi
 RUN/POST\_PROCESS/ & merge, outlier check, \texttt{phok\_table.py}, \texttt{t3\_compare.py},
   \texttt{t4\_compare.py} \\
 RESULTS/ & \texttt{prod500k}, \texttt{t1\_t2}, \texttt{t3\_split}, \texttt{t4\_points},
-  \texttt{t4\_fix}, \texttt{fix500k}, \texttt{final500k}, \texttt{fix5M}, \texttt{final5M}, \texttt{final5M\_c1M\_e5}, \texttt{before\_c1M\_e5} \\
+  \texttt{t4\_fix}, \texttt{fix500k}, \texttt{final500k}, \texttt{fix5M}, \texttt{final5M}, \texttt{final5M\_cfull\_e5}, \texttt{before\_cfull\_e5} \\
 REPORT/ & this report, \texttt{make\_figures.py}, \texttt{make\_numbers.py} \\
 \bottomrule
 \end{tabularx}

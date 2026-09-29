@@ -115,7 +115,7 @@ else:
     lines += ["\\newcommand{\\FiveN}{--}", "\\newcommand{\\FiveSig}{--}", "\\newcommand{\\FiveA}{--}",
               "\\newcommand{\\FiveAm}{--}", "\\newcommand{\\FiveAv}{--}"]
 # pion-angle shape chi2/ndf of the after-fix plots (RESULTS/final5M/summary.txt, table vs phokhara)
-AFTER = "final5M_c1M_e5"   # after-fix plots: CEEX more1M (Emin 1e-5 only) vs fix5M PHOKHARA
+AFTER = "final5M_cfull_e5"   # after-fix plots: CEEX more1M full run (199/200 tasks, Emin 1e-5 only) vs fix5M PHOKHARA
 sf = os.path.join(ROOT, "RESULTS", AFTER, "summary.txt")
 chiC = chiB = "--"
 if os.path.exists(sf):
