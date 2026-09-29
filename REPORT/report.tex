@@ -88,11 +88,11 @@ the cutoff; \ceex{} (\CeexA) and \bby{} ($0.23724$) agree with it to $3\times10^
   $\theta^\pm$ and $\theta_{\rm avg}$ differ ($\chi^2/{\rm ndf}\approx 10^3$). At LO the two
   codes agree exactly.
 \item \textbf{The \phok{} asymmetry depends on the soft cutoff $w$}: $\Ath$ changes by
-  $+0.0156$ per decade of $w$ while $\sigma$ is constant (\cref{sec:t1}).
+  $+0.0156$ per decade of $w$ while $\sigma$ is constant (\cref{sec:h2}).
 \item \textbf{The whole effect sits in the charge-odd part of the one-photon contribution}
   (Born + virtual + soft); the hard two-photon emission agrees between the codes
-  (\cref{sec:t3}).
-\item \textbf{Two errors in \phok{} explain it point by point} (\cref{sec:t4,sec:bugs}):
+  at a matched cutoff.
+\item \textbf{Two errors in \phok{} explain it point by point} (\cref{sec:bugs}, \cref{app:t4}):
   \begin{itemize}
   \item \textbf{H1} -- \code{phokhara\_10.0.f:9969--9982}: the factor $(v_f+v_s)$ multiplies only
     the last of four helicity terms of the tree interference;
@@ -125,8 +125,7 @@ $A=[\sigma(\theta<90^\circ)-\sigma(\theta>90^\circ)]/\sigma$.
 \item \textbf{\phok~10.0} (\code{PHOKARA\_10.0} @ \code{133d68b}) with the KLOE-I cut file,
   card \code{nlo=nlo2=1}, IFSNLO$=1$, ISR+INT+FSR, \code{ivac=0}, \code{FF\_pion=-1} ($F_\pi=1$),
   no GVMD, no $f_0$, soft cutoff $w=10^{-5}$ (soft region $E_\gamma<w\sqrt s$). The production
-  binary \code{phokhara\_nostop} only disables the abort on ``Max(i) too small''
-  (\cref{sec:other}); only weighted events are used.
+  binary \code{phokhara\_nostop} only disables the abort on ``Max(i) too small''; only weighted events are used.
 \item \textbf{\bby} and the earlier \phok{} reference set (5~Aug) are taken from the Strong2020
   comparison files.
 \end{itemize}
@@ -134,7 +133,7 @@ $A=[\sigma(\theta<90^\circ)-\sigma(\theta>90^\circ)]/\sigma$.
 \paragraph{Pipeline.} SLURM arrays per run name; \ceex{} rank outputs are screened with
 \code{check\_total.sh} and outliers are moved aside (\code{quarantine.sh}) before merging;
 \code{plot\_compare.py} produces the distribution and ratio plots. Everything is in the
-repository (\cref{app:files}).
+repository \url{https://github.com/jpaltrinieri/CEEX_PHOKHARA_ANALYSIS}.
 
 %=========================================================================================
 \section{\texorpdfstring{How \phok{} computes $\pi^+\pi^-\gamma$ at NLO}{How PHOKHARA computes pi+pi-gamma at NLO}}
@@ -416,7 +415,7 @@ terms are both proportional to the tree interference:
   \Delta B_5={\rm Re}\langle I,F\rangle\,\big(1+S_{\rm ISR}(w)\big).
 \]
 The decomposition of $I_{\rm 1L}$ is read from \code{V1(1)} (\cref{sec:h2}) and confirmed
-numerically by the per-point test (\cref{sec:t4}).
+numerically by the per-point test (\cref{app:t4}).
 
 The ingredients:
 \begin{itemize}
@@ -502,7 +501,7 @@ The ingredients (diagram content inferred from the propagator masses):
   \code{NLOpions} \emph{(inferred)}.
 \item Normalisation: with the common factor written out, $V_\pi$ carries $32\pi^2\alpha^4$ and the
   pentagons $\frac{(4\pi\alpha)^3}{4}\frac{\alpha}{4\pi}\,2=8\pi^2\alpha^4$. We did not check
-  whether the factor 4 is compensated inside the routine; the per-point test (\cref{sec:t4})
+  whether the factor 4 is compensated inside the routine; the per-point test (\cref{app:t4})
   agrees with \ceex{}.
 \end{itemize}
 
@@ -620,7 +619,7 @@ the fixes.
 \code{ampNLO} are computed but not used. The virtual-FSR term in \code{virt\_pions} has an
 explicit prefactor four times that of the pentagons ($32\pi^2\alpha^4$ vs $8\pi^2\alpha^4$); we
 did not check whether this is compensated inside the routine, but the per-point test
-(\cref{sec:t4}) agrees with \ceex{} to $2.5\times10^{-5}$ of the tree. Some ``(-1)'' comments do
+(\cref{app:t4}) agrees with \ceex{} to $2.5\times10^{-5}$ of the tree. Some ``(-1)'' comments do
 not match the code.
 
 %=========================================================================================
@@ -633,14 +632,16 @@ not match the code.
 \CeexN{} tasks $\times$ 5 ranks $\times$ 1M events at $E_{\min}=10^{-5}$~GeV (\CeexNr{} rank outputs
 after discarding 8 whose total diverged).}
 \label{tab:prod}
-\begin{tabular}{lcc}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{@{}lll@{}}
 \toprule
- & $\sigma$ [nb] & $\Ath$ \\
+Generator & $\sigma$ [nb] & $\Ath$ \\
 \midrule
-\ceex, $E_{\min}=10^{-5}$ GeV & \CeexSig & \CeexA \\
+\ceex{} ($E_{\min}=10^{-5}$~GeV) & \CeexSig & \CeexA \\
 \bby & 0.268389(4) & 0.23724(1) \\
-\phok, this work & 0.268353(46) & 0.27872(16) \\
-\phok, earlier reference & 0.268393(23) & 0.27861(8) \\
+\addlinespace
+\phok{} unpatched, this work & 0.268353(46) & \textbf{0.27872(16)} \\
+\phok{} unpatched, earlier reference & 0.268393(23) & \textbf{0.27861(8)} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -652,20 +653,12 @@ observable to \phok: only the three pion angles are off, by a smooth tilt from $
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.62\textwidth]{before_cfull_e5/60bins/pi_kloe_la_lth+.pdf}
-\caption{\textbf{Before the fix}: unpatched \phok{} (300$\times$500k) against \ceex{} more1M (\CeexN$\times$5$\times$1M): $d\sigma/d\theta^+$, \ceex/\bby, and \ceex{} and
-\bby{} over \phok{} (60 bins). \ceex{} ($E_{\min}=10^{-5}$~GeV, black) and \bby{} (blue) agree; \phok{} (red) is
-tilted.}
+\includegraphics[width=0.66\textwidth]{before_cfull_e5/report/60bins/pi_kloe_la_lth+.pdf}
+\caption{\textbf{Before the fix.} Top: $d\sigma/d\theta^+$ from \ceex{} ($E_{\min}=10^{-5}$~GeV,
+\CeexN$\times$5$\times$1M, black), the unpatched \phok{} (300$\times$500k, red) and \bby{} (blue,
+dashed), 60 bins; the legend gives each total cross section. Middle: \ceex/\bby{} (CEEX/BY).
+Bottom: \ceex{} and \bby{} over \phok{} (X/PH). \ceex{} and \bby{} agree; \phok{} is tilted.}
 \label{fig:before}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{before_cfull_e5/60bins/overview_vs_phokhara.pdf}
-\caption{\textbf{Before the fix}: every observable, \ceex{} and \bby{} over \phok. Only
-$\theta^+$, $\theta^-$ and $\theta_{\rm avg}$ are off; the spikes in $M_{\pi\pi\gamma}$ and
-$M_{\rm trk}$ are empty tail bins.}
-\label{fig:before-ov}
 \end{figure}
 
 At LO the codes agree exactly (earlier runs with the Strong2020 form factor:
@@ -692,116 +685,6 @@ interference is $Q_e^3Q_\pi^3$). Three tools were used to isolate it:
 Each histogram-level test used enough statistics to resolve $\Ath$ to $\sim10^{-3}$ while
 checking that $\sigma$ and $M_{\pi\pi}$ are unchanged. The plan with all tests and hypotheses
 is in \code{plan.txt}.
-
-%=========================================================================================
-\section{Tests}
-\label{sec:tests}
-
-\subsection{T1: soft-cutoff scan}
-\label{sec:t1}
-\begin{table}[H]
-\centering\small
-\caption{Unpatched \phok, 30 seeds $\times$ 100k per value of $w$.}
-\label{tab:t1}
-\begin{tabular}{lcccc}
-\toprule
-$w$ & $10^{-3}$ & $10^{-4}$ & $10^{-5}$ & $10^{-6}$ \\
-\midrule
-$\sigma_{1\gamma}$ [nb] & 0.1386 & 0.0955 & 0.0530 & 0.0103 \\
-$\sigma_{2\gamma}$ [nb] & 0.1297 & 0.1728 & 0.2149 & 0.2580 \\
-$\sigma$ [nb] & 0.26833(33) & 0.26827(35) & 0.26792(33) & 0.26830(30) \\
-$\Ath$ & 0.3106(11) & 0.2950(12) & 0.2785(12) & 0.2637(11) \\
-\bottomrule
-\end{tabular}
-\end{table}
-$\Ath$ falls linearly in $\ln w$, by $0.0156$ per decade, while $\sigma$ is constant to
-$0.1\%$: the charge-even soft logarithms cancel between the one- and two-photon parts, a
-charge-odd one does not. In \ceex{}, $E_{\min}=10^{-4}$ and $10^{-5}$~GeV give the same $\Ath$
-to $10^{-4}$.
-
-\subsection{T2: diagnostic variants}
-\label{sec:t2}
-Three diagnostic \phok{} builds were run at $w=10^{-4},10^{-5},10^{-6}$ (\cref{fig:wscan}a):
-\begin{itemize}
-\item \textbf{H1 fixed} (the parenthesis of \cref{sec:h1}): $\Ath$ moves by $-0.037$ and keeps
-  its slope. H1 is a $w$-independent error.
-\item \textbf{B5 soft log removed} (probe): $\Ath$ becomes flat in $w$, but at $0.355$. The whole
-  $w$-dependence comes from this term; removing only the logarithm is not the right correction.
-\item \textbf{Both}: flat, at $0.319$.
-\end{itemize}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.96\textwidth]{fig_wscan.pdf}
-\caption{$\Ath$ against the \phok{} soft cutoff for the unpatched code, the T2 diagnostic
-variants and the fixed code (H1 + H3), with \ceex{} (grey band: $\pm3\sigma$) and \bby. The zoom
-(b) shows the fixed code at 30$\times$100k, at 300$\times$500k (stars) and at
-\FiveN$\times$5M (diamond, drawn just left of $w=10^{-5}$).}
-\label{fig:wscan}
-\end{figure}
-
-\subsection{T3: split by photon multiplicity}
-\label{sec:t3}
-\ceex-main was given an opt-in output of the per-multiplicity histograms
-(\code{CEEX\_NPH\_HISTOS=1}); \phok{} writes them with \code{print\_summed=1}.
-\begin{table}[H]
-\centering\small
-\caption{Matched cutoff ($10^{-5}$ GeV). \ceex{} 10 seeds $\times$ 5 ranks $\times$ 100k; \phok{} 30 $\times$ 100k (unpatched).}
-\label{tab:t3}
-\begin{tabular}{lccccc}
-\toprule
- & \multicolumn{2}{c}{$\sigma$ [nb]} & \multicolumn{2}{c}{$\Ath$} & angle shapes \\
- & \ceex & \phok & \ceex & \phok & $\chi^2/{\rm ndf}$ \\
-\midrule
-1 photon (Born+V+S) & 0.05268(7) & 0.05239(24) & 0.0375(13) & 0.2360(44) & 79--94 \\
-2 photons (hard) & 0.21560(37) & 0.21588(23) & 0.2901(16) & 0.2855(10) & 1.0--1.4 \\
-\bottomrule
-\end{tabular}
-\end{table}
-The one-photon parts have the same $\sigma$ and the same $M_{\pi\pi}$, $\theta_\gamma$ and
-$E_\gamma$ shapes, but charge-odd cross sections of $0.0020$ (\ceex) and $0.0124$~nb (\phok). The
-difference, $0.0104$~nb, is the whole total discrepancy (\cref{fig:t3}). The hard two-photon
-parts agree.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.85\textwidth]{fig_t3.pdf}
-\caption{T3: $d\sigma/d\theta^+$ of the one-photon (left) and two-photon (right) contributions at a
-matched cutoff, with the ratio \phok/\ceex.}
-\label{fig:t3}
-\end{figure}
-
-\subsection{T4: point-by-point comparison}
-\label{sec:t4}
-988 accepted one-photon KLOE-LA points were dumped by a \phok{} variant
-(\code{phokhara\_dump}) together with every piece of the one-photon matrix element, at the event
-and with the pion momenta swapped. A \ceex-main driver (\code{t4\_ceex}) evaluates the tree, the
-hard virtual $\frac{\alpha}{4\pi}D$ (\gosam{} finite part plus mass counterterm), the
-wave-function counterterm and the YFS factor at the same momenta; the pion mass is set to
-\phok's value. Each code is normalised to its own charge-even tree:
-\begin{itemize}
-\item tree $C$-odd/$C$-even ratio: identical to $7\times10^{-13}$;
-\item $C$-even NLO correction: \ceex{} $-0.77566$, \phok{} $-0.77570$, per-point difference rms $10^{-5}$;
-\item $C$-odd NLO correction: per-point difference $D$ with rms $0.099$;
-\item $C$-odd soft (eikonal/YFS) part: agrees, rms $7\times10^{-4}$.
-\end{itemize}
-$D$ is exactly proportional to the tree interference at every point. Subtracting the two errors,
-each computed exactly per point ($v_s=0.29655$, $v_f=0.023$--$0.036$,
-$S_{\rm ISR}(w)=-0.95556$),
-\[
-  \text{pred}_{\rm H1}=B_4-\tfrac12B_3\,(v_f+v_s),\qquad
-  \text{pred}_{\rm H2}=\tfrac12B_3\,(1+S_{\rm ISR}(w)),
-\]
-leaves a residual of rms $2.5\times10^{-5}$ with mean $10^{-6}$ (\cref{fig:t4}). H1 alone leaves
-$1.2\times10^{-2}$, H2 alone $8.8\times10^{-2}$.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.95\textwidth]{fig_t4.pdf}
-\caption{T4, 988 points. Left: the $C$-odd difference $D$ against the tree interference, with the
-H1+H2 prediction. Right: $\log_{10}|D-\text{subtracted}|$ for no subtraction, H1, H2 and H1+H2.}
-\label{fig:t4}
-\end{figure}
 
 %=========================================================================================
 \section{The two errors in \phok}
@@ -858,7 +741,7 @@ S_{\rm ISR}(w)=\frac{\alpha}{\pi}\Big[-\ln(4w^2)\,(1+L)-\tfrac12L^2-L-\tfrac{\pi
 \item The analytic ISR soft function is replaced by the eikonal in
   \code{NLOpions}; it is subtracted from $v_s$, $v_f$ and the leptonic tensor, but not here.
 \item At $w\simeq10^{-5}$ the two parts nearly cancel ($1+S_{\rm ISR}=0.044$), but
-  $S_{\rm ISR}$ changes by $0.152$ per decade of $w$. This gives the T1 slope:
+  $S_{\rm ISR}$ changes by $0.152$ per decade of $w$. This gives the slope of the unpatched $\Ath$:
   $\tfrac12\cdot0.152\cdot A_{\rm LO}\approx0.019$ per decade, against $0.0156$ measured.
 \end{itemize}
 \textbf{Fix} (\code{variants/h3.patch}): subtract ${\rm Re}[\sum T]\,(1+S_{\rm ISR})$ after B5, with
@@ -870,58 +753,72 @@ $S_{\rm ISR}$ computed as in the $v_s$ subtraction.
 \code{phokhara\_fix} is the production binary with \code{h1.patch} and \code{h3.patch}.
 \begin{table}[H]
 \centering\small
-\caption{Fixed \phok{} against the soft cutoff.}
+\caption{Fixed \phok{} against the soft cutoff $w$. The unpatched code moves by $+0.0156$ per
+decade of $w$.}
 \label{tab:fix}
-\begin{tabular}{lcccc}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{@{}llll@{}}
 \toprule
-$w$ & $10^{-3}$ & $10^{-4}$ & $10^{-5}$ & $10^{-6}$ \\
+Sample & $w$ & $\sigma$ [nb] & $\Ath$ \\
 \midrule
-\multicolumn{5}{l}{\emph{30 seeds $\times$ 100k}} \\
-$\sigma$ [nb] & 0.26799(33) & 0.26892(35) & 0.26854(32) & 0.26784(31) \\
-$\Ath$ & 0.2349(12) & 0.2352(13) & 0.2383(12) & 0.2374(11) \\
-\multicolumn{5}{l}{\emph{300 seeds $\times$ 500k}} \\
-$\sigma$ [nb] & -- & \HiSigA & \HiSigB & \HiSigC \\
-$\Ath$ & -- & \HiAA & \HiAB & \HiAC \\
-\multicolumn{5}{l}{\emph{\FiveN{} seeds $\times$ 5M ($5\times10^9$ events)}} \\
-$\sigma$ [nb] & -- & -- & \FiveSig & -- \\
-$\Ath$ & -- & -- & \FiveA & -- \\
+30 seeds $\times$ 100k & $10^{-3}$ & 0.26799(33) & 0.2349(12) \\
+                       & $10^{-4}$ & 0.26892(35) & 0.2352(13) \\
+                       & $10^{-5}$ & 0.26854(32) & 0.2383(12) \\
+                       & $10^{-6}$ & 0.26784(31) & 0.2374(11) \\
+\addlinespace
+300 seeds $\times$ 500k & $10^{-4}$ & \HiSigA & \HiAA \\
+                        & $10^{-5}$ & \HiSigB & \HiAB \\
+                        & $10^{-6}$ & \HiSigC & \HiAC \\
+\addlinespace
+\FiveN{} seeds $\times$ 5M & $10^{-5}$ & \FiveSig & \FiveA \\
 \bottomrule
 \end{tabular}
 \end{table}
-At high statistics the slope in $w$ is \HiSlope{} per decade (unpatched: $+0.0156$), and the
-$w$-averaged asymmetries are
-\begin{center}\small
-\begin{tabular}{lccc}
+At high statistics the slope in $w$ is \HiSlope{} per decade (unpatched: $+0.0156$);
+\cref{tab:asym} gives the asymmetries.
+\begin{table}[H]
+\centering\small
+\caption{Pion asymmetries after the fix.}
+\label{tab:asym}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}llll@{}}
 \toprule
- & $\Ath$ & $-A(\theta^-)$ & $-A(\theta_{\rm avg})$ \\
+Generator & $\Ath$ & $-A(\theta^-)$ & $-A(\theta_{\rm avg})$ \\
 \midrule
-\phok, fixed (300$\times$500k, $w$-average) & \HiAav & \HiAmav & \HiAvav \\
-\phok, fixed (\FiveN$\times$5M, $w=10^{-5}$) & \FiveA & \FiveAm & \FiveAv \\
-\ceex, $E_{\min}=10^{-5}$ GeV (more1M, \CeexN$\times$5$\times$1M) & \CeexA & \CeexAm & \CeexAv \\
+\phok{} fixed, 300$\times$500k, $w$-average & \HiAav & \HiAmav & \HiAvav \\
+\phok{} fixed, \FiveN$\times$5M, $w=10^{-5}$ & \FiveA & \FiveAm & \FiveAv \\
+\addlinespace
+\ceex{}, $E_{\min}=10^{-5}$~GeV, \CeexN$\times$5$\times$1M & \CeexA & \CeexAm & \CeexAv \\
 \bby & 0.23724(1) & 0.23727(1) & 0.26650(1) \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 At $w=10^{-5}$ and $10^{-6}$ the fixed \phok{} agrees with \ceex{} and \bby{} within
-$0.3$--$1.5\sigma$. The $w=10^{-4}$ sample lies $0.0007$ lower. To check it, the multiplicity split
-of \cref{sec:t3} was repeated with the fixed code at a matched cutoff of $10^{-4}$~GeV
-(\phok{} $w=9.804\times10^{-5}$, 100 seeds $\times$ 500k; \ceex{} $E_{\min}=10^{-4}$~GeV):
-\begin{center}\small
-\begin{tabular}{lcccc}
+$0.3$--$1.5\sigma$. The $w=10^{-4}$ sample lies $0.0007$ lower. To check it, the cross section was split
+by photon multiplicity with the fixed code at a matched cutoff of $10^{-4}$~GeV
+(\phok{} $w=9.804\times10^{-5}$, 100 seeds $\times$ 500k; \ceex{} $E_{\min}=10^{-4}$~GeV), \cref{tab:split}.
+\begin{table}[H]
+\centering\small
+\caption{Split by photon multiplicity at a matched cutoff of $10^{-4}$~GeV, fixed \phok.}
+\label{tab:split}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}lllll@{}}
 \toprule
  & \multicolumn{2}{c}{$\sigma$ [nb]} & \multicolumn{2}{c}{$\Ath$} \\
- & \ceex & \phok{} (fixed) & \ceex & \phok{} (fixed) \\
+\cmidrule(lr){2-3}\cmidrule(l){4-5}
+ & \ceex & \phok & \ceex & \phok \\
 \midrule
-1 photon (Born+V+S) & 0.09533(10) & 0.09539(7) & 0.1548(11) & 0.1558(7) \\
-2 photons (hard) & 0.17290(23) & 0.17301(5) & 0.2826(13) & 0.2829(2) \\
-sum & 0.26823(25) & 0.26840(8) & 0.2372(9) & 0.2377(3) \\
+1 photon (Born + virtual + soft) & 0.09533(10) & 0.09539(7) & 0.1548(11) & 0.1558(7) \\
+2 photons (hard)                  & 0.17290(23) & 0.17301(5) & 0.2826(13) & 0.2829(2) \\
+\midrule
+Sum                               & 0.26823(25) & 0.26840(8) & 0.2372(9)  & 0.2377(3) \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 Both parts agree, with angle-shape $\chi^2/{\rm ndf}=0.7$--$1.4$, and this sample gives
 $\Ath=0.2377(3)$, consistent with $w=10^{-5}$ and $10^{-6}$. A 2\% change of the cutoff cannot
 move $\Ath$ by $0.0009$, so the low $w=10^{-4}$ value is a fluctuation of that sample
-($2.6\sigma$ from this one). T4 at $w=10^{-4}$ also leaves no systematic $C$-odd residual after
+($2.6\sigma$ from this one). The per-point test (\cref{app:t4}) at $w=10^{-4}$ also leaves no systematic $C$-odd residual after
 H1+H2 (mean $-7\times10^{-6}$).
 \paragraph{Highest statistics.} A final run of \FiveN{} seeds $\times$ 5M events
 ($5\times10^9$ events passing the cuts, $w=10^{-5}$) gives $\sigma=\FiveSig$~nb and
@@ -941,95 +838,69 @@ pion-angle shape $\chi^2/{\rm ndf}$ of \ceex{} against the fixed \phok{} drops f
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.62\textwidth]{final5M_cfull_e5/60bins/pi_kloe_la_lth+.pdf}
-\caption{\textbf{After the fix}: as \cref{fig:before}, with the fixed \phok{} (\FiveN$\times$5M,
-$w=10^{-5}$) as the denominator and \ceex{} more1M (\CeexN$\times$5$\times$1M, $E_{\min}=10^{-5}$~GeV).
-The tilt is gone.}
+\includegraphics[width=0.66\textwidth]{final5M_cfull_e5/report/60bins/pi_kloe_la_lth+.pdf}
+\caption{\textbf{After the fix.} As \cref{fig:before}, with the fixed \phok{}
+(\FiveN$\times$5M, $w=10^{-5}$) in red and as the denominator of the bottom panel. The tilt is
+gone.}
 \label{fig:after}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{final5M_cfull_e5/60bins/overview_vs_phokhara.pdf}
-\caption{\textbf{After the fix}: every observable, \ceex{} (more1M, $E_{\min}=10^{-5}$~GeV) and \bby{}
-over the fixed \phok{} (\FiveN$\times$5M).}
+\includegraphics[width=\textwidth]{final5M_cfull_e5/report/60bins/overview_vs_phokhara.pdf}
+\caption{\textbf{After the fix}: every observable, \ceex{} ($E_{\min}=10^{-5}$~GeV, black) and
+\bby{} (blue, dashed) over the fixed \phok{} (\FiveN$\times$5M; red band: its MC error), 60 bins.
+The ratio axes are clipped to the bulk of each distribution; the spikes in $m_{\pi\pi\gamma}$,
+$m_{\rm trk}$ and $m^{\rm c}_{\rm trk}$ are nearly empty tail bins.}
 \label{fig:after-ov}
 \end{figure}
 
 %=========================================================================================
-\section{Caveats and open points}
-\label{sec:caveats}
-\begin{itemize}
-\item Only the configuration studied here was tested ($F_\pi=1$, no VP, KLOE-LA cuts). Both
-  errors are in the pion full-NLO code whatever the form factor or VP setting, so
-  they should also affect the Strong2020 form-factor results (there the NLO gap in $\Ath$ is
-  $0.012$: \ceex{} $0.0804$, \phok{} $0.0924$). This has not been re-run.
-\item After the fix, one of the three high-statistics samples ($w=10^{-4}$) lies $0.0007$ below the
-  others; an independent sample at the same cutoff agrees with them and with \ceex{} part by part
-  (\cref{sec:fix}), so it is treated as a fluctuation.
-\item Muons take a different, correct branch and are not affected.
-\item Totals and charge-even distributions are not affected by either error ($\sigma$ unchanged
-  in every run; charge-even per-point agreement $10^{-5}$).
-\item The $0.00027$ ($2\sigma$) excess of \ceex{} prod500k over \bby{} in $\Ath$ was a statistical
-  fluctuation: \ceex{} more1M gives $\Ath=\CeexA$, equal to \bby{} ($0.23724(1)$) and the fixed
-  \phok{} ($\FiveA$).
-\item With $5\times10^9$ \phok{} events, small \bby--\phok{} shape differences become visible in a few
-  charge-even observables ($\chi^2/{\rm ndf}$ 2--3 in $p_\pm$, $p^\perp_+$, $E_\gamma$; 10 in
-  $|p^z_-|$, where \bby's binning already gave $\sim20$ before). \ceex{} agrees with \phok{} there at
-  $\chi^2/{\rm ndf}\approx1$. They are unrelated to the pion-angle issue.
-\item Tests T5 (charge-class split) and T6 (two-photon point-by-point) of the plan were not
-  needed: the two-photon part agrees (T3) and H1+H2 explain the one-photon part (T4).
-\end{itemize}
-
-%=========================================================================================
-\section{Other findings}
-\label{sec:other}
-\begin{itemize}
-\item The checked-out \code{PHOKARA\_10.0} has an empty stub \code{variables\_cuts.f} (no cuts, no
-  histograms); the KLOE-I cut file comes from the Strong2020 scenario repository. The card format
-  and the \code{FF\_pion} numbering changed with respect to the Strong2020 cards.
-\item \phok{} aborts without writing histograms when a weight exceeds the scanned maximum
-  (\code{phokhara\_10.0.f:1910,2135,2263}). Dropping such seeds, as the Strong2020 merge did,
-  biases the result; for weighted events the abort is unnecessary.
-\item \code{virt\_pions} overwrites its quad-precision momentum arguments ($\sim1$~GeV). This is
-  harmless in production but breaks any second call in the same event.
-\item In the 5 Aug reference folder, \code{Phokhara/NLOnovp\_*.csv} is the muon result
-  ($0.9925$~nb), not the pion one.
-\item \ceex: a few rank outputs per hundred diverge at 100k events (11/300); they are removed
-  before merging. The \ceex-main README still documents \code{--ref\_alloc} and
-  \code{--vfreeze}, which main no longer parses.
-\item Cost: at equal precision on $\sigma$ (prod100k), \phok{} needed about 45 times less CPU
-  than \ceex: $0.25$ against $28$ CPU-hours.
-\end{itemize}
-
-%=========================================================================================
 \appendix
-\section{Reproduction and files}
-\label{app:files}
-\begin{tabularx}{\textwidth}{>{\ttfamily\small}l>{\small}X}
-\toprule
-plan.txt & test plan (T0--T6, hypotheses H1--H5) \\
-RUN/config.sh & all paths \\
-RUN/RUN\_CEEX/, RUN/RUN\_PHOKHARA/ & SLURM submitters and job scripts, runcards \\
-RUN/RUN\_PHOKHARA/variants/ & \texttt{h1.patch}, \texttt{h3.patch} (the fix), \texttt{h2.patch}
-  (T2 probe), \texttt{dump.patch} (T4), \texttt{build.sh} \\
-RUN/RUN\_CEEX/t4/ & \ceex{} point driver; \texttt{MC\_nphsplit.patch} (per-multiplicity histograms) \\
-RUN/POST\_PROCESS/ & merge, outlier check, \texttt{phok\_table.py}, \texttt{t3\_compare.py},
-  \texttt{t4\_compare.py} \\
-RESULTS/ & \texttt{prod500k}, \texttt{t1\_t2}, \texttt{t3\_split}, \texttt{t4\_points},
-  \texttt{t4\_fix}, \texttt{fix500k}, \texttt{final500k}, \texttt{fix5M}, \texttt{final5M}, \texttt{final5M\_cfull\_e5}, \texttt{before\_cfull\_e5} \\
-REPORT/ & this report, \texttt{make\_figures.py}, \texttt{make\_numbers.py} \\
-\bottomrule
-\end{tabularx}
+\section{Every observable before the fix}
+\label{app:before-ov}
+\Cref{fig:before-ov} is the before-fix counterpart of \cref{fig:after-ov}.
 
-\medskip\noindent
-Building the fixed binary:
-\begin{lstlisting}[language={}]
-cd RUN/RUN_PHOKHARA/variants
-./build.sh fix h1.patch h3.patch                   # -> src/phokhara_fix
-cd ../..
-EXE=RUN_PHOKHARA/src/phokhara_fix \
-  RUN_PHOKHARA/submit.sh <run> <n_seeds> <nges> 10000 <walltime>
-\end{lstlisting}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{before_cfull_e5/report/60bins/overview_vs_phokhara.pdf}
+\caption{\textbf{Before the fix}: every observable, \ceex{} and \bby{} over \phok. Only
+$\theta^+$, $\theta^-$ and $\theta_{\rm avg}$ are off; the spikes in $M_{\pi\pi\gamma}$ and
+$M_{\rm trk}$ are empty tail bins.}
+\label{fig:before-ov}
+\end{figure}
+
+\clearpage
+\section{Per-point comparison of the one-photon matrix element}
+\label{app:t4}
+988 accepted one-photon KLOE-LA points were dumped by a \phok{} variant
+(\code{phokhara\_dump}) together with every piece of the one-photon matrix element, at the event
+and with the pion momenta swapped. A \ceex-main driver (\code{t4\_ceex}) evaluates the tree, the
+hard virtual $\frac{\alpha}{4\pi}D$ (\gosam{} finite part plus mass counterterm), the
+wave-function counterterm and the YFS factor at the same momenta; the pion mass is set to
+\phok's value. Each code is normalised to its own charge-even tree:
+\begin{itemize}
+\item tree $C$-odd/$C$-even ratio: identical to $7\times10^{-13}$;
+\item $C$-even NLO correction: \ceex{} $-0.77566$, \phok{} $-0.77570$, per-point difference rms $10^{-5}$;
+\item $C$-odd NLO correction: per-point difference $D$ with rms $0.099$;
+\item $C$-odd soft (eikonal/YFS) part: agrees, rms $7\times10^{-4}$.
+\end{itemize}
+$D$ is exactly proportional to the tree interference at every point. Subtracting the two errors,
+each computed exactly per point ($v_s=0.29655$, $v_f=0.023$--$0.036$,
+$S_{\rm ISR}(w)=-0.95556$),
+\[
+  \text{pred}_{\rm H1}=B_4-\tfrac12B_3\,(v_f+v_s),\qquad
+  \text{pred}_{\rm H2}=\tfrac12B_3\,(1+S_{\rm ISR}(w)),
+\]
+leaves a residual of rms $2.5\times10^{-5}$ with mean $10^{-6}$ (\cref{fig:t4}). H1 alone leaves
+$1.2\times10^{-2}$, H2 alone $8.8\times10^{-2}$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{fig_t4.pdf}
+\caption{Per-point comparison, 988 one-photon points. Left: the $C$-odd difference $D$ against the tree interference, with the
+H1+H2 prediction. Right: $\log_{10}|D-\text{subtracted}|$ for no subtraction, H1, H2 and H1+H2.}
+\label{fig:t4}
+\end{figure}
 
 \end{document}

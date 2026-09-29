@@ -69,8 +69,15 @@ data_dir = pos[0] if len(pos) > 0 else "DATA"
 out_dir = pos[1] if len(pos) > 1 else "RESULTS"
 ECUTS = set(opt["--ecuts"].split(",")) if "--ecuts" in opt else None
 DO_PREVIEW = "--no-preview" not in opt
+# --report: figures for the write-up -- no title or cut list, legend above the
+# plot, the cross sections in a line below it, no old Phokhara reference set,
+# 60 bins only. --phok-label= renames this run's Phokhara curve.
+REPORT = "--report" in opt
+PHOK_LABEL = opt.get("--phok-label")
 
 REBIN_VARIANTS = [(1, "600bins"), (10, "60bins"), (60, "10bins")]
+if REPORT:
+    REBIN_VARIANTS = [(10, "60bins")]
 
 OBS_ORDER = ["lth+", "lth-", "lthav", "lthg", "lp+", "lp-", "lpz+", "lpz-",
              "lpp+", "lpp-", "lmxx", "lxi", "ldphi", "leg",
@@ -173,10 +180,12 @@ for (p, e), c in zip(zip(ceex_files, ceex_ecuts), ceex_colors):
     sources[f"ceex{e}"] = dict(label=f"CEEX main ({format_ecut_label(e)})",
                                hists=read_ceex(p), style=(c, "-", 1.3))
 for key, sub, label, reader, style in [
-        ("phokhara", "phokhara", "Phokhara NLO (new run)", read_phokhara_dir, (NLO_COLOR, "-", 1.5)),
+        ("phokhara", "phokhara", PHOK_LABEL or "Phokhara NLO (new run)", read_phokhara_dir, (NLO_COLOR, "-", 1.5)),
         ("phokhara_ref", "phokhara_ref", "Phokhara NLO (old ref.)", read_phokhara_dir, ("#e6994d", "--", 1.4)),
         ("babayaga", "babayaga", "BabaYaga NLO", read_babayaga_dir, ("#1f4fd1", (0, (5, 2.5)), 1.9))]:
     d = os.path.join(data_dir, sub)
+    if REPORT and key == "phokhara_ref":
+        continue
     h = reader(d) if os.path.isdir(d) else {}
     if h:
         sources[key] = dict(label=label, hists=h, style=style)
@@ -464,11 +473,52 @@ def ratio_panels(g):
     return out
 
 
+def fmt_xs(v, e):
+    """0.268385(8): the value to the precision of its error."""
+    if e <= 0:
+        return f"{v:.6f}"
+    d = max(0, -int(np.floor(np.log10(e))) + (1 if e / 10**np.floor(np.log10(e)) < 2 else 0))
+    return f"{v:.{d}f}({round(e * 10**d):d})"
+
+
+def plot_obs_report(obs, g, panels, folder):
+    xlabel, ylabel = LABELS.get(obs, (obs, "dsigma/dx"))
+    fig = plt.figure(figsize=(6.4, 3.3 + 1.15 * len(panels)), facecolor=BG_COLOR)
+    gs = gridspec.GridSpec(1 + len(panels), 1, height_ratios=[2.4] + [1] * len(panels),
+                           hspace=0.07, top=0.97, bottom=0.10, left=0.15, right=0.97)
+    ax_d = fig.add_subplot(gs[0])
+    draw_distribution(ax_d, g)
+    style_axis(ax_d, ylabel=ylabel + " [nb/deg]" if obs in ANGLE_OBS else ylabel)
+    axes = [ax_d]
+    short = {"CEEX / BabaYaga": "CEEX/BY", "Phokhara / BabaYaga": "PH/BY", "X / Phokhara": "X/PH"}
+    for i, (nums, den, lab) in enumerate(panels):
+        ax = fig.add_subplot(gs[1 + i], sharex=ax_d)
+        draw_ratio(ax, g, nums, den)
+        style_axis(ax, ylabel=short.get(lab, lab), xlabel=xlabel if i == len(panels) - 1 else None)
+        ax.yaxis.set_label_coords(-0.1, 0.5)
+        axes.append(ax)
+    ax_d.yaxis.set_label_coords(-0.1, 0.5)
+    for ax in axes[:-1]:
+        plt.setp(ax.get_xticklabels(), visible=False)
+    # legend above the plot, one source per row, with its cross section
+    h, l = ax_d.get_legend_handles_labels()
+    sig = {sources[k]["label"]: fmt_xs(*integrate_xs(bins)) for k, bins in g.items()}
+    l = [f"{x}:  $\\sigma$ = {sig[x]} nb" for x in l]
+    ax_d.legend(h, l, loc="lower left", bbox_to_anchor=(0.0, 1.02), ncol=1, fontsize=9.5,
+                frameon=False, handlelength=2.6, borderaxespad=0.0)
+    out = os.path.join(folder, f"pi_kloe_la_{obs}.pdf")
+    fig.savefig(out, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    return out
+
+
 def plot_obs(obs, group, folder):
     g = on_grid(obs, group)
     panels = ratio_panels(g)
     if not panels:
         return None
+    if REPORT:
+        return plot_obs_report(obs, g, panels, folder)
     xlabel, ylabel = LABELS.get(obs, (obs, "dsigma/dx"))
     fig = plt.figure(figsize=(7.5, 4.6 + 1.3 * len(panels)), facecolor=BG_COLOR)
     gs = gridspec.GridSpec(1 + len(panels), 1, height_ratios=[2.2] + [1] * len(panels),
@@ -521,7 +571,16 @@ def plot_overview(obs_list, group, folder, which):
         draw_ratio(ax, g, nums, den)
         used.update(nums + [den])
         style_axis(ax, xlabel=LABELS.get(obs, (obs,))[0], ylabel=lab)
-        ax.set_title(obs + ("  (angle)" if obs in ANGLE_OBS else ""), fontsize=11)
+        if REPORT:   # symbol only; ratios clipped to the bulk (empty tail bins spike)
+            ax.set_title(LABELS.get(obs, (obs,))[0].split(" [")[0], fontsize=12)
+            ax.set_ylabel("X/PH" if which else "CEEX/BY")
+            vals = [v for k in nums for v in compute_ratio([b[2] for b in g[k]], [b[3] for b in g[k]],
+                    [b[2] for b in g[den]], [0.0] * len(g[den]))[0] if np.isfinite(v) and v != 0]
+            if vals:
+                q = np.nanpercentile(vals, [4, 96])
+                ax.set_ylim(*compute_ratio_ylimits(list(q), min_half_range=0.004))
+        else:
+            ax.set_title(obs + ("  (angle)" if obs in ANGLE_OBS else ""), fontsize=11)
     for ax in list(axes.flat)[len(rows):]:
         ax.axis("off")
     keys = [k for k in sources if k in used]
@@ -529,8 +588,9 @@ def plot_overview(obs_list, group, folder, which):
                        lw=sources[k]["style"][2]) for k in keys]
     fig.legend(h, [sources[k]["label"] for k in keys], loc="lower center",
                ncol=len(h), fontsize=9, frameon=True)
-    fig.suptitle(PANEL1 if which == 0 else
-                 f"CEEX and BabaYaga / {sources[REF]['label']}", fontsize=12)
+    if not REPORT:
+        fig.suptitle(PANEL1 if which == 0 else
+                     f"CEEX and BabaYaga / {sources[REF]['label']}", fontsize=12)
     fig.tight_layout(rect=(0, 0.05, 1, 0.97))
     out = os.path.join(folder, "overview_vs_babayaga.pdf" if which == 0
                        else "overview_vs_phokhara.pdf")
