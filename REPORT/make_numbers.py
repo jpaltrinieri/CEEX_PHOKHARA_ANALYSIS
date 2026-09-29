@@ -115,7 +115,8 @@ else:
     lines += ["\\newcommand{\\FiveN}{--}", "\\newcommand{\\FiveSig}{--}", "\\newcommand{\\FiveA}{--}",
               "\\newcommand{\\FiveAm}{--}", "\\newcommand{\\FiveAv}{--}"]
 # pion-angle shape chi2/ndf of the after-fix plots (RESULTS/final5M/summary.txt, table vs phokhara)
-sf = os.path.join(ROOT, "RESULTS", "final5M", "summary.txt")
+AFTER = "final5M_c1M"   # after-fix plots: CEEX (prod500k Emin 1e-4 + more1M Emin 1e-5) vs fix5M PHOKHARA
+sf = os.path.join(ROOT, "RESULTS", AFTER, "summary.txt")
 chiC = chiB = "--"
 if os.path.exists(sf):
     txt = open(sf).read().split("shape chi2/ndf vs phokhara", 1)
@@ -128,7 +129,34 @@ if os.path.exists(sf):
         c = col("ceex4") + col("ceex5"); b = col("babayaga")
         chiC = f"{min(c):.1f}--{max(c):.1f}"; chiB = f"{min(b):.1f}--{max(b):.1f}"
 lines += [f"\\newcommand{{\\FiveChiC}}{{{chiC}}}", f"\\newcommand{{\\FiveChiB}}{{{chiB}}}"]
-summ.append(f"final5M pion-angle shape chi2/ndf: vs CEEX {chiC}, vs BabaYaga {chiB}")
+summ.append(f"{AFTER} pion-angle shape chi2/ndf: vs CEEX {chiC}, vs BabaYaga {chiB}")
+# CEEX asymmetries of the after-fix run (\CeexN tasks, \CeexNr rank outputs, \CeexA/Am/Av/Sig at Emin 1e-5;
+# \CeexFourA/Am/Av at Emin 1e-4)
+def ceex_merged(path):
+    H, cur = {}, None
+    for line in open(path):
+        if line.startswith(" Histogram:") or line.startswith("Histogram:"):
+            cur = line.split("Histogram:")[1].strip(); H[cur] = []; continue
+        if cur and line.split():
+            try: H[cur].append([float(x) for x in line.split()[:4]])
+            except ValueError: cur = None
+    return {k: np.array(v) for k, v in H.items() if v}
+cdir = os.path.join(ROOT, "PLOTS", "DATA", AFTER, "ceex")
+CE = os.path.expanduser(f"~/scratch/CEEX_PHOKHARA_ANALYSIS/CEEX/{AFTER}")
+for tag, ecut in (("", "5"), ("Four", "4")):
+    f = os.path.join(cdir, f"merged_histograms_{ecut}.txt")
+    if not os.path.exists(f):
+        lines += [f"\\newcommand{{\\Ceex{tag}{k}}}{{--}}" for k in ("A", "Am", "Av")]; continue
+    H = ceex_merged(f)
+    a, am, av = asym(H["lth+"]), asym(H["lth-"]), asym(H["lthav"])
+    w = H["lth+"][:, 1] - H["lth+"][:, 0]
+    sg = ((H["lth+"][:, 2] * w).sum(), np.sqrt(((H["lth+"][:, 3] * w)**2).sum()))
+    lines += [f"\\newcommand{{\\Ceex{tag}A}}{{{fmt(*a, 5)}}}", f"\\newcommand{{\\Ceex{tag}Am}}{{{fmt(-am[0], am[1], 5)}}}",
+              f"\\newcommand{{\\Ceex{tag}Av}}{{{fmt(-av[0], av[1], 5)}}}", f"\\newcommand{{\\Ceex{tag}Sig}}{{{fmt(*sg, 6)}}}"]
+    summ.append(f"CEEX {AFTER} Emin 1e-{ecut}: sigma={fmt(*sg, 6)}  A(th+)={fmt(*a, 5)}  -A(th-)={fmt(-am[0], am[1], 5)}  -A(thav)={fmt(-av[0], av[1], 5)}")
+ntask = len(glob.glob(os.path.join(CE, "RUN_CEEX_*_5")))
+nr = len(glob.glob(os.path.join(CE, "RUN_CEEX_*_5", "output_*.txt")))
+lines += [f"\\newcommand{{\\CeexN}}{{{ntask}}}", f"\\newcommand{{\\CeexNr}}{{{nr}}}"]
 summ.append("# CEEX prod500k (Emin 1e-4): A(th+) 0.23751(13), -A(th-) 0.23723(13), -A(thav) 0.26660(13); BabaYaga 0.23724 / 0.23727 / 0.26650")
 open(os.path.join(HERE, "numbers.tex"), "w").write("\n".join(lines) + "\n")
 os.makedirs(os.path.join(ROOT, "RESULTS", "fix500k"), exist_ok=True)

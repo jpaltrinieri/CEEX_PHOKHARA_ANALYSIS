@@ -74,7 +74,12 @@ def run_A(run):
 
 # ---------------------------------------------------------------- fig_wscan
 def fig_wscan():
-    CEEX, eC = 0.23751, 0.00013
+    CEEX, eC = 0.23751, 0.00013          # prod500k, Emin 1e-4
+    CEEX1M = None                        # more1M, Emin 1e-5, from numbers.tex if present
+    nt = os.path.join(HERE, "numbers.tex")
+    if os.path.exists(nt):
+        m = re.search(r"\\CeexA\}\{([0-9.]+)\((\d+)\)", open(nt).read())
+        if m: CEEX1M = (float(m.group(1)), int(m.group(2)) * 1e-5)
     BB = 0.23724
     variants = [  # (runs by w, label, colour, marker)
         ({-3: "t1_w1e-3", -4: "t1_w1e-4", -5: "t1_w1e-5", -6: "t1_w1e-6"}, "unpatched", S2, "o"),
@@ -88,6 +93,9 @@ def fig_wscan():
     for a in (ax, zx):
         a.axhspan(CEEX - 3 * eC, CEEX + 3 * eC, color=GRID, lw=0, zorder=0)
         a.axhline(CEEX, color=INK2, lw=1.0, zorder=1, label="CEEX-main, prod500k (band: $\\pm3\\sigma$)")
+        if CEEX1M:
+            a.axhline(CEEX1M[0], color=INK, lw=1.2, ls=(0, (1, 1.5)), zorder=1,
+                      label=f"CEEX-main, more1M: {CEEX1M[0]:.5f}({CEEX1M[1]*1e5:.0f})")
         a.axhline(BB, color=INK2, lw=1.0, ls=(0, (4, 3)), zorder=1, label="BabaYaga")
         a.set_xlabel(r"$\log_{10} w$")
         a.set_xlim(-2.7, -6.3)
