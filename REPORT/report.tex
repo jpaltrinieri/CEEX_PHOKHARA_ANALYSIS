@@ -307,7 +307,7 @@ The pattern follows from what each routine can do:
   $|F|^2$ and $2{\rm Re}[I^*F]$ they are all in \code{helicityampLO} (B1--B4).
 \item $\delta I_e$ appears twice. Against $I^*$ it is in \code{amplit} (analytic, $m_e$ kept);
   against $F^*$ it needs the amplitude, which \code{helicityampLO} takes from
-  \code{NLO\_ISR\_no\_mass\_terms} (massless electrons) in B5.
+  \code{NLO\_ISR\_no\_mass\_terms} (massless electrons) in B5; the effect of the electron mass is discussed in \cref{app:me}.
 \item The non-factorising loops $\delta F_\pi$, $\delta B_e$, $\delta B_\pi$ are genuine one-loop
   amplitudes, computed in \code{virt\_pions} against the full tree $I+F$.
 \end{itemize}
@@ -594,79 +594,6 @@ terms, so the analytic soft function is removed from each of the three:
 $w$ terms. All $w$ dependence then comes from \code{NLOpions} and cancels against the
 two-photon events. A leftover analytic $\ln w$ term does not cancel, and the result depends on
 $w$.
-
-\subsection{Electron mass}
-\label{sec:phok-me}
-The full-NLO pion calculation is not exact in $m_e$ everywhere. Piece by piece:
-\begin{itemize}
-\item \textbf{Exact in $m_e$:} the tree amplitudes $I$ and $F$ (massive beam spinors through the
-  $T_k$), the one-loop ISR squared in \code{amplit} (\code{Bornvirtualsoft}, with its
-  electron-mass corrections), the two-photon-exchange boxes and pentagons (electron propagators
-  and spinors massive), and the eikonal soft integrals of \code{NLOpions}.
-\item \textbf{$m_e$ only in logarithms:} the electron vertex $v_s$ is the $m_e\to0$ form,
-  $\frac{2\alpha}{\pi}[(L-1)\ln2w+\frac34L-1+\frac{\pi^2}{6}]$ with $L=\ln(s/m_e^2)$. The
-  neglected terms are $\mathcal O(m_e^2/s)\approx2.5\times10^{-7}$ at fixed $s$, with no
-  enhancement anywhere in phase space.
-\item \textbf{Massless, except logarithms and kinematics: B5}, the ISR one-loop amplitude against
-  the FSR tree (\code{NLO\_ISR\_no\_mass\_terms}). Only the leading coefficient \code{V1(1)}
-  contains $m_e$, in its soft and collinear logarithms; the other kept coefficients
-  (\code{V1(2)}, \code{V1(5)}, \code{V1(8)}--\code{V1(11)}) are massless expressions in
-  $y_{1,2}=2p_{1,2}\cdot k/s$ and $q^2/s$, evaluated with the massive momenta. The seven
-  helicity-flip coefficients (\code{V1(3,4,6,7,12,13,14)}) are set to zero and their expressions
-  do not exist in the code; only their normalisation is left as a comment. The mass terms
-  \code{deny1}, \code{deny2}, \code{m2miny1}, \code{m2miny2} are computed but not used.
-\end{itemize}
-So the claim of full $m_e$ dependence holds for every piece except B5 (and, harmlessly, $v_s$).
-For B5 the approximation is safe at large photon angles, where the neglected terms are
-$\mathcal O(m_e^2/s)$. For a photon along a beam (KLOE small-angle) the helicity-flip terms are
-still suppressed, because they interfere with the helicity-flip part of $F$, which is itself
-$\propto m_e/\sqrt s$ with no collinear enhancement. The helicity-conserving terms of relative
-size $m_e^2/(p\cdot k)$ are simply missing, and matter only within $\theta_\gamma\lesssim
-m_e/E\approx1$~mrad of a beam; there they are an $\mathcal O(\alpha)$ correction to the
-ISR$\times$FSR interference, which is small for such photons.
-
-\paragraph{Test at small-angle kinematics.} We repeated the per-point comparison with \ceex{},
-whose amplitudes keep $m_e$ exactly, at 1233 one-photon points of the KLOE small-angle scenario
-(missing momentum within $15^\circ$ of a beam, $0.35\le M^2_{\pi\pi}\le0.95$~GeV$^2$), 82 of
-them with the photon within 1~mrad of a beam (\cref{tab:sa}). After subtracting H1 and H2 the
-charge-odd difference is consistent with zero in every angular bin: within 1~mrad it is
-$1.1(1.0)\times10^{-5}$ of the tree, against $3\times10^{-4}$ for the whole B5 loop and
-$2\times10^{-3}$ for the tree interference. The massless B5 has no visible effect, even for
-photons collinear to a beam.
-
-The precision of the test is set by \ceex{}. Below its collinear cutoff (\code{-{}-thg\_cutoff},
-default $3^\circ$) \ceex{} does not evaluate the virtual correction directly but extrapolates it
-in $\ln(2p\cdot k)$ from two anchor angles. Lowering the cutoff to $0.3^\circ$ shrinks the
-charge-odd scatter from $1.4\times10^{-3}$ to $9\times10^{-5}$, so that scatter comes from the
-extrapolation, not from \phok. The charge-even part cannot be followed that far: the direct
-evaluation becomes unstable below $\sim1^\circ$ (differences of $10^{-2}$ with the $0.3^\circ$
-cutoff). With the default cutoff the charge-even parts agree to $(0.6$--$1)\times10^{-3}$ of the
-tree within 5~mrad, and to $10^{-4}$ or better above $1^\circ$.
-
-\begin{table}[H]
-\centering\small
-\caption{Per-point comparison at KLOE small-angle kinematics, binned in the photon angle to the
-  nearest beam. All entries are divided by the charge-even tree; residuals are mean (rms) over
-  the points. ``\ceex{} cutoff'' is \code{-{}-thg\_cutoff}.}
-\label{tab:sa}
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{@{}lccccc@{}}
-\toprule
-$\theta_\gamma$ [mrad] & 0--1 & 1--5.2 & 5.2--17.5 & 17.5--52 & 52--270 \\
-\midrule
-Points & 82 & 273 & 267 & 268 & 343 \\
-$|$tree interference$|$ & $1.9\times10^{-3}$ & $3.3\times10^{-3}$ & $1.0\times10^{-2}$ & $3.3\times10^{-2}$ & $0.12$ \\
-$|$B5 loop$|$ & $3.0\times10^{-4}$ & $5.1\times10^{-4}$ & $1.6\times10^{-3}$ & $5.1\times10^{-3}$ & $1.8\times10^{-2}$ \\
-\addlinespace
-\multicolumn{6}{@{}l}{\emph{Charge-odd, minus H1 and H2} [$10^{-5}$]} \\
-\quad \ceex{} cutoff $0.3^\circ$ & $+1.1\,(8.9)$ & $+0.2\,(5.8)$ & $-0.2\,(3.6)$ & $-0.1\,(1.7)$ & $-0.1\,(1.0)$ \\
-\quad \ceex{} cutoff $3^\circ$ & $+16\,(140)$ & $+7\,(100)$ & $+0.3\,(48)$ & $+0.2\,(13)$ & $-0.1\,(1.0)$ \\
-\addlinespace
-\multicolumn{6}{@{}l}{\emph{Charge-even} [$10^{-5}$]} \\
-\quad \ceex{} cutoff $3^\circ$ & $+100\,(56)$ & $+59\,(62)$ & $-2\,(29)$ & $-12\,(16)$ & $-6\,(4)$ \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsection{Where the errors are}
 \label{sec:phok-errors}
@@ -963,5 +890,79 @@ $\theta^+$, $\theta^-$ and $\theta_{\rm avg}$ are off; the spikes in $M_{\pi\pi\
 $M_{\rm trk}$ are empty tail bins.}
 \label{fig:before-ov}
 \end{figure}
+
+\clearpage
+\section{Finite \texorpdfstring{$m_e$}{m\_e} effects}
+\label{app:me}
+The full-NLO pion calculation is not exact in $m_e$ everywhere. Piece by piece:
+\begin{itemize}
+\item \textbf{Exact in $m_e$:} the tree amplitudes $I$ and $F$ (massive beam spinors through the
+  $T_k$), the one-loop ISR squared in \code{amplit} (\code{Bornvirtualsoft}, with its
+  electron-mass corrections), the two-photon-exchange boxes and pentagons (electron propagators
+  and spinors massive), and the eikonal soft integrals of \code{NLOpions}.
+\item \textbf{$m_e$ only in logarithms:} the electron vertex $v_s$ is the $m_e\to0$ form,
+  $\frac{2\alpha}{\pi}[(L-1)\ln2w+\frac34L-1+\frac{\pi^2}{6}]$ with $L=\ln(s/m_e^2)$. The
+  neglected terms are $\mathcal O(m_e^2/s)\approx2.5\times10^{-7}$ at fixed $s$, with no
+  enhancement anywhere in phase space.
+\item \textbf{Massless, except logarithms and kinematics: B5}, the ISR one-loop amplitude against
+  the FSR tree (\code{NLO\_ISR\_no\_mass\_terms}). Only the leading coefficient \code{V1(1)}
+  contains $m_e$, in its soft and collinear logarithms; the other kept coefficients
+  (\code{V1(2)}, \code{V1(5)}, \code{V1(8)}--\code{V1(11)}) are massless expressions in
+  $y_{1,2}=2p_{1,2}\cdot k/s$ and $q^2/s$, evaluated with the massive momenta. The seven
+  helicity-flip coefficients (\code{V1(3,4,6,7,12,13,14)}) are set to zero and their expressions
+  do not exist in the code; only their normalisation is left as a comment. The mass terms
+  \code{deny1}, \code{deny2}, \code{m2miny1}, \code{m2miny2} are computed but not used.
+\end{itemize}
+So the electron mass is kept exactly in every piece except B5 (and, harmlessly, $v_s$).
+For B5 the approximation is safe at large photon angles, where the neglected terms are
+$\mathcal O(m_e^2/s)$. For a photon along a beam (KLOE small-angle) the helicity-flip terms are
+still suppressed, because they interfere with the helicity-flip part of $F$, which is itself
+$\propto m_e/\sqrt s$ with no collinear enhancement. The helicity-conserving terms of relative
+size $m_e^2/(p\cdot k)$ are simply missing, and matter only within $\theta_\gamma\lesssim
+m_e/E\approx1$~mrad of a beam; there they are an $\mathcal O(\alpha)$ correction to the
+ISR$\times$FSR interference, which is small for such photons.
+
+\paragraph{Test at small-angle kinematics.} We repeated the per-point comparison with \ceex{},
+whose amplitudes keep $m_e$ exactly, at 1233 one-photon points of the KLOE small-angle scenario
+(missing momentum within $15^\circ$ of a beam, $0.35\le M^2_{\pi\pi}\le0.95$~GeV$^2$), 82 of
+them with the photon within 1~mrad of a beam (\cref{tab:sa}). After subtracting H1 and H2 the
+charge-odd difference is consistent with zero in every angular bin: within 1~mrad it is
+$1.1(1.0)\times10^{-5}$ of the tree, against $3\times10^{-4}$ for the whole B5 loop and
+$2\times10^{-3}$ for the tree interference. The massless B5 has no visible effect, even for
+photons collinear to a beam.
+
+The precision of the test is set by \ceex{}. Below its collinear cutoff (\code{-{}-thg\_cutoff},
+default $3^\circ$) \ceex{} does not evaluate the virtual correction directly but extrapolates it
+in $\ln(2p\cdot k)$ from two anchor angles. Lowering the cutoff to $0.3^\circ$ shrinks the
+charge-odd scatter from $1.4\times10^{-3}$ to $9\times10^{-5}$, so that scatter comes from the
+extrapolation, not from \phok. The charge-even part cannot be followed that far: the direct
+evaluation becomes unstable below $\sim1^\circ$ (differences of $10^{-2}$ with the $0.3^\circ$
+cutoff). With the default cutoff the charge-even parts agree to $(0.6$--$1)\times10^{-3}$ of the
+tree within 5~mrad, and to $10^{-4}$ or better above $1^\circ$.
+
+\begin{table}[H]
+\centering\small
+\caption{Per-point comparison at KLOE small-angle kinematics, binned in the photon angle to the
+  nearest beam. All entries are divided by the charge-even tree; residuals are mean (rms) over
+  the points. ``\ceex{} cutoff'' is \code{-{}-thg\_cutoff}.}
+\label{tab:sa}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+$\theta_\gamma$ [mrad] & 0--1 & 1--5.2 & 5.2--17.5 & 17.5--52 & 52--270 \\
+\midrule
+Points & 82 & 273 & 267 & 268 & 343 \\
+$|$tree interference$|$ & $1.9\times10^{-3}$ & $3.3\times10^{-3}$ & $1.0\times10^{-2}$ & $3.3\times10^{-2}$ & $0.12$ \\
+$|$B5 loop$|$ & $3.0\times10^{-4}$ & $5.1\times10^{-4}$ & $1.6\times10^{-3}$ & $5.1\times10^{-3}$ & $1.8\times10^{-2}$ \\
+\addlinespace
+\multicolumn{6}{@{}l}{\emph{Charge-odd, minus H1 and H2} [$10^{-5}$]} \\
+\quad \ceex{} cutoff $0.3^\circ$ & $+1.1\,(8.9)$ & $+0.2\,(5.8)$ & $-0.2\,(3.6)$ & $-0.1\,(1.7)$ & $-0.1\,(1.0)$ \\
+\quad \ceex{} cutoff $3^\circ$ & $+16\,(140)$ & $+7\,(100)$ & $+0.3\,(48)$ & $+0.2\,(13)$ & $-0.1\,(1.0)$ \\
+\addlinespace
+\multicolumn{6}{@{}l}{\emph{Charge-even} [$10^{-5}$]} \\
+\quad \ceex{} cutoff $3^\circ$ & $+100\,(56)$ & $+59\,(62)$ & $-2\,(29)$ & $-12\,(16)$ & $-6\,(4)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \end{document}
