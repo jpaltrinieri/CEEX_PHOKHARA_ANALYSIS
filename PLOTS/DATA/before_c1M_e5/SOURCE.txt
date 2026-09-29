@@ -1,0 +1,1 @@
+2026-09-29T10:18:04+01:00 before-fix comparison: ceex = copy of DATA/final5M_c1M_e5/ceex (more1M, 148 tasks, 8 outputs discarded, Emin 1e-5); phokhara = copy of DATA/prod500k/phokhara (unpatched, 300 x 500k)

@@ -140,14 +140,15 @@ repository (\cref{app:files}).
 
 \begin{table}[H]
 \centering\small
-\caption{Production runs (prod500k): \phok{} 300 seeds $\times$ 500k events; \ceex{} 29 tasks
-$\times$ 5 ranks $\times$ 500k at $E_{\min}=10^{-5}$~GeV (one slow task cancelled).}
+\caption{Before the fix. \phok{} (unpatched) 300 seeds $\times$ 500k events; \ceex{} more1M,
+\CeexN{} tasks $\times$ 5 ranks $\times$ 1M events at $E_{\min}=10^{-5}$~GeV (\CeexNr{} rank outputs
+after discarding 8 whose total diverged).}
 \label{tab:prod}
 \begin{tabular}{lcc}
 \toprule
  & $\sigma$ [nb] & $\Ath$ \\
 \midrule
-\ceex, $E_{\min}=10^{-5}$ GeV & 0.26836(4) & 0.23752(14) \\
+\ceex, $E_{\min}=10^{-5}$ GeV & \CeexSig & \CeexA \\
 \bby & 0.268389(4) & 0.23724(1) \\
 \phok, this work & 0.268353(46) & 0.27872(16) \\
 \phok, earlier reference & 0.268393(23) & 0.27861(8) \\
@@ -162,8 +163,8 @@ observable to \phok: only the three pion angles are off, by a smooth tilt from $
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.62\textwidth]{prod500k_e5/60bins/pi_kloe_la_lth+.pdf}
-\caption{\textbf{Before the fix} (prod500k): $d\sigma/d\theta^+$, \ceex/\bby, and \ceex{} and
+\includegraphics[width=0.62\textwidth]{before_c1M_e5/60bins/pi_kloe_la_lth+.pdf}
+\caption{\textbf{Before the fix}: unpatched \phok{} (300$\times$500k) against \ceex{} more1M (\CeexN$\times$5$\times$1M): $d\sigma/d\theta^+$, \ceex/\bby, and \ceex{} and
 \bby{} over \phok{} (60 bins). \ceex{} ($E_{\min}=10^{-5}$~GeV, black) and \bby{} (blue) agree; \phok{} (red) is
 tilted.}
 \label{fig:before}
@@ -171,7 +172,7 @@ tilted.}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{prod500k_e5/60bins/overview_vs_phokhara.pdf}
+\includegraphics[width=\textwidth]{before_c1M_e5/60bins/overview_vs_phokhara.pdf}
 \caption{\textbf{Before the fix}: every observable, \ceex{} and \bby{} over \phok. Only
 $\theta^+$, $\theta^-$ and $\theta_{\rm avg}$ are off; the spikes in $M_{\pi\pi\gamma}$ and
 $M_{\rm trk}$ are empty tail bins.}
@@ -530,7 +531,7 @@ RUN/RUN\_CEEX/t4/ & \ceex{} point driver; \texttt{MC\_nphsplit.patch} (per-multi
 RUN/POST\_PROCESS/ & merge, outlier check, \texttt{phok\_table.py}, \texttt{t3\_compare.py},
   \texttt{t4\_compare.py} \\
 RESULTS/ & \texttt{prod500k}, \texttt{t1\_t2}, \texttt{t3\_split}, \texttt{t4\_points},
-  \texttt{t4\_fix}, \texttt{fix500k}, \texttt{final500k}, \texttt{fix5M}, \texttt{final5M}, \texttt{final5M\_c1M\_e5}, \texttt{prod500k\_e5} \\
+  \texttt{t4\_fix}, \texttt{fix500k}, \texttt{final500k}, \texttt{fix5M}, \texttt{final5M}, \texttt{final5M\_c1M\_e5}, \texttt{before\_c1M\_e5} \\
 REPORT/ & this report, \texttt{make\_figures.py}, \texttt{make\_numbers.py} \\
 \bottomrule
 \end{tabularx}
