@@ -922,29 +922,77 @@ size $m_e^2/(p\cdot k)$ are simply missing, and matter only within $\theta_\gamm
 m_e/E\approx1$~mrad of a beam; there they are an $\mathcal O(\alpha)$ correction to the
 ISR$\times$FSR interference, which is small for such photons.
 
-\paragraph{Test at small-angle kinematics.} We repeated the per-point comparison with \ceex{},
-whose amplitudes keep $m_e$ exactly, at 1233 one-photon points of the KLOE small-angle scenario
-(missing momentum within $15^\circ$ of a beam, $0.35\le M^2_{\pi\pi}\le0.95$~GeV$^2$), 82 of
-them with the photon within 1~mrad of a beam (\cref{tab:sa}). After subtracting H1 and H2 the
-charge-odd difference is consistent with zero in every angular bin: within 1~mrad it is
-$1.1(1.0)\times10^{-5}$ of the tree, against $3\times10^{-4}$ for the whole B5 loop and
-$2\times10^{-3}$ for the tree interference. The massless B5 has no visible effect, even for
-photons collinear to a beam.
+\subsection*{Test at small-angle kinematics}
 
-The precision of the test is set by \ceex{}. Below its collinear cutoff (\code{-{}-thg\_cutoff},
-default $3^\circ$) \ceex{} does not evaluate the virtual correction directly but extrapolates it
-in $\ln(2p\cdot k)$ from two anchor angles. Lowering the cutoff to $0.3^\circ$ shrinks the
-charge-odd scatter from $1.4\times10^{-3}$ to $9\times10^{-5}$, so that scatter comes from the
-extrapolation, not from \phok. The charge-even part cannot be followed that far: the direct
-evaluation becomes unstable below $\sim1^\circ$ (differences of $10^{-2}$ with the $0.3^\circ$
-cutoff). With the default cutoff the charge-even parts agree to $(0.6$--$1)\times10^{-3}$ of the
-tree within 5~mrad, and to $10^{-4}$ or better above $1^\circ$.
+\paragraph{Question.} Does the massless ISR one-loop amplitude used in B5 change the one-photon
+matrix element when the photon is collinear with a beam? The missing mass terms can only matter
+within $\theta_\gamma\lesssim m_e/E\approx1$~mrad of a beam, a region the KLOE large-angle cuts
+never reach but the KLOE small-angle cuts do.
 
-\begin{table}[H]
+\paragraph{Method: comparison point by point.} Instead of comparing histograms, both codes
+evaluate the same quantity at the same phase-space points:
+\begin{enumerate}[leftmargin=*]
+\item \phok{} generates events; at each accepted one-photon event it writes the momenta and every
+  piece of the one-photon weight (\code{amplit}, the blocks B1--B5, \code{NLOpions},
+  \code{virt\_pions}).
+\item \ceex{} evaluates its one-photon matrix element at the same momenta: the \gosam{} tree and
+  one-loop amplitudes, which keep $m_e$ exactly, the mass counterterm, and the YFS soft factor.
+\item The quantity compared is the NLO correction to the one-photon matrix element (tree +
+  one-loop virtual + soft photons below the cutoff, minus the tree), divided by each code's own
+  tree. No overall normalisation enters.
+\end{enumerate}
+B5 is purely charge-odd, so we look at the charge-odd part. Every point is evaluated a second
+time with the $\pi^+$ and $\pi^-$ momenta exchanged, and for any quantity
+$X_{\rm odd}=\tfrac12[X(p_+,p_-)-X(p_-,p_+)]$ and $X_{\rm even}=\tfrac12[X(p_+,p_-)+X(p_-,p_+)]$.
+The per-point difference is
+\[
+  D=\frac{(\delta_{\rm PH})_{\rm odd}}{({\rm tree}_{\rm PH})_{\rm even}}
+   -\frac{(\delta_{\rm CEEX})_{\rm odd}}{({\rm tree}_{\rm CEEX})_{\rm even}},
+\]
+with $\delta$ the NLO correction.
+
+\paragraph{Removing the known errors.} The \phok{} numbers come from the unpatched code, so $D$
+contains H1 and H2. Both are known exactly at each point from the blocks
+(\cref{sec:phok-1ph}): $\Delta B_4=B_4-\tfrac12B_3(v_f+v_s)$ and
+$\Delta B_5=\tfrac12B_3\,(1+S_{\rm ISR}(w))$. The residual
+\[
+  R=D-\frac{(\Delta B_4+\Delta B_5)_{\rm odd}}{({\rm tree}_{\rm PH})_{\rm even}}
+\]
+is what is left once the two errors are corrected. In the KLOE large-angle scenario $R$ has an
+rms of $2.5\times10^{-5}$. An effect of the massless B5 would appear as a non-zero $R$ at small
+photon angles.
+
+\paragraph{Settings.}
+\begin{itemize}
+\item \textbf{Physics:} $\sqrt s=1.02$~GeV, $F_\pi=1$, no vacuum polarisation, full NLO, soft
+  cutoff $w\sqrt s=E_{\min}=10^{-5}$~GeV in both codes, the same pion mass.
+\item \textbf{Points:} the first 1233 accepted one-photon events (seed 77) of a \phok{} run with
+  the KLOE small-angle acceptance of Strong2020 (KLOE-II): pions at $50^\circ$--$130^\circ$ with
+  $|p^z|>90$~MeV or $p^\perp>160$~MeV, missing momentum within $15^\circ$ of a beam,
+  $0.35\le M^2_{\pi\pi}\le0.95$~GeV$^2$, $E_\gamma>20$~MeV, no photon detected. Their photon angle
+  to the nearest beam has a median of 17~mrad; 82 points lie within 1~mrad and 15 within
+  0.3~mrad.
+\item \textbf{\phok{}:} the unpatched code with the dump (binary \code{phokhara\_dump\_sa}).
+\item \textbf{\ceex{}:} the point driver \code{t4\_ceex} on \ceex-main. The one parameter varied is
+  the collinear cutoff \code{-{}-thg\_cutoff}. Below it \ceex{} does not evaluate its one-loop
+  correction at the event: the five-point reduction becomes unreliable for nearly collinear
+  photons (good above $\sim3^\circ$, useless below $\sim0.3^\circ$ according to the \ceex{}
+  code). It evaluates the correction at the cutoff angle and at three times it, and
+  extrapolates linearly in $\ln(2p\cdot k)$ to the event. We ran the default $3^\circ$
+  (52~mrad), $1^\circ$ and $0.3^\circ$.
+\end{itemize}
+
+\paragraph{Scale of a possible effect.} In each angular bin \cref{tab:sa} gives the size of the
+tree interference and of the whole B5 loop, $2{\rm Re}[F^*\delta I_e]$ as computed by
+\code{NLO\_ISR\_no\_mass\_terms}. The error from the missing mass terms is a fraction of the B5
+loop.
+
+\begin{table}[htbp]
 \centering\small
-\caption{Per-point comparison at KLOE small-angle kinematics, binned in the photon angle to the
-  nearest beam. All entries are divided by the charge-even tree; residuals are mean (rms) over
-  the points. ``\ceex{} cutoff'' is \code{-{}-thg\_cutoff}.}
+\caption{Point-by-point comparison at KLOE small-angle kinematics, binned in the photon angle to
+  the nearest beam. All entries are per point and divided by the charge-even tree. Residuals:
+  mean over the points, with the rms in brackets, in units of $10^{-5}$. The \ceex{} cutoff is
+  \code{-{}-thg\_cutoff}; below it \ceex{} extrapolates its one-loop correction.}
 \label{tab:sa}
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lccccc@{}}
@@ -955,14 +1003,40 @@ Points & 82 & 273 & 267 & 268 & 343 \\
 $|$tree interference$|$ & $1.9\times10^{-3}$ & $3.3\times10^{-3}$ & $1.0\times10^{-2}$ & $3.3\times10^{-2}$ & $0.12$ \\
 $|$B5 loop$|$ & $3.0\times10^{-4}$ & $5.1\times10^{-4}$ & $1.6\times10^{-3}$ & $5.1\times10^{-3}$ & $1.8\times10^{-2}$ \\
 \addlinespace
-\multicolumn{6}{@{}l}{\emph{Charge-odd, minus H1 and H2} [$10^{-5}$]} \\
-\quad \ceex{} cutoff $0.3^\circ$ & $+1.1\,(8.9)$ & $+0.2\,(5.8)$ & $-0.2\,(3.6)$ & $-0.1\,(1.7)$ & $-0.1\,(1.0)$ \\
+\multicolumn{6}{@{}l}{\emph{Charge-odd residual $R$} [$10^{-5}$]} \\
 \quad \ceex{} cutoff $3^\circ$ & $+16\,(140)$ & $+7\,(100)$ & $+0.3\,(48)$ & $+0.2\,(13)$ & $-0.1\,(1.0)$ \\
+\quad \ceex{} cutoff $1^\circ$ & $+5.5\,(53)$ & $+1.8\,(36)$ & $-0.0\,(11)$ & $-0.1\,(1.7)$ & $-0.1\,(1.0)$ \\
+\quad \ceex{} cutoff $0.3^\circ$ & $+1.1\,(8.9)$ & $+0.2\,(5.8)$ & $-0.2\,(3.6)$ & $-0.1\,(1.7)$ & $-0.1\,(1.0)$ \\
 \addlinespace
-\multicolumn{6}{@{}l}{\emph{Charge-even} [$10^{-5}$]} \\
+\multicolumn{6}{@{}l}{\emph{Charge-even difference} [$10^{-5}$] (not affected by B5)} \\
 \quad \ceex{} cutoff $3^\circ$ & $+100\,(56)$ & $+59\,(62)$ & $-2\,(29)$ & $-12\,(16)$ & $-6\,(4)$ \\
+\quad \ceex{} cutoff $1^\circ$ & $-73\,(260)$ & $-94\,(250)$ & $-90\,(150)$ & $-32\,(47)$ & $-6\,(4)$ \\
+\quad \ceex{} cutoff $0.3^\circ$ & $-1400\,(2000)$ & $-1100\,(1600)$ & $-320\,(580)$ & $-32\,(47)$ & $-6\,(4)$ \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{Results.}
+\begin{itemize}
+\item \textbf{Above $3^\circ$} both codes evaluate everything directly, and the charge-odd
+  residual is $10^{-5}$ of the tree, as in the large-angle scenario.
+\item \textbf{Below $3^\circ$} the scatter of $R$ shrinks as the \ceex{} cutoff is lowered: within
+  1~mrad, from $1.4\times10^{-3}$ (cutoff $3^\circ$) to $5\times10^{-4}$ ($1^\circ$) and
+  $9\times10^{-5}$ ($0.3^\circ$). The scatter therefore comes from the \ceex{} extrapolation, not
+  from \phok.
+\item \textbf{With the $0.3^\circ$ cutoff}, $R$ is consistent with zero in every bin. Within
+  1~mrad its mean is $1.1(1.0)\times10^{-5}$ of the tree, against $3\times10^{-4}$ for the whole
+  B5 loop. On average, the missing mass terms change B5 by less than about 10\%, i.e.\ by less than
+  $3\times10^{-5}$ of the tree.
+\item \textbf{The charge-even part} is not affected by B5 and is shown only to document the
+  reference. Only the default cutoff can be used for it: at $1^\circ$ and $0.3^\circ$ the direct
+  evaluation of the charge-even one-loop correction is already unstable. With the default
+  cutoff the two codes agree to $10^{-4}$ above $1^\circ$ and to $(0.6$--$1)\times10^{-3}$
+  within 5~mrad, where \ceex{} extrapolates (quoted accuracy $5\times10^{-4}$). Which code is
+  closer there cannot be decided with these tools.
+\end{itemize}
+The massless ISR one-loop amplitude in B5 has no visible effect, even for photons collinear to a
+beam. The inputs and outputs are in \code{RESULTS/t4\_sa} (\code{RUN/POST\_PROCESS/t4\_sa\_compare.py}).
+
 
 \end{document}
