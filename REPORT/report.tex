@@ -101,6 +101,8 @@ the cutoff; \ceex{} (\CeexA) and \bby{} ($0.23724$) agree with it to $3\times10^
     an extra ${\rm Re}[F^*I]\,(1+S_{\rm ISR}(w))$.
   \end{itemize}
   Subtracting both leaves a per-point residual of $2.5\times10^{-5}$ of the tree.
+\item \textbf{Both errors are in the official \phok~10.0 release} (October 2020) and came with
+  the full-NLO pion mode, which is new in that version (\cref{sec:origin}).
 \item \textbf{With both corrected}, $\Ath$ no longer depends on $w$ and agrees with \ceex{} and
   \bby{}, in total and separately in the one- and two-photon parts (\cref{sec:fix}). Totals and
   charge-even distributions are unchanged.
@@ -746,6 +748,25 @@ S_{\rm ISR}(w)=\frac{\alpha}{\pi}\Big[-\ln(4w^2)\,(1+L)-\tfrac12L^2-L-\tfrac{\pi
 \end{itemize}
 \textbf{Fix} (\code{variants/h3.patch}): subtract ${\rm Re}[\sum T]\,(1+S_{\rm ISR})$ after B5, with
 $S_{\rm ISR}$ computed as in the $v_s$ subtraction.
+
+\subsection{Origin of the errors}
+\label{sec:origin}
+Both errors are in the code as released by the \phok{} authors, not in later modifications:
+\begin{itemize}
+\item The \code{PHOKARA\_10.0} repository used here starts from the official release: its first
+  commit (\code{2aaf541}) contains the tarball \code{PH10.0.tar.gz}, identical (md5
+  \code{f0334656\ldots}) to the one distributed at
+  \url{https://looptreeduality.csic.es/phokhara/} (version 10.0, October 2020). \code{phokhara\_10.0.f}
+  and \code{ISRcurrent\_no\_mass\_terms.f} there are byte-identical to the released ones.
+\item \code{git blame} traces every line of the H1 block and of B5, and the two \code{V1(1)}
+  lines, to that first commit; none of the later commits touched them.
+\item The previous releases on the same page (8.0, 9.0, 9.1, 9.2, 9.3) have no full-NLO pion
+  mode at all: no \code{nlo2} switch, no \code{NLO\_ISR\_no\_mass\_terms}, \code{NLOpions} or
+  \code{virt\_pions}. Both errors therefore entered with that mode in version 10.0, whose physics
+  is described in Phys.\ Rev.\ D100 (2019) 076004.
+\item A first version 10.0 (December 2018) was replaced by the October 2020 one, which fixed
+  vacuum-polarisation omissions; it is no longer distributed and could not be checked.
+\end{itemize}
 
 %=========================================================================================
 \section{Result with the fix}
