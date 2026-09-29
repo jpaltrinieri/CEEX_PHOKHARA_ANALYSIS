@@ -91,11 +91,10 @@ def fig_wscan():
     hi = {-4: "fix500k_w1e-4", -5: "fix500k_w1e-5", -6: "fix500k_w1e-6"}
     fig, (ax, zx) = plt.subplots(1, 2, figsize=(6.4, 3.3), gridspec_kw={"width_ratios": [1.25, 1]})
     for a in (ax, zx):
-        a.axhspan(CEEX - 3 * eC, CEEX + 3 * eC, color=GRID, lw=0, zorder=0)
-        a.axhline(CEEX, color=INK2, lw=1.0, zorder=1, label="CEEX-main, prod500k (band: $\\pm3\\sigma$)")
-        if CEEX1M:
-            a.axhline(CEEX1M[0], color=INK, lw=1.2, ls=(0, (1, 1.5)), zorder=1,
-                      label=f"CEEX-main, more1M: {CEEX1M[0]:.5f}({CEEX1M[1]*1e5:.0f})")
+        ref, eref = CEEX1M if CEEX1M else (CEEX, eC)
+        a.axhspan(ref - 3 * eref, ref + 3 * eref, color=GRID, lw=0, zorder=0)
+        a.axhline(ref, color=INK2, lw=1.0, zorder=1,
+                  label=f"CEEX-main, $E_{{\\min}}=10^{{-5}}$: {ref:.5f}({eref*1e5:.0f}) (band: $\\pm3\\sigma$)")
         a.axhline(BB, color=INK2, lw=1.0, ls=(0, (4, 3)), zorder=1, label="BabaYaga")
         a.set_xlabel(r"$\log_{10} w$")
         a.set_xlim(-2.7, -6.3)

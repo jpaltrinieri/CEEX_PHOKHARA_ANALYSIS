@@ -4,7 +4,6 @@ fix500k_w1e-5   n=300 sigma_MC=0.268351(46)  A(th+)=0.23757(17)  A(th-)=-0.23735
 fix500k_w1e-6   n=300 sigma_MC=0.268354(44)  A(th+)=0.23730(16)  A(th-)=-0.23735(16)  A(thav)=-0.26659(16)
 slope dA(th+)/dlog10(w) = -0.00023 +- 0.00012;  w-average A(th+) 0.23724(10), -A(th-) 0.23722(10), -A(thav) 0.26651(9)
 fix5M_w1e-5     n=1000 sigma_MC=0.268398(8)  A(th+)=0.23725(3)  A(th-)=-0.23728(3)  A(thav)=-0.26651(3)
-final5M_c1M pion-angle shape chi2/ndf: vs CEEX 0.9--1.5, vs BabaYaga 0.9--1.2
-CEEX final5M_c1M Emin 1e-5: sigma=0.268386(9)  A(th+)=0.23726(3)  -A(th-)=0.23726(3)  -A(thav)=0.26649(3)
-CEEX final5M_c1M Emin 1e-4: sigma=0.268396(36)  A(th+)=0.23748(13)  -A(th-)=0.23724(13)  -A(thav)=0.26660(13)
+final5M_c1M_e5 pion-angle shape chi2/ndf: vs CEEX 0.8--1.4, vs BabaYaga 0.9--1.2
+CEEX final5M_c1M_e5 Emin 1e-5: sigma=0.268389(9)  A(th+)=0.23725(3)  -A(th-)=0.23726(3)  -A(thav)=0.26648(3)
 # CEEX prod500k (Emin 1e-4): A(th+) 0.23751(13), -A(th-) 0.23723(13), -A(thav) 0.26660(13); BabaYaga 0.23724 / 0.23727 / 0.26650

@@ -115,7 +115,7 @@ else:
     lines += ["\\newcommand{\\FiveN}{--}", "\\newcommand{\\FiveSig}{--}", "\\newcommand{\\FiveA}{--}",
               "\\newcommand{\\FiveAm}{--}", "\\newcommand{\\FiveAv}{--}"]
 # pion-angle shape chi2/ndf of the after-fix plots (RESULTS/final5M/summary.txt, table vs phokhara)
-AFTER = "final5M_c1M"   # after-fix plots: CEEX (prod500k Emin 1e-4 + more1M Emin 1e-5) vs fix5M PHOKHARA
+AFTER = "final5M_c1M_e5"   # after-fix plots: CEEX more1M (Emin 1e-5 only) vs fix5M PHOKHARA
 sf = os.path.join(ROOT, "RESULTS", AFTER, "summary.txt")
 chiC = chiB = "--"
 if os.path.exists(sf):
@@ -126,7 +126,7 @@ if os.path.exists(sf):
         def col(name):
             j = 1 + 2 * (head.index(name) - 1)   # after "obs", each entry is "<chi2> (<ndf>)"
             return [float(r[j]) for r in data]
-        c = col("ceex4") + col("ceex5"); b = col("babayaga")
+        c = sum((col(k) for k in ("ceex4", "ceex5") if k in head), []); b = col("babayaga")
         chiC = f"{min(c):.1f}--{max(c):.1f}"; chiB = f"{min(b):.1f}--{max(b):.1f}"
 lines += [f"\\newcommand{{\\FiveChiC}}{{{chiC}}}", f"\\newcommand{{\\FiveChiB}}{{{chiB}}}"]
 summ.append(f"{AFTER} pion-angle shape chi2/ndf: vs CEEX {chiC}, vs BabaYaga {chiB}")
