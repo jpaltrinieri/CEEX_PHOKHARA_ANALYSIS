@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Write REPORT/numbers.tex: LaTeX macros with the high-statistics fixed-PHOKHARA results
-(runs fix500k_w1e-4, fix500k_w1e-5, fix500k_w1e-6 under $PHOKHARA_SCRATCH).
+(runs fix500k_w1e-4, fix500k_w1e-5, fix500k_w1e-6 under $PHOKHARA_SCRATCH;
+appendix "Each fix alone": \\Scan* from runs fixscan_{none,h1,h3,both}).
 
   \\HiSigA \\HiSigB \\HiSigC     sigma_MC per w (1e-4, 1e-5, 1e-6)
   \\HiAA   \\HiAB   \\HiAC       A(theta+) per w
@@ -158,6 +159,27 @@ ntask = len(glob.glob(os.path.join(CE, "RUN_CEEX_*_5")))
 nr = len(glob.glob(os.path.join(CE, "RUN_CEEX_*_5", "output_*.txt")))
 lines += [f"\\newcommand{{\\CeexN}}{{{ntask}}}", f"\\newcommand{{\\CeexNr}}{{{nr}}}"]
 summ.append("# CEEX prod500k (Emin 1e-4): A(th+) 0.23751(13), -A(th-) 0.23723(13), -A(thav) 0.26660(13); BabaYaga 0.23724 / 0.23727 / 0.26650")
+# Appendix: each fix alone (runs fixscan_{none,h1,h3,both}: 300 x 500k, w = 1e-5, fresh seeds)
+# \Scan{Sig,A,ChiC,ChiB,N}<tag>; ChiC/ChiB = lth+ shape chi2/ndf of CEEX / BabaYaga against
+# that PHOKHARA, from RESULTS/fixscan_<v>/report/summary.txt
+for tag, v in (("None", "none"), ("Hone", "h1"), ("Hthree", "h3"), ("Both", "both")):
+    run = f"fixscan_{v}"
+    seeds = [d for d in glob.glob(f"{SC}/{run}/seed_*")
+             if os.path.exists(d + "/done.txt") and os.path.getsize(d + "/NLOFF1.dat") > 0]
+    vals = dict(Sig="--", A="--", ChiC="--", ChiB="--", N=str(len(seeds)))
+    if seeds:
+        sig = np.array([[float(x) for x in SIG.search(open(d + "/phokhara.out", errors="replace").read()).groups()] for d in seeds])
+        a = np.stack([hists(d + "/NLOFF1.dat", ("lth+",))["lth+"] for d in seeds])
+        m = a[0].copy(); m[:, 2] = a[:, :, 2].mean(0); m[:, 3] = np.sqrt((a[:, :, 3]**2).sum(0)) / len(seeds)
+        vals["Sig"] = fmt(sig[:, 0].mean(), np.sqrt((sig[:, 1]**2).sum()) / len(seeds), 6)
+        vals["A"] = fmt(*asym(m), 5)
+    sf = os.path.join(ROOT, "RESULTS", run, "report", "summary.txt")
+    if os.path.exists(sf):
+        txt = open(sf).read().split("shape chi2/ndf vs phokhara", 1)[1].split("\n\n", 1)[0].splitlines()
+        head = txt[1].split(); row = next(l.split() for l in txt[2:] if l.split()[:1] == ["lth+"])
+        vals["ChiC"] = row[1 + 2 * (head.index("ceex5") - 1)]; vals["ChiB"] = row[1 + 2 * (head.index("babayaga") - 1)]
+    lines += [f"\\newcommand{{\\Scan{k}{tag}}}{{{x}}}" for k, x in vals.items()]
+    summ.append(f"{run:15s} n={vals['N']:>4s} sigma_MC={vals['Sig']}  A(th+)={vals['A']}  lth+ chi2/ndf CEEX/PH {vals['ChiC']}, BY/PH {vals['ChiB']}")
 open(os.path.join(HERE, "numbers.tex"), "w").write("\n".join(lines) + "\n")
 os.makedirs(os.path.join(ROOT, "RESULTS", "fix500k"), exist_ok=True)
 open(os.path.join(ROOT, "RESULTS", "fix500k", "summary.txt"), "w").write("\n".join(summ) + "\n")

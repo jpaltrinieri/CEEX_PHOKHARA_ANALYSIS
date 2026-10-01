@@ -892,6 +892,69 @@ $M_{\rm trk}$ are empty tail bins.}
 \end{figure}
 
 \clearpage
+\section{Each fix alone}
+\label{app:each-fix}
+To show that both corrections are needed, \phok{} was run four times with the same card
+($w=10^{-5}$) and the same statistics (300 seeds $\times$ 500k, fresh seeds): without either fix
+(\code{phokhara\_nostop}), with H1 only (\code{h1.patch}), with H2 only (\code{h3.patch}) and with
+both (\code{phokhara\_fix}). Each is compared with the same \ceex{} run ($E_{\min}=10^{-5}$~GeV,
+\CeexN$\times$5$\times$1M) and with \bby{}; \cref{tab:each-fix} gives the numbers and
+\cref{fig:each-fix} the $\theta^+$ distributions.
+\begin{table}[H]
+\centering\small
+\caption{\phok{} with each fix alone, 300 seeds $\times$ 500k at $w=10^{-5}$. $\chi^2/{\rm ndf}$:
+shape of the $\theta^+$ distribution of \ceex{} and of \bby{} against that \phok{} (60 bins).}
+\label{tab:each-fix}
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\phok{} & $\sigma$ [nb] & $\Ath$ & $\chi^2/{\rm ndf}$ \ceex & $\chi^2/{\rm ndf}$ \bby \\
+\midrule
+no fix  & \ScanSigNone   & \ScanANone   & \ScanChiCNone   & \ScanChiBNone \\
+H1 only & \ScanSigHone   & \ScanAHone   & \ScanChiCHone   & \ScanChiBHone \\
+H2 only & \ScanSigHthree & \ScanAHthree & \ScanChiCHthree & \ScanChiBHthree \\
+H1 + H2 & \ScanSigBoth   & \ScanABoth   & \ScanChiCBoth   & \ScanChiBBoth \\
+\addlinespace
+\ceex{} & \CeexSig & \CeexA & & \\
+\bby{}  & 0.268389(4) & 0.23724(1) & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+The cross section does not move, because both errors are $C$-odd; the asymmetry does.
+\begin{itemize}
+\item \textbf{No fix} reproduces the unpatched value of \cref{tab:prod}, $0.0415$ (about
+  $250\sigma$) above \ceex.
+\item \textbf{H1 only} removes most of the gap, but $\Ath$ is still $0.0050$ ($29\sigma$) high and
+  the $\theta^+$ shape is still tilted by $\pm2\%$ ($\chi^2/{\rm ndf}\approx35$).
+\item \textbf{H2 only} lowers $\Ath$ by $0.0054$ and leaves most of the tilt. Its size here is
+  set by the cutoff: at $w\simeq10^{-5}$, $1+S_{\rm ISR}=0.044$ is small (\cref{sec:h2}). Without
+  H2 the result depends on $w$ ($+0.0156$ per decade), so no choice of $w$ makes H1 alone
+  correct.
+\item \textbf{H1 + H2} agrees with \ceex{} and \bby{} within $1\sigma$, with
+  $\chi^2/{\rm ndf}\approx1$.
+\end{itemize}
+The two shifts add: $-0.0365$ (H1) and $-0.0054$ (H2), against $-0.0415$ for both, the same
+within the statistical error. This is expected, since the two corrections are separate terms in
+the weight.
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{@{}cc@{}}
+\includegraphics[width=0.48\textwidth]{fixscan_none/report/60bins/pi_kloe_la_lth+.pdf} &
+\includegraphics[width=0.48\textwidth]{fixscan_h1/report/60bins/pi_kloe_la_lth+.pdf} \\
+(a) no fix & (b) H1 only \\[4pt]
+\includegraphics[width=0.48\textwidth]{fixscan_h3/report/60bins/pi_kloe_la_lth+.pdf} &
+\includegraphics[width=0.48\textwidth]{fixscan_both/report/60bins/pi_kloe_la_lth+.pdf} \\
+(c) H2 only & (d) H1 + H2
+\end{tabular}
+\caption{\textbf{Each fix alone.} As \cref{fig:before}, with \phok{} (300$\times$500k,
+$w=10^{-5}$, red) built (a) without either fix, (b) with H1 only, (c) with H2 only and (d) with
+both. The bottom panels (\ceex{} and \bby{} over \phok) have different vertical scales. The ratio
+runs from $0.95$ to $1.28$ in (a), to $1.23$ in (c) and only to $1.02$ in (b); it is flat only in (d).}
+\label{fig:each-fix}
+\end{figure}
+
+\clearpage
 \section{Finite \texorpdfstring{$m_e$}{m\_e} effects}
 \label{app:me}
 The full-NLO pion calculation is not exact in $m_e$ everywhere. Piece by piece:

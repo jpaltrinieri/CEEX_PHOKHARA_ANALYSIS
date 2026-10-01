@@ -1,0 +1,74 @@
+CEEX vs Phokhara -- KLOE-LA pi+pi-gamma NLO, F(pi)=1, no VP
+data: /users/jpaltrin/software/CEEX_PHOKHARA_ANALYSIS/PLOTS/DATA/fixscan_none
+reference (ratio denominator): phokhara = PHOKHARA (no fix)
+
+sigma [nb], integral of each observable over the common range
+obs                        ceex5                phokhara                babayaga
+lth+           0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lth-           0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lthav          0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lthg           0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lp+            0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lp-            0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lpz+           0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lpz-           0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lpp+           0.26838 ± 0.00001       0.26835 ± 0.00003       0.26839 ± 0.00000
+lpp-           0.26838 ± 0.00001       0.26835 ± 0.00003       0.26839 ± 0.00000
+lmxx           0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lxi            0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+ldphi          0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+leg            0.26838 ± 0.00001       0.26835 ± 0.00005       0.26839 ± 0.00000
+lmxxg                          -       0.21567 ± 0.00003       0.19306 ± 0.00000
+lmtrk                          -       0.26835 ± 0.00005       0.26839 ± 0.00000
+lmxxc                          -       0.25363 ± 0.00005       0.25367 ± 0.00000
+lmtrkc                         -       0.08704 ± 0.00002       0.08704 ± 0.00000
+
+shape chi2/ndf vs phokhara (60-bin grid; each distribution normalised to its own sigma)
+obs                ceex5        babayaga
+lth+        2802.14 (60)    3146.27 (60)   <-- angle
+lth-        2972.55 (60)    3138.34 (60)   <-- angle
+lthav       3303.50 (60)    3512.48 (60)   <-- angle
+lthg           1.19 (60)       1.18 (60)
+lp+            1.05 (56)       1.09 (56)
+lp-            0.99 (56)       1.10 (56)
+lpz+           1.06 (58)      20.16 (58)
+lpz-           1.34 (58)      19.19 (58)
+lpp+           1.22 (56)       1.30 (56)
+lpp-           1.10 (56)       1.18 (56)
+lmxx           1.48 (60)       1.41 (60)
+lxi            1.10 (60)       1.05 (60)
+ldphi          0.92 (60)       1.00 (60)
+leg            1.14 (60)       1.19 (60)
+lmxxg                  -    8269.46 (56)
+lmtrk                  -       1.84 (43)
+lmxxc                  -       1.37 (60)
+lmtrkc                 -       0.72 (32)
+
+shape chi2/ndf vs babayaga (60-bin grid)
+obs                ceex5
+lth+           1.35 (60)   <-- angle
+lth-           0.76 (60)   <-- angle
+lthav          0.85 (60)   <-- angle
+lthg           1.32 (60)
+lp+            3.94 (56)
+lp-            4.46 (56)
+lpz+           4.04 (58)
+lpz-          19.67 (58)
+lpp+           2.43 (56)
+lpp-           2.04 (56)
+lmxx           1.42 (60)
+lxi            1.16 (60)
+ldphi          1.27 (60)
+leg            1.58 (60)
+
+forward-backward asymmetry A = [sigma(<90) - sigma(>90)] / sigma
+obs                      ceex5              phokhara              babayaga
+lth+          0.23726 ±0.00003      0.27873 ±0.00016      0.23724 ±0.00001
+lth-         -0.23726 ±0.00003     -0.27830 ±0.00016     -0.23727 ±0.00001
+lthav        -0.26650 ±0.00003     -0.31206 ±0.00016     -0.26650 ±0.00001
+lthg          0.00002 ±0.00003     -0.00033 ±0.00018      0.00002 ±0.00001
+
+C-mirror test: lth+(theta) vs lth-(180-theta), chi2/ndf (must be ~1 for any generator)
+    ceex5              1.01  (60 bins)
+    phokhara           1.21  (60 bins)
+    babayaga           1.07  (60 bins)

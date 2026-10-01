@@ -1,0 +1,1 @@
+2026-10-01T12:03:41+01:00 fix scan: ceex = copy of DATA/final5M_cfull_e5/ceex (more1M, Emin 1e-5); phokhara = fixscan_both (300 x 500k, w=1e-5)

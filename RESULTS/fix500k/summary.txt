@@ -7,3 +7,7 @@ fix5M_w1e-5     n=1000 sigma_MC=0.268398(8)  A(th+)=0.23725(3)  A(th-)=-0.23728(
 final5M_cfull_e5 pion-angle shape chi2/ndf: vs CEEX 0.8--1.5, vs BabaYaga 0.9--1.2
 CEEX final5M_cfull_e5 Emin 1e-5: sigma=0.268385(8)  A(th+)=0.23726(3)  -A(th-)=0.23726(3)  -A(thav)=0.26650(3)
 # CEEX prod500k (Emin 1e-4): A(th+) 0.23751(13), -A(th-) 0.23723(13), -A(thav) 0.26660(13); BabaYaga 0.23724 / 0.23727 / 0.26650
+fixscan_none    n= 300 sigma_MC=0.268353(46)  A(th+)=0.27873(16)  lth+ chi2/ndf CEEX/PH 2802.14, BY/PH 3146.27
+fixscan_h1      n= 300 sigma_MC=0.268428(46)  A(th+)=0.24224(17)  lth+ chi2/ndf CEEX/PH 33.40, BY/PH 35.82
+fixscan_h3      n= 300 sigma_MC=0.268373(47)  A(th+)=0.27332(17)  lth+ chi2/ndf CEEX/PH 2091.96, BY/PH 2339.77
+fixscan_both    n= 300 sigma_MC=0.268400(46)  A(th+)=0.23723(17)  lth+ chi2/ndf CEEX/PH 0.82, BY/PH 0.77
