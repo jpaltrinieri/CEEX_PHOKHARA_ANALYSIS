@@ -1,0 +1,3 @@
+# merged from /users/jpaltrin/scratch/CEEX_PHOKHARA_ANALYSIS/PHOKHARA/sa_fix: 300 seeds
+sigma     = 1.189063 +- 0.000391 nb  (seed-scatter error 0.000399, 300 seeds)
+sigma_MC  = 1.189356 +- 0.000138 nb  (seed-scatter error 0.000136, 300 seeds)

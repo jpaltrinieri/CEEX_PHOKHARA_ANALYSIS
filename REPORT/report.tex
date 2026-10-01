@@ -955,6 +955,68 @@ runs from $0.95$ to $1.28$ in (a), to $1.23$ in (c) and only to $1.02$ in (b); i
 \end{figure}
 
 \clearpage
+\section{The fix at KLOE small angle}
+\label{app:sa}
+The comparison at the KLOE small-angle kinematics (Strong2020 KLOE-II) never showed the problem.
+To check that this agrees with the fix, \phok{} was run with and without H1 + H2 at these cuts.
+\begin{itemize}
+\item \textbf{Cuts:} pions at $50^\circ$--$130^\circ$ with the same track-quality cuts as KLOE-LA,
+  missing momentum within $15^\circ$ of a beam, no photon detected,
+  $0.35\le M^2_{\pi\pi}\le0.95$~GeV$^2$ (\code{variants/sa\_cuts.patch}, card
+  \code{input\_KLOE-SA\_pipi\_NLO\_noVP\_FF1}). Physics settings as for KLOE-LA: full NLO,
+  $F_\pi=1$, no vacuum polarisation, $w=10^{-5}$.
+\item \textbf{Runs:} \code{phokhara\_sa\_nofix} and \code{phokhara\_sa\_fix} (also with
+  \code{h1.patch} and \code{h3.patch}), 300 seeds $\times$ 1M events each.
+\item \textbf{References:} the existing KLOE-SA \bby{} and \ceex{} ($E_{\min}=10^{-5}$~GeV) sets
+  of the Strong2020 comparison, copied to \code{PLOTS/DATA/kloe\_sa\_ref}.
+\end{itemize}
+\begin{table}[H]
+\centering\small
+\caption{KLOE small angle, before and after the fix. Here $A(\theta^-)$ and $A(\theta_{\rm avg})$ are
+not negated. Last row: fixed minus unpatched, with its significance.}
+\label{tab:sa-fix}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+ & $\sigma$ [nb] & $\Ath$ & $A(\theta^-)$ & $A(\theta_{\rm avg})$ \\
+\midrule
+\phok{} unpatched & \SaSigNofix & \SaANofix & \SaAmNofix & \SaAvNofix \\
+\phok{} fixed (H1 + H2) & \SaSigFix & \SaAFix & \SaAmFix & \SaAvFix \\
+\addlinespace
+\ceex{} ($E_{\min}=10^{-5}$~GeV) & \SaSigCeex & \SaACeex & \SaAmCeex & \SaAvCeex \\
+\bby & \SaSigBB & \SaABB & \SaAmBB & \SaAvBB \\
+\midrule
+fixed $-$ unpatched & \multicolumn{1}{p{2.4cm}}{\SaDSig} & \multicolumn{1}{p{2.4cm}}{\SaDA} &
+  \multicolumn{1}{p{2.4cm}}{\SaDAm} & \multicolumn{1}{p{2.4cm}}{\SaDAv} \\
+\bottomrule
+\end{tabular}
+\end{table}
+None of the differences exceeds $2\sigma$. Under charge conjugation $\theta^+$ and $\theta^-$ swap,
+so the $C$-odd shift is $\frac12\left(\Delta\Ath-\Delta A(\theta^-)\right)=\SaDodd$. At KLOE-LA the same fix
+moves $\Ath$ by $-0.0415$, so at KLOE-SA the effect is at least $\sim100$ times smaller. Both
+versions of \phok{} agree with \ceex{} and \bby; \cref{fig:sa-fix} shows the distributions.
+
+The reason is the size of the ISR$\times$FSR interference. Both errors are a fixed fraction of
+the tree interference ${\rm Re}[F^*I]$ at every point (\cref{sec:h1,sec:h2}). With the photon at
+large angle (KLOE-LA) the ISR and FSR amplitudes are comparable. With the photon along a beam
+(KLOE-SA) ISR is collinearly enhanced and FSR is not, so the interference is suppressed. In the
+per-point samples (988 KLOE-LA points, as used to check H1 and H2, and the 1233 KLOE-SA points of
+\cref{app:me}) the median $|$tree interference$|$/tree is $0.41$ at KLOE-LA and $0.013$ at
+KLOE-SA, and the median H1 error is $0.069$ and $0.0021$ of the tree. Most
+small-angle events have the photon within a few degrees of a beam, where the interference is
+$\sim10^{-3}$--$10^{-2}$ of the tree (\cref{tab:sa}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{fig_sa.pdf}
+\caption{\textbf{KLOE small angle, before and after the fix.} Left $\theta^+$, right
+$\theta_{\rm avg}$, 2$^\circ$ bins. Top: \phok{} unpatched and fixed (300$\times$1M each), \ceex{}
+($E_{\min}=10^{-5}$~GeV) and \bby. Middle: each over \bby. Bottom: fixed over unpatched \phok.
+The edge bins of $\theta_{\rm avg}$ are nearly empty.}
+\label{fig:sa-fix}
+\end{figure}
+
+\clearpage
 \section{Finite \texorpdfstring{$m_e$}{m\_e} effects}
 \label{app:me}
 The full-NLO pion calculation is not exact in $m_e$ everywhere. Piece by piece:

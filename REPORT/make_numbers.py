@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Write REPORT/numbers.tex: LaTeX macros with the high-statistics fixed-PHOKHARA results
 (runs fix500k_w1e-4, fix500k_w1e-5, fix500k_w1e-6 under $PHOKHARA_SCRATCH;
-appendix "Each fix alone": \\Scan* from runs fixscan_{none,h1,h3,both}).
+appendix "Each fix alone": \\Scan* from runs fixscan_{none,h1,h3,both};
+appendix KLOE-SA: \\Sa* from runs sa_nofix, sa_fix and PLOTS/DATA/kloe_sa_ref).
 
   \\HiSigA \\HiSigB \\HiSigC     sigma_MC per w (1e-4, 1e-5, 1e-6)
   \\HiAA   \\HiAB   \\HiAC       A(theta+) per w
@@ -180,6 +181,58 @@ for tag, v in (("None", "none"), ("Hone", "h1"), ("Hthree", "h3"), ("Both", "bot
         vals["ChiC"] = row[1 + 2 * (head.index("ceex5") - 1)]; vals["ChiB"] = row[1 + 2 * (head.index("babayaga") - 1)]
     lines += [f"\\newcommand{{\\Scan{k}{tag}}}{{{x}}}" for k, x in vals.items()]
     summ.append(f"{run:15s} n={vals['N']:>4s} sigma_MC={vals['Sig']}  A(th+)={vals['A']}  lth+ chi2/ndf CEEX/PH {vals['ChiC']}, BY/PH {vals['ChiB']}")
+# Appendix: KLOE-SA before/after the fix (runs sa_nofix, sa_fix: 300 x 1M, w = 1e-5) and the SA
+# references in PLOTS/DATA/kloe_sa_ref. \Sa{Sig,A,Am,Av}{Nofix,Fix,BB,Ceex}; \SaD{Sig,A,Am,Av}: fixed - unpatched
+# (with pull); \SaDodd: C-odd shift [dA(th+) - dA(th-)]/2. Am, Av are A(theta-), A(theta_avg), not negated.
+NUM = r"([-+]?\d+\.\d*(?:[EeDd][-+]?\d+)?)"
+SIGSA = re.compile(r"sigma_MC \(nbarn\)\s*=?\s*" + NUM + r"\s+\+-\s+" + NUM + r"\s*$", re.M)   # lines can interleave
+def asym_range(lo, hi, y, e):
+    w = hi - lo; m = (lo >= 50 - 1e-9) & (hi <= 130 + 1e-9)
+    return asym(np.column_stack([lo, hi, y, e])[m])
+sa = {}
+for tag, run in (("Nofix", "sa_nofix"), ("Fix", "sa_fix")):
+    seeds = [d for d in glob.glob(f"{SC}/{run}/seed_*")
+             if os.path.exists(d + "/done.txt") and os.path.getsize(d + "/NLOFF1.dat") > 0]
+    if not seeds:
+        continue
+    sig = np.array([[float(x) for x in SIGSA.findall(open(d + "/phokhara.out", errors="replace").read())[-1]] for d in seeds])
+    H = {k: [] for k in ("lth+", "lth-", "lthav")}
+    for d in seeds:
+        h = hists(d + "/NLOFF1.dat")
+        for k in H: H[k].append(h[k])
+    A = {}
+    for k in H:
+        a = np.stack(H[k]); m = a[0].copy(); m[:, 2] = a[:, :, 2].mean(0); m[:, 3] = np.sqrt((a[:, :, 3]**2).sum(0)) / len(seeds)
+        A[k] = asym(m)
+    sa[tag] = dict(n=len(seeds), sig=(sig[:, 0].mean(), np.sqrt((sig[:, 1]**2).sum()) / len(seeds)), A=A)
+REF = os.path.join(ROOT, "PLOTS", "DATA", "kloe_sa_ref")
+if os.path.isdir(REF):
+    A = {}
+    for k in ("th+", "th-", "thav"):
+        b = np.loadtxt(f"{REF}/babayaga/BB_s{k}.txt", delimiter=",", skiprows=1); dx = b[1, 0] - b[0, 0]
+        A["l" + k] = asym_range(b[:, 0], b[:, 0] + dx, b[:, 1], b[:, 2])
+    w = dx * b[:, 1]; m = (b[:, 0] >= 50 - 1e-9) & (b[:, 0] + dx <= 130 + 1e-9)
+    sa["BB"] = dict(sig=(w[m].sum(), np.sqrt(((dx * b[:, 2])[m]**2).sum())), A=A)
+    Hc = ceex_merged(f"{REF}/ceex/merged_histograms_5.txt"); A = {}
+    for k in ("th+", "th-", "thav"):
+        c = Hc["s" + k]; A["l" + k] = asym_range(c[:, 0], c[:, 1], c[:, 2], c[:, 3])
+    c = Hc["sth+"]; sa["Ceex"] = dict(sig=((c[:, 2] * (c[:, 1] - c[:, 0])).sum(), np.sqrt(((c[:, 3] * (c[:, 1] - c[:, 0]))**2).sum())), A=A)
+for tag, r in sa.items():
+    lines += [f"\\newcommand{{\\SaSig{tag}}}{{{fmt(*r['sig'], 5)}}}"]
+    lines += [f"\\newcommand{{\\Sa{m}{tag}}}{{{fmt(*r['A'][k], 5)}}}" for m, k in (("A", "lth+"), ("Am", "lth-"), ("Av", "lthav"))]
+    summ.append(f"KLOE-SA {tag:5s} n={r.get('n', '-')} sigma={fmt(*r['sig'], 5)} A(th+)={fmt(*r['A']['lth+'], 5)} "
+                f"A(th-)={fmt(*r['A']['lth-'], 5)} A(thav)={fmt(*r['A']['lthav'], 5)}")
+def dfmt(a, b, nd=5):
+    d, e = a[0] - b[0], np.hypot(a[1], b[1])
+    return f"${d:+.{nd}f}({int(round(e * 10**nd))})$, ${abs(d) / e:.1f}\\sigma$"
+if "Fix" in sa and "Nofix" in sa:
+    f, u = sa["Fix"], sa["Nofix"]
+    lines += [f"\\newcommand{{\\SaDSig}}{{{dfmt(f['sig'], u['sig'])}}}"]
+    lines += [f"\\newcommand{{\\SaD{m}}}{{{dfmt(f['A'][k], u['A'][k])}}}" for m, k in (("A", "lth+"), ("Am", "lth-"), ("Av", "lthav"))]
+    dp = f["A"]["lth+"][0] - u["A"]["lth+"][0]; dm = f["A"]["lth-"][0] - u["A"]["lth-"][0]
+    eo = np.hypot(np.hypot(f["A"]["lth+"][1], u["A"]["lth+"][1]), np.hypot(f["A"]["lth-"][1], u["A"]["lth-"][1])) / 2
+    lines += [f"\\newcommand{{\\SaDodd}}{{{(dp - dm) / 2:+.5f}({int(round(eo * 1e5))})}}"]
+    summ.append(f"KLOE-SA fixed-unpatched: sigma {dfmt(f['sig'], u['sig'])}; C-odd shift {(dp - dm) / 2:+.5f}({int(round(eo * 1e5))})")
 open(os.path.join(HERE, "numbers.tex"), "w").write("\n".join(lines) + "\n")
 os.makedirs(os.path.join(ROOT, "RESULTS", "fix500k"), exist_ok=True)
 open(os.path.join(ROOT, "RESULTS", "fix500k", "summary.txt"), "w").write("\n".join(summ) + "\n")

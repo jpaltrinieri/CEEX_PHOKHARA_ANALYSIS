@@ -1,0 +1,1 @@
+2026-10-01T14:08:41+01:00 KLOE-SA (Strong2020 KLOE-II) pi+pi-gamma NLO, F(pi)=1, no VP: copied from ~/software/CEEX_ANALYSIS/PLOTS/DATA/data_kloe_sa_bb_pi (BB_*.txt -> babayaga/, merged_histograms_5.txt = CEEX Emin 1e-5 -> ceex/, Phokhara/NLOFF1_* = earlier unpatched PHOKHARA -> phokhara_ref/)

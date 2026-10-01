@@ -11,3 +11,8 @@ fixscan_none    n= 300 sigma_MC=0.268353(46)  A(th+)=0.27873(16)  lth+ chi2/ndf 
 fixscan_h1      n= 300 sigma_MC=0.268428(46)  A(th+)=0.24224(17)  lth+ chi2/ndf CEEX/PH 33.40, BY/PH 35.82
 fixscan_h3      n= 300 sigma_MC=0.268373(47)  A(th+)=0.27332(17)  lth+ chi2/ndf CEEX/PH 2091.96, BY/PH 2339.77
 fixscan_both    n= 300 sigma_MC=0.268400(46)  A(th+)=0.23723(17)  lth+ chi2/ndf CEEX/PH 0.82, BY/PH 0.77
+KLOE-SA Nofix n=300 sigma=1.18903(13) A(th+)=-0.01381(12) A(th-)=0.01389(12) A(thav)=0.01562(12)
+KLOE-SA Fix   n=300 sigma=1.18936(14) A(th+)=-0.01374(12) A(th-)=0.01355(12) A(thav)=0.01538(12)
+KLOE-SA BB    n=- sigma=1.18920(4) A(th+)=-0.01370(4) A(th-)=0.01366(4) A(thav)=0.01548(4)
+KLOE-SA Ceex  n=- sigma=1.18921(5) A(th+)=-0.01359(4) A(th-)=0.01364(4) A(thav)=0.01534(4)
+KLOE-SA fixed-unpatched: sigma $+0.00033(19)$, $1.7\sigma$; C-odd shift +0.00021(12)

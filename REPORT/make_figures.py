@@ -3,6 +3,7 @@
 
   fig_wscan.pdf   T1/T2/fix: A(theta+) vs soft cutoff w for every PHOKHARA variant
   fig_t3.pdf      T3: dsigma/dtheta+ of the 1-photon and 2-photon parts, CEEX vs PHOKHARA
+  fig_sa.pdf      KLOE-SA: theta+ and theta_avg, unpatched and fixed PHOKHARA vs CEEX and BabaYaga
   fig_t4.pdf      T4: per-point C-odd difference vs the tree interference, and residuals
                       after subtracting H1, H2, H1+H2
 
@@ -225,9 +226,70 @@ def fig_t4():
     fig.tight_layout(); fig.savefig(os.path.join(OUT, "fig_t4.pdf")); plt.close(fig)
 
 
+
+# ---------------------------------------------------------------- fig_sa
+SADATA = os.path.join(ROOT, "PLOTS", "DATA")
+
+
+def sa_sources(obs):
+    """dsigma/dtheta (nb/deg) on 2-degree bins, 50-130 deg: {name: (y, e)} for KLOE-SA."""
+    edges = np.arange(50, 130.001, 2.0)
+    def rebin_c(c, y, e, w):
+        Y, E = np.zeros(len(edges) - 1), np.zeros(len(edges) - 1)
+        k = np.digitize(c, edges) - 1; ok = (k >= 0) & (k < len(Y))
+        np.add.at(Y, k[ok], (y * w)[ok]); np.add.at(E, k[ok], ((e * w)**2)[ok])
+        return Y / 2.0, np.sqrt(E) / 2.0
+    out = {}
+    b = np.loadtxt(f"{SADATA}/kloe_sa_ref/babayaga/BB_s{obs}.txt", delimiter=",", skiprows=1)
+    dx = b[1, 0] - b[0, 0]; out["bb"] = rebin_c(b[:, 0] + dx / 2, b[:, 1], b[:, 2], dx)
+    H, cur = {}, None
+    for line in open(f"{SADATA}/kloe_sa_ref/ceex/merged_histograms_5.txt"):
+        if "Histogram:" in line:
+            cur = line.split("Histogram:")[1].strip(); H[cur] = []; continue
+        w = line.split()
+        if cur and len(w) >= 4:
+            try: H[cur].append([float(x) for x in w[:4]])
+            except ValueError: pass
+    c = np.array(H[f"s{obs}"]); out["ceex"] = rebin_c((c[:, 0] + c[:, 1]) / 2, c[:, 2], c[:, 3], c[:, 1] - c[:, 0])
+    for run in ("sa_nofix", "sa_fix"):
+        d = np.loadtxt(f"{SADATA}/{run}/phokhara/NLOFF1_l{obs}.csv", delimiter=",", skiprows=1)
+        out[run] = rebin_c((d[:, 0] + d[:, 1]) / 2, d[:, 2], d[:, 3], d[:, 1] - d[:, 0])
+    return edges, out
+
+
+def fig_sa():
+    fig, axes = plt.subplots(3, 2, figsize=(6.4, 5.0), sharex=True,
+                             gridspec_kw={"height_ratios": [2.0, 1.2, 1.0]})
+    sty = {"ceex": (S1, "-", "CEEX-main ($E_{\\min}=10^{-5}$ GeV)"), "sa_nofix": (S2, "-", "PHOKHARA unpatched"),
+           "sa_fix": (S3, "-", "PHOKHARA fixed (H1 + H2)"), "bb": (INK2, (0, (4, 3)), "BabaYaga")}
+    for j, (obs, lab) in enumerate((("th+", r"\theta^+"), ("thav", r"\theta_{\rm avg}"))):
+        edges, src = sa_sources(obs); xc = (edges[:-1] + edges[1:]) / 2
+        ax, rx, fx = axes[:, j]
+        for k in ("sa_nofix", "sa_fix", "ceex", "bb"):
+            col, ls, l = sty[k]; ax.stairs(src[k][0], edges, color=col, ls=ls, lw=1.4, label=l)
+        ax.set_ylabel(rf"$d\sigma/d{lab}$ [nb/deg]" if j == 0 else "")
+        yb, eb = src["bb"]
+        rx.axhline(1, color=INK2, lw=0.8)
+        for i, k in enumerate(("ceex", "sa_nofix", "sa_fix")):
+            y, e = src[k]; r = y / yb
+            rx.errorbar(xc + (i - 1) * 0.45, r, yerr=r * np.hypot(e / y, eb / yb), color=sty[k][0], marker="o",
+                        ms=2.5, lw=0, elinewidth=1.0, markeredgewidth=0)
+        rx.set_ylim(0.985, 1.015); rx.set_ylabel("X / BabaYaga" if j == 0 else "")
+        (y1, e1), (y0, e0) = src["sa_fix"], src["sa_nofix"]; r = y1 / y0
+        fx.axhline(1, color=INK2, lw=0.8)
+        fx.errorbar(xc, r, yerr=r * np.hypot(e1 / y1, e0 / y0), color=S3, marker="o", ms=2.5, lw=0,
+                    elinewidth=1.0, markeredgewidth=0)
+        fx.set_ylim(0.985, 1.015); fx.set_ylabel("fixed / unpatched" if j == 0 else "")
+        fx.set_xlabel(rf"${lab}$ [deg]"); fx.set_xlim(50, 130)
+    h, l = axes[0, 0].get_legend_handles_labels()
+    fig.legend(h, l, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.05))
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.savefig(os.path.join(OUT, "fig_sa.pdf")); plt.close(fig)
+
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["wscan", "t3", "t4"]
+    which = sys.argv[1:] or ["wscan", "t3", "t4", "sa"]
     if "wscan" in which: fig_wscan()
     if "t3" in which: fig_t3_real()
     if "t4" in which: fig_t4()
+    if "sa" in which: fig_sa()
     print("figures ->", OUT, sorted(os.listdir(OUT)))

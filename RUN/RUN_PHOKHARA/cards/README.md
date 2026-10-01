@@ -6,3 +6,8 @@ input_KLOE-LA_pipi_NLO_noVP_FF1.template.dat
   Placeholders @SEED@ @NEVENTS@ @NMAX@ are filled by ../run_phokhara.sh (via ../submit.sh).
   Derived from monte-carlo-results-root-scenarios/scenarios/kloe-I/phokhara/Pions/Inputs/input_NLO.dat
   (older card format: no seed/GVMD lines, FF_pion=3 meant Strong2020 FF there).
+
+input_KLOE-SA_pipi_NLO_noVP_FF1.template.dat
+  As the KLOE-LA card, but 0.35 <= M_pipi^2 <= 0.95 GeV^2 (Strong2020 KLOE-II). The small-angle
+  cuts themselves (missing momentum within 15 deg of a beam, no photon tagged) are in the
+  binary: variants/sa_cuts.patch -> src/phokhara_sa_nofix, src/phokhara_sa_fix (+ h1, h3).
