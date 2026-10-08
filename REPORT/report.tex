@@ -102,7 +102,9 @@ the cutoff; \ceex{} (\CeexA) and \bby{} ($0.23724$) agree with it to $3\times10^
   \end{itemize}
   Subtracting both leaves a per-point residual of $2.5\times10^{-5}$ of the tree.
 \item \textbf{Both errors are in the official \phok~10.0 release} (October 2020) and came with
-  the full-NLO pion mode, which is new in that version (\cref{sec:origin}).
+  the full-NLO pion mode, which is new in that version. The sQED ingredients (vertex
+  corrections, tree interference) are older and correct; the errors are in the 10.0 code that
+  assembles them into the charge-odd one-loop term (\cref{sec:origin}).
 \item \textbf{With both corrected}, $\Ath$ no longer depends on $w$ and agrees with \ceex{} and
   \bby{}, in total and separately in the one- and two-photon parts (\cref{sec:fix}). Totals and
   charge-even distributions are unchanged.
@@ -760,13 +762,45 @@ Both errors are in the code as released by the \phok{} authors, not in later mod
   and \code{ISRcurrent\_no\_mass\_terms.f} there are byte-identical to the released ones.
 \item \code{git blame} traces every line of the H1 block and of B5, and the two \code{V1(1)}
   lines, to that first commit; none of the later commits touched them.
-\item The previous releases on the same page (8.0, 9.0, 9.1, 9.2, 9.3) have no full-NLO pion
-  mode at all: no \code{nlo2} switch, no \code{NLO\_ISR\_no\_mass\_terms}, \code{NLOpions} or
-  \code{virt\_pions}. Both errors therefore entered with that mode in version 10.0, whose physics
-  is described in Phys.\ Rev.\ D100 (2019) 076004.
 \item A first version 10.0 (December 2018) was replaced by the October 2020 one, which fixed
   vacuum-polarisation omissions; it is no longer distributed and could not be checked.
 \end{itemize}
+
+\paragraph{Older ingredients, new assembly.} The sQED pieces that enter H1 and H2 are older than
+version 10.0. The errors are not in them but in the 10.0 code that combines them into the
+charge-odd one-loop ISR$\times$FSR term for pions. We checked every earlier release on the same
+page (5.0, December 2005; 6.0; 7.0; 8.0, July 2013; 9.0, February 2014; 9.1b; 9.2; 9.3,
+November 2017):
+\begin{itemize}
+\item \textbf{The vertex corrections and the tree interference are old and used correctly.}
+  \code{ampLO} with the pion vertex $v_f$ (\code{ver\_f = vertLO(qq)}) and the electron vertex
+  $v_s$ (\code{ver\_s}) is present from 5.0 on. In 9.3 (\code{phokhara\_9.3.f:9378--9399}), $v_f$
+  multiplies only $|F|^2$, $(1+v_s)$ only $|I|^2$, and the tree interference (block B3,
+  \code{fsr=2}) is added as $2\,{\rm Re}[F^*I]$ without a vertex factor. There is no one-loop
+  ISR$\times$FSR interference for pions in any release before 10.0, so their pion results
+  contain neither error (they lack this charge-odd term altogether).
+\item \textbf{The muon counterpart of the H1 block is old and correct.} The full-NLO muon mode
+  (\code{ampLOm2}, pentagons from eemmg-lib) appears in 9.0. Its one-loop ISR$\times$FSR block
+  is $2\,{\rm Re}[T_1+T_2+T_3+T_4]\,(v_s+v_f)/2$, with the factor outside \code{dreal}. It ends
+  at \code{phokhara\_9.0.f:7850} and \code{phokhara\_9.3.f:9778}, and is unchanged in 10.0
+  (\code{phokhara\_10.0.f:10384--10394}).
+\item \textbf{H1 is in a block new in 10.0.} The pion block \code{if((nlo2.eq.1).and.(pion.eq.1))}
+  exists in no earlier release. It is the B3 block copied, with \code{*(ver\_f+ver\_s)} written
+  before the closing parenthesis instead of after it, so the factor reaches only the last
+  helicity term. The vertex functions themselves are correct; the error is in the bracketing of
+  the new block, which differs from the muon template.
+\item \textbf{H2 comes from combining an ISR current with code that already holds its pieces.}
+  \code{NLO\_ISR\_no\_mass\_terms} (\code{ISRcurrent\_no\_mass\_terms.f}) is absent from every
+  earlier release; no \code{V1(1)} appears in 9.3. Its leading coefficient includes the tree
+  and the analytic ISR soft function, which is a natural definition of the complete one-loop
+  ISR current. In 10.0 it is combined with B3, which already adds the tree interference, and with
+  \code{NLOpions}, which already supplies the soft part through the eikonal, so both are
+  counted twice. The current is not wrong on its own; the double counting arises in the
+  assembly.
+\end{itemize}
+Both errors therefore entered with the full-NLO pion mode of version 10.0 (Phys.\ Rev.\ D100
+(2019) 076004): they are in the new code that assembles older sQED ingredients, not in those
+ingredients. Muon results are unaffected in every version.
 
 %=========================================================================================
 \section{Result with the fix}
