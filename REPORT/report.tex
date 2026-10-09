@@ -49,8 +49,10 @@
 \title{\vspace{-1.2cm}\textbf{Origin of the \ceex--\phok{} discrepancy in the pion angular
   distributions}\\[4pt]\large KLOE large-angle scenario, $e^+e^-\to\pi^+\pi^-\gamma$ at NLO,
   $F_\pi=1$, no vacuum polarisation}
-\author{Jeremy Paltrinieri\thanks{Analysis carried out with Claude Code (Anthropic).
-  Repository: \url{https://github.com/jpaltrinieri/CEEX_PHOKHARA_ANALYSIS}}}
+\author{Jérémy Paltrinieri, Pau Petit Rosàs, Lois Flower,\\
+  William J.~Torres Bobadilla and Thomas Teubner\\[4pt]
+  \small Department of Mathematical Sciences, University of Liverpool, Liverpool L69 3BX,
+  United Kingdom}
 \date{23 September 2026}
 
 \begin{document}
@@ -136,8 +138,7 @@ $A=[\sigma(\theta<90^\circ)-\sigma(\theta>90^\circ)]/\sigma$.
 
 \paragraph{Pipeline.} SLURM arrays per run name; \ceex{} rank outputs are screened with
 \code{check\_total.sh} and outliers are moved aside (\code{quarantine.sh}) before merging;
-\code{plot\_compare.py} produces the distribution and ratio plots. Everything is in the
-repository \url{https://github.com/jpaltrinieri/CEEX_PHOKHARA_ANALYSIS}.
+\code{plot\_compare.py} produces the distribution and ratio plots.
 
 %=========================================================================================
 \section{\texorpdfstring{How \phok{} computes $\pi^+\pi^-\gamma$ at NLO}{How PHOKHARA computes pi+pi-gamma at NLO}}
@@ -506,7 +507,7 @@ The ingredients (diagram content inferred from the propagator masses):
 \item Normalisation: with the common factor written out, $V_\pi$ carries $32\pi^2\alpha^4$ and the
   pentagons $\frac{(4\pi\alpha)^3}{4}\frac{\alpha}{4\pi}\,2=8\pi^2\alpha^4$. We did not check
   whether the factor 4 is compensated inside the routine; the per-point comparison with \ceex{}
-  agrees with \ceex{}.
+  is consistent with this normalisation.
 \end{itemize}
 
 \paragraph{\code{NLOpions}: last term of \cref{eq:phok-split}} (\code{hard\_soft\_part/one\_photon.f},
@@ -909,6 +910,12 @@ The ratio axes are clipped to the bulk of each distribution; the spikes in $m_{\
 $m_{\rm trk}$ and $m^{\rm c}_{\rm trk}$ are nearly empty tail bins.}
 \label{fig:after-ov}
 \end{figure}
+
+%=========================================================================================
+\section*{Acknowledgements}
+\addcontentsline{toc}{section}{Acknowledgements}
+The code investigation, the analysis and the drafting of this report were carried out with the
+assistance of Claude Code (Anthropic).
 
 %=========================================================================================
 \appendix
